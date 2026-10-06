@@ -2,7 +2,7 @@
 Kelompok Fisik dan Stok.
 """
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, TYPE_CHECKING
 
 from sqlmodel import SQLModel, Field, Relationship
@@ -13,6 +13,10 @@ if TYPE_CHECKING:
     from .akses import User, PenugasanKandang
     from .masterdata import BahanPakan
     from .operasional import SiklusKandang, Formulasi, Perintah
+
+
+def utc_now():
+    return datetime.now(timezone.utc)
 
 
 class Kandang(SQLModel, table=True):
@@ -97,7 +101,7 @@ class TransaksiStok(SQLModel, table=True):
     jenis: JenisTransaksi
     jumlah: float
     alasan: Optional[str] = None
-    dibuat_pada: datetime = Field(default_factory=datetime.utcnow)
+    dibuat_pada: datetime = Field(default_factory=utc_now)
 
     wadah: "Wadah" = Relationship(back_populates="transaksi_stok")
     dilakukan_oleh: "User" = Relationship(back_populates="transaksi_stok")

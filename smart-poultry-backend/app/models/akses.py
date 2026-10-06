@@ -3,7 +3,7 @@ Kelompok Akses (versi MVP, disederhanakan).
 Role & Permission TIDAK dibuat sebagai tabel - lihat PeranUser di enums.py.
 """
 import uuid
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from typing import Optional, TYPE_CHECKING
 
 from sqlmodel import SQLModel, Field, Relationship
@@ -16,6 +16,10 @@ if TYPE_CHECKING:
     from .operasional import Formulasi, Perintah, Notifikasi
 
 
+def utc_now():
+    return datetime.now(timezone.utc)
+
+
 class User(SQLModel, table=True):
     __tablename__ = "user"
 
@@ -25,7 +29,7 @@ class User(SQLModel, table=True):
     kata_sandi_hash: str
     role: PeranUser
     status: StatusUser = Field(default=StatusUser.AKTIF)
-    dibuat_pada: datetime = Field(default_factory=datetime.utcnow)
+    dibuat_pada: datetime = Field(default_factory=utc_now)
 
     # Relasi R7-R10: master data dimiliki per Pemilik
     kandang: list["Kandang"] = Relationship(back_populates="pemilik")
@@ -68,6 +72,6 @@ class AuditLog(SQLModel, table=True):
     nilai_lama: Optional[str] = None
     nilai_baru: Optional[str] = None
     catatan: Optional[str] = None
-    waktu: datetime = Field(default_factory=datetime.utcnow)
+    waktu: datetime = Field(default_factory=utc_now)
 
     user: Optional["User"] = Relationship(back_populates="audit_log")

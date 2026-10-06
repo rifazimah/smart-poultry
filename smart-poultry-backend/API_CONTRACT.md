@@ -31,9 +31,13 @@ endpoint untuk **simulator alat**. Tidak ada endpoint jadwal/pengajuan
 
 | Method | Path | Body | Response | Catatan |
 |---|---|---|---|---|
-| POST | `/auth/login` | `{email, kata_sandi}` | `{access_token, token_type, user}` | |
+| POST | `/auth/login` | `{email, kata_sandi}` | `{access_token, token_type, user}` | Menerima JSON murni. |
 | GET | `/auth/me` | — | `User` | Butuh JWT |
 | POST | `/auth/ganti-kata-sandi` | `{kata_sandi_lama, kata_sandi_baru}` | 204 | Butuh JWT |
+
+> **Catatan Endpoint Login & Swagger UI:**
+> `POST /auth/login` secara ketat **hanya** menerima body **JSON** (sebagai *source of truth* untuk Frontend). 
+> Terdapat satu endpoint internal tersembunyi (`POST /auth/swagger-login`) yang dikhususkan untuk menerima Form-Data `application/x-www-form-urlencoded`. Endpoint internal ini **hanya** digunakan agar fitur tombol gembok "Authorize" bawaan Swagger UI (`/docs`) dapat berfungsi untuk keperluan testing. Frontend developer **dilarang** menggunakan endpoint `swagger-login` tersebut dan harus tetap menggunakan `/auth/login` dengan payload JSON.
 
 ## 2. User & Penugasan (BR-02, BR-03)
 

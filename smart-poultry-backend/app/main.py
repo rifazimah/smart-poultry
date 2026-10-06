@@ -13,8 +13,7 @@ def health():
     return {"status": "ok"}
 
 
-# Router akan didaftarkan di sini seiring endpoint di API_CONTRACT.md diimplementasikan, mis.:
-# from .routers import auth, kandang, formulasi, perintah, device
-# app.include_router(auth.router)
-# app.include_router(kandang.router)
-# ...
+from .routers import auth, users
+
+app.include_router(auth.router, prefix="/api/v1")
+app.include_router(users.router, prefix="/api/v1")

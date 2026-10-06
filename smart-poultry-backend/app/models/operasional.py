@@ -8,7 +8,7 @@ Konsekuensi: Perintah & LogEksekusi HANYA berasal dari aksi manual
 sumber dari eksekusi terjadwal.
 """
 import uuid
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from typing import Optional, TYPE_CHECKING
 
 from sqlmodel import SQLModel, Field, Relationship
@@ -22,6 +22,10 @@ if TYPE_CHECKING:
     from .akses import User
     from .fisik import Kandang, Alat
     from .masterdata import JenisAyam, Fase, BahanPakan, Nutrisi
+
+
+def utc_now():
+    return datetime.now(timezone.utc)
 
 
 class SiklusKandang(SQLModel, table=True):
@@ -69,7 +73,7 @@ class Formulasi(SQLModel, table=True):
     mode: ModeFormulasi
     total_biaya_per_kg: Optional[float] = None
     status: StatusFormulasi
-    dibuat_pada: datetime = Field(default_factory=datetime.utcnow)
+    dibuat_pada: datetime = Field(default_factory=utc_now)
 
     siklus: "SiklusKandang" = Relationship(back_populates="formulasi")
     dibuat_oleh: "User" = Relationship(back_populates="formulasi_dibuat")
@@ -124,7 +128,7 @@ class Perintah(SQLModel, table=True):
     tipe: TipePerintah
     command_id: uuid.UUID = Field(default_factory=uuid.uuid4, unique=True, index=True)
     status: StatusPerintah = Field(default=StatusPerintah.PENDING)
-    dibuat_pada: datetime = Field(default_factory=datetime.utcnow)
+    dibuat_pada: datetime = Field(default_factory=utc_now)
 
     alat: "Alat" = Relationship(back_populates="perintah")
     dibuat_oleh: "User" = Relationship(back_populates="perintah_dibuat")
@@ -144,7 +148,7 @@ class LogEksekusi(SQLModel, table=True):
     id_eksekusi_unik: uuid.UUID = Field(unique=True, index=True)  # idempotency key dari alat
     berat_aktual: Optional[float] = None
     status: StatusEksekusi
-    dilaporkan_pada: datetime = Field(default_factory=datetime.utcnow)
+    dilaporkan_pada: datetime = Field(default_factory=utc_now)
 
     perintah: "Perintah" = Relationship(back_populates="log_eksekusi")
 
@@ -158,6 +162,6 @@ class Notifikasi(SQLModel, table=True):
     judul: str
     pesan: str
     status: StatusNotifikasi = Field(default=StatusNotifikasi.BELUM_DIBACA)
-    dibuat_pada: datetime = Field(default_factory=datetime.utcnow)
+    dibuat_pada: datetime = Field(default_factory=utc_now)
 
     user: "User" = Relationship(back_populates="notifikasi")
