@@ -13,10 +13,11 @@ def health():
     return {"status": "ok"}
 
 
-from .routers import auth, users, kandang, masterdata, siklus
+from .routers import auth, users, kandang, masterdata, siklus, formulasi
 
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(users.router, prefix="/api/v1")
 app.include_router(kandang.router, prefix="/api/v1")
 app.include_router(masterdata.router, prefix="/api/v1")
 app.include_router(siklus.router, prefix="/api/v1")
+app.include_router(formulasi.router, prefix="/api/v1")
