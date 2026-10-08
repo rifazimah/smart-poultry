@@ -10,7 +10,7 @@ from app.models.akses import User, PenugasanKandang
 from app.models.fisik import Kandang, Alat, Wadah
 from app.models.enums import PeranUser, StatusPenugasan
 from app.schemas.fisik import (
-    KandangCreate, KandangUpdate, KandangPublic,
+    KandangCreate, KandangUpdate, KandangPublic, KandangDetailPublic,
     AlatWithToken, TokenRotasiResponse,
     WadahCreate, WadahUpdate, WadahPublic
 )
@@ -86,7 +86,7 @@ def _get_kandang_or_404(session: Session, kandang_id: uuid.UUID, user: User) -> 
     return kandang
 
 
-@router.get("/kandang/{id}", response_model=KandangPublic)
+@router.get("/kandang/{id}", response_model=KandangDetailPublic)
 def get_kandang(
     id: uuid.UUID,
     current_user: Annotated[User, Depends(get_current_user)],
@@ -94,7 +94,28 @@ def get_kandang(
 ):
     """Detail kandang. Pemilik & Pekerja yang ditugaskan."""
     kandang = _get_kandang_or_404(session, id, current_user)
-    return kandang
+    
+    # Enrich response
+    detail = KandangDetailPublic.model_validate(kandang)
+    
+    alat = session.exec(select(Alat).where(Alat.kandang_id == kandang.id)).first()
+    if alat:
+        detail.status_alat = alat.status
+        
+    # Lazy import to avoid circular dependency
+    from app.models.operasional import SiklusKandang
+    from app.models.enums import StatusSiklus
+    siklus_aktif = session.exec(
+        select(SiklusKandang).where(
+            SiklusKandang.kandang_id == kandang.id,
+            SiklusKandang.status == StatusSiklus.AKTIF
+        )
+    ).first()
+    if siklus_aktif:
+        detail.siklus_aktif_id = siklus_aktif.id
+        detail.siklus_aktif_status = siklus_aktif.status.value
+        
+    return detail
 
 
 @router.patch("/kandang/{id}", response_model=KandangPublic)

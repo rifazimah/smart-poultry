@@ -35,6 +35,7 @@ class FormulasiPreview(BaseModel):
     Tidak disimpan ke DB langsung, ini adalah respon dari proses formulasi (baik OTOMATIS maupun MANUAL).
     Jika disimpan, struktur ini akan diubah jadi entitas Formulasi, FormulasiItem, FormulasiNutrisiHasil.
     """
+    siklus_id: uuid.UUID
     mode: ModeFormulasi
     status: StatusFormulasi
     total_biaya_per_kg: Optional[float] = None

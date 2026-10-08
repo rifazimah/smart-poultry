@@ -53,78 +53,18 @@ def generate_formulasi_manual_endpoint(
 
 @router.post("/formulasi", response_model=FormulasiPublic, status_code=status.HTTP_201_CREATED)
 def simpan_formulasi(
-    siklus_id: uuid.UUID, # dari query atau body? Contract: body `FormulasiPreview` tapi butuh siklus_id.
     preview: FormulasiPreview,
     current_user: Annotated[User, Depends(get_current_user)],
     session: Annotated[Session, Depends(get_session)]
 ):
     """
     Menyimpan hasil preview menjadi formulasi resmi (snapshot).
-    Catatan: butuh parameter query ?siklus_id=... agar tahu disimpan ke siklus mana.
     """
-    siklus = _get_siklus_or_404(session, siklus_id, current_user)
-    
-    # Validasi wadah: pastikan bahan_pakan_id di item masih terpasang di wadah alat
-    alat = session.exec(select(Alat).where(Alat.kandang_id == siklus.kandang_id)).first()
-    if not alat:
-        raise HTTPException(status_code=400, detail="Kandang tidak memiliki alat IoT")
-        
-    wadah_list = session.exec(select(Wadah).where(Wadah.alat_id == alat.id)).all()
-    bahan_terpasang = {w.bahan_pakan_id for w in wadah_list if w.bahan_pakan_id is not None}
-    
-    for item in preview.item:
-        if item.bahan_pakan_id not in bahan_terpasang:
-            raise HTTPException(
-                status_code=409, 
-                detail=f"Bahan pakan {item.nama_bahan} sudah dilepas dari wadah sejak preview dibuat."
-            )
-            
-    # Nonaktifkan formulasi lama yang aktif
-    old_formulas = session.exec(
-        select(Formulasi).where(
-            Formulasi.siklus_id == siklus_id,
-            Formulasi.status.in_([StatusFormulasi.AKTIF, StatusFormulasi.PERLU_DITINJAU])
-        )
-    ).all()
-    for f in old_formulas:
-        f.status = StatusFormulasi.NONAKTIF
-        session.add(f)
-        
-    # Buat Formulasi baru
-    db_form = Formulasi(
-        siklus_id=siklus_id,
-        dibuat_oleh_id=current_user.id,
-        mode=preview.mode,
-        total_biaya_per_kg=preview.total_biaya_per_kg,
-        status=StatusFormulasi.AKTIF if preview.status != StatusFormulasi.TIDAK_SEMPURNA else StatusFormulasi.TIDAK_SEMPURNA
-    )
-    session.add(db_form)
-    session.commit()
-    session.refresh(db_form)
-    
-    # Simpan Items
-    for item in preview.item:
-        db_item = FormulasiItem(
-            formulasi_id=db_form.id,
-            bahan_pakan_id=item.bahan_pakan_id,
-            proporsi=item.proporsi,
-            berat_per_sesi=item.berat_per_sesi
-        )
-        session.add(db_item)
-        
-    # Simpan Nutrisi Hasil
-    for nh in preview.nutrisi_hasil:
-        db_nh = FormulasiNutrisiHasil(
-            formulasi_id=db_form.id,
-            nutrisi_id=nh.nutrisi_id,
-            nilai_hasil=nh.nilai_hasil,
-            status=nh.status
-        )
-        session.add(db_nh)
-        
-    session.commit()
-    session.refresh(db_form)
-    return db_form
+    try:
+        from app.services.formulasi import simpan_formulasi_service
+        return simpan_formulasi_service(session, preview, current_user)
+    except FormulasiException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.message)
 
 
 @router.get("/siklus/{id}/formulasi", response_model=List[FormulasiPublic])

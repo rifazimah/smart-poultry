@@ -28,6 +28,12 @@ class KandangPublic(BaseModel):
         from_attributes = True
 
 
+class KandangDetailPublic(KandangPublic):
+    status_alat: Optional[StatusAlat] = None
+    siklus_aktif_id: Optional[uuid.UUID] = None
+    siklus_aktif_status: Optional[str] = None
+
+
 class AlatPublic(BaseModel):
     id: uuid.UUID
     kandang_id: uuid.UUID

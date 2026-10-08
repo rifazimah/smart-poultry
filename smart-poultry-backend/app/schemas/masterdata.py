@@ -114,3 +114,37 @@ class StandarKonsumsiPublic(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# --- KANDUNGAN NUTRISI BAHAN ---
+class KandunganNutrisiBahanInput(BaseModel):
+    nutrisi_id: uuid.UUID
+    nilai_per_kg: float
+
+
+class KandunganNutrisiBahanPublic(BaseModel):
+    id: uuid.UUID
+    bahan_pakan_id: uuid.UUID
+    nutrisi_id: uuid.UUID
+    nilai_per_kg: float
+
+    class Config:
+        from_attributes = True
+
+
+# --- KEBUTUHAN NUTRISI FASE ---
+class KebutuhanNutrisiFaseInput(BaseModel):
+    nutrisi_id: uuid.UUID
+    batas_min: Optional[float] = None
+    batas_max: Optional[float] = None
+
+
+class KebutuhanNutrisiFasePublic(BaseModel):
+    id: uuid.UUID
+    fase_id: uuid.UUID
+    nutrisi_id: uuid.UUID
+    batas_min: Optional[float] = None
+    batas_max: Optional[float] = None
+
+    class Config:
+        from_attributes = True

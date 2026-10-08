@@ -6,13 +6,18 @@ from sqlmodel import Session, select
 
 from app.database import get_session
 from app.models.akses import User
-from app.models.masterdata import JenisAyam, Fase, Nutrisi, BahanPakan, StandarKonsumsi
+from app.models.masterdata import (
+    JenisAyam, Fase, Nutrisi, BahanPakan, StandarKonsumsi,
+    KandunganNutrisiBahan, KebutuhanNutrisiFase
+)
 from app.schemas.masterdata import (
     JenisAyamCreate, JenisAyamUpdate, JenisAyamPublic,
     FaseCreate, FaseUpdate, FasePublic,
     NutrisiCreate, NutrisiUpdate, NutrisiPublic,
     BahanPakanCreate, BahanPakanUpdate, BahanPakanPublic,
-    StandarKonsumsiCreateUpdate, StandarKonsumsiPublic
+    StandarKonsumsiCreateUpdate, StandarKonsumsiPublic,
+    KandunganNutrisiBahanInput, KandunganNutrisiBahanPublic,
+    KebutuhanNutrisiFaseInput, KebutuhanNutrisiFasePublic
 )
 from app.services.auth import get_current_pemilik
 
@@ -186,6 +191,42 @@ def upsert_standar_konsumsi(
     return db_obj
 
 
+@router.put("/fase/{id}/kebutuhan-nutrisi", response_model=List[KebutuhanNutrisiFasePublic])
+def upsert_kebutuhan_nutrisi_fase(
+    id: uuid.UUID,
+    data_in: List[KebutuhanNutrisiFaseInput],
+    current_pemilik: Annotated[User, Depends(get_current_pemilik)],
+    session: Annotated[Session, Depends(get_session)]
+):
+    fase = session.get(Fase, id)
+    if not fase:
+        raise HTTPException(status_code=404, detail="Fase tidak ditemukan")
+    get_entity_or_404(session, JenisAyam, fase.jenis_ayam_id, current_pemilik.id)
+
+    # Delete existing requirements for this phase
+    session.query(KebutuhanNutrisiFase).filter(KebutuhanNutrisiFase.fase_id == id).delete()
+
+    new_items = []
+    for item in data_in:
+        # Validate nutrisi exists and belongs to pemilik
+        get_entity_or_404(session, Nutrisi, item.nutrisi_id, current_pemilik.id)
+        
+        db_obj = KebutuhanNutrisiFase(
+            fase_id=id,
+            nutrisi_id=item.nutrisi_id,
+            batas_min=item.batas_min,
+            batas_max=item.batas_max
+        )
+        session.add(db_obj)
+        new_items.append(db_obj)
+        
+    session.commit()
+    for obj in new_items:
+        session.refresh(obj)
+        
+    return new_items
+
+
 # --- NUTRISI ---
 @router.post("/nutrisi", response_model=NutrisiPublic, status_code=status.HTTP_201_CREATED)
 def create_nutrisi(
@@ -302,3 +343,35 @@ def delete_bahan_pakan(
     db_obj = get_entity_or_404(session, BahanPakan, id, current_pemilik.id)
     session.delete(db_obj)
     session.commit()
+
+
+@router.put("/bahan-pakan/{id}/nutrisi", response_model=List[KandunganNutrisiBahanPublic])
+def upsert_kandungan_nutrisi_bahan(
+    id: uuid.UUID,
+    data_in: List[KandunganNutrisiBahanInput],
+    current_pemilik: Annotated[User, Depends(get_current_pemilik)],
+    session: Annotated[Session, Depends(get_session)]
+):
+    bahan = get_entity_or_404(session, BahanPakan, id, current_pemilik.id)
+
+    # Delete existing requirements for this ingredient
+    session.query(KandunganNutrisiBahan).filter(KandunganNutrisiBahan.bahan_pakan_id == id).delete()
+
+    new_items = []
+    for item in data_in:
+        # Validate nutrisi exists and belongs to pemilik
+        get_entity_or_404(session, Nutrisi, item.nutrisi_id, current_pemilik.id)
+        
+        db_obj = KandunganNutrisiBahan(
+            bahan_pakan_id=id,
+            nutrisi_id=item.nutrisi_id,
+            nilai_per_kg=item.nilai_per_kg
+        )
+        session.add(db_obj)
+        new_items.append(db_obj)
+        
+    session.commit()
+    for obj in new_items:
+        session.refresh(obj)
+        
+    return new_items
