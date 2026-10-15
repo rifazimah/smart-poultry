@@ -1,0 +1,37 @@
+version: "3.9"
+
+# Smart Poultry — local development compose
+# Starts an identical PostgreSQL Alpine instance for every team member.
+#
+# Usage:
+#   docker compose up -d          # start in background
+#   docker compose down           # stop (data is preserved in the volume)
+#   docker compose down -v        # stop AND wipe all data (CAUTION!)
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: smart-poultry-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: popuri123
+      POSTGRES_DB: smart_poultry
+    ports:
+      # Exposes port 5432 on the host so Alembic / uvicorn running on the
+      # host machine (outside Docker) can connect via localhost:5432.
+      - "5432:5432"
+    volumes:
+      # Named volume — data survives `docker compose down` (without -v).
+      - smart_poultry_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d smart_poultry"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  smart_poultry_pgdata:
+    # Leave driver blank → uses Docker's default local driver.
+    # Data is stored in Docker's managed volume directory,
+    # completely separate from WSL file paths.
