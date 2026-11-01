@@ -16,8 +16,8 @@ API_CONTRACT.md).
                                                  ▼
                                        ┌───────────────────┐
                                        │  PostgreSQL         │
-                                       │  (container Alpine, │
-                                       │   sudah jalan lokal)│
+                                       │  (docker-compose, │
+                                       │   postgres:16-alpine)│
                                        └───────────────────┘
                                                  ▲
                                        HTTP + X-Device-Token
@@ -32,8 +32,8 @@ API_CONTRACT.md).
 **4 komponen berjalan terpisah**, tidak saling import kode:
 1. **React App** — belum dibangun di fase ini (menyusul).
 2. **FastAPI Backend** — repo ini. Satu-satunya yang bicara ke database.
-3. **PostgreSQL** — sudah jalan di container Alpine lokal (bukan tanggung
-   jawab repo ini untuk menjalankannya, cuma konek lewat `DATABASE_URL`).
+3. **PostgreSQL** — dijalankan lewat `docker-compose.yml` di root repo
+   (`docker compose up -d`); backend hanya konek lewat `DATABASE_URL`.
 4. **Simulator Alat** — repo/folder **terpisah** di luar
    `smart-poultry-backend/`, dijalankan manual (`python run.py`) saat
    testing. Ini BUKAN bagian dari backend FastAPI, dan tidak boleh
@@ -77,7 +77,7 @@ KISS di AGENTS.md).
 
 | Lingkungan | Tujuan | Database |
 |---|---|---|
-| **Lokal** | Development sehari-hari | Container PostgreSQL Alpine yang sudah jalan, lewat `.env` |
+| **Lokal** | Development sehari-hari | Container PostgreSQL via `docker compose up -d`, lewat `.env` |
 | **Demo** | Presentasi/testing bersama teman, akhir bulan | Satu deployment sederhana (Railway/Render/Fly.io — belum dipilih final), PostgreSQL managed dari platform yang sama |
 
 Tidak ada staging/CI-CD bertingkat untuk MVP ini — ini keputusan sadar

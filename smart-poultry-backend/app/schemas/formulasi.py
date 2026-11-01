@@ -51,6 +51,7 @@ class FormulasiPublic(BaseModel):
     mode: ModeFormulasi
     total_biaya_per_kg: Optional[float] = None
     status: StatusFormulasi
+    aktif: bool
     dibuat_pada: datetime
 
     class Config:

@@ -4,7 +4,7 @@ Scope: automated feed formulation (LP-based + manual) and manual feeding
 control via a device simulator. **Not included:** automated scheduling,
 worker-approval flow, and dynamic Role/Permission (deferred to Phase 2).
 
-See `API_CONTRACT.md` in the repo root for the full list of endpoints.
+See [`../spesifikasi/API_CONTRACT.md`](../spesifikasi/API_CONTRACT.md) for the full list of endpoints.
 
 ## 1. Prerequisites
 
@@ -83,7 +83,8 @@ uvicorn app.main:app --reload
 ```
 smart-poultry/               ← monorepo root (git is here)
   docker-compose.yml         ← one-command local DB setup
-  smart-poultry-backend/     ← this folder
+  smart-poultry-backend/     ← backend code
+  docs/                      ← all documentation (API_CONTRACT, CONVENTIONS, ARCHITECTURE, ...)
     app/
       models/
         enums.py             → all enums (status, type, etc.)
@@ -98,8 +99,4 @@ smart-poultry/               ← monorepo root (git is here)
       config.py              → reads .env
       main.py                → FastAPI entrypoint
     alembic/                 → schema migrations
-    API_CONTRACT.md          → endpoint reference (read before adding a router)
-    CONVENTIONS.md           → coding rules (password hashing, LP solver, etc.)
-    ARCHITECTURE.md          → system design & auth flow
-    AGENTS.md                → rules for AI coding agents
 ```

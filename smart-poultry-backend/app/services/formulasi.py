@@ -95,9 +95,9 @@ def _evaluate_nutrisi(
             
         status = StatusNutrisi.SESUAI
         if keb.batas_min is not None and nilai_total < (keb.batas_min - 1e-4):
-            status = StatusNutrisi.TIDAK_SESUAI
+            status = StatusNutrisi.KURANG
         if keb.batas_max is not None and nilai_total > (keb.batas_max + 1e-4):
-            status = StatusNutrisi.TIDAK_SESUAI
+            status = StatusNutrisi.BERLEBIH
             
         hasil.append(
             NutrisiHasilOutput(
@@ -195,10 +195,10 @@ def hitung_formulasi_otomatis(session: Session, siklus: SiklusKandang) -> Formul
             
     nutrisi_hasil = _evaluate_nutrisi(session, bahan_list, proporsi_dict, kebutuhan)
     
-    # Cek ada TIDAK_SESUAI gak (seharusnya tidak ada jika sukses)
+    # Cek ada nutrisi di luar batas (seharusnya tidak ada jika sukses)
     status_form = StatusFormulasi.VALID
     for n in nutrisi_hasil:
-        if n.status == StatusNutrisi.TIDAK_SESUAI:
+        if n.status != StatusNutrisi.SESUAI:
             status_form = StatusFormulasi.TIDAK_SEMPURNA
             
     return FormulasiPreview(
@@ -262,7 +262,7 @@ def hitung_formulasi_manual(
     
     pesan_error = []
     for n in nutrisi_hasil:
-        if n.status == StatusNutrisi.TIDAK_SESUAI:
+        if n.status != StatusNutrisi.SESUAI:
             pesan_error.append(n.nama_nutrisi)
             
     status_form = StatusFormulasi.VALID
@@ -308,11 +308,11 @@ def simpan_formulasi_service(
     old_formulas = session.exec(
         select(Formulasi).where(
             Formulasi.siklus_id == preview.siklus_id,
-            Formulasi.status.in_([StatusFormulasi.AKTIF, StatusFormulasi.PERLU_DITINJAU])
+            Formulasi.aktif == True  # noqa: E712
         )
     ).all()
     for f in old_formulas:
-        f.status = StatusFormulasi.NONAKTIF
+        f.aktif = False
         session.add(f)
         
     # Buat Formulasi baru
@@ -321,7 +321,8 @@ def simpan_formulasi_service(
         dibuat_oleh_id=current_user.id,
         mode=preview.mode,
         total_biaya_per_kg=preview.total_biaya_per_kg,
-        status=StatusFormulasi.AKTIF if preview.status != StatusFormulasi.TIDAK_SEMPURNA else StatusFormulasi.TIDAK_SEMPURNA
+        status=preview.status,
+        aktif=preview.status == StatusFormulasi.VALID
     )
     session.add(db_form)
     session.commit()
