@@ -1,9 +1,9 @@
 # 06 — Analisis Endpoint DELETE
 
 Tanggal: 1 November 2026 · Pemicu: pengguna ingin bisa menghapus data yang salah input.
-Status: **usulan, belum diimplementasi** — menunggu keputusan di bagian 6. (AGENTS.md melarang menambah endpoint di luar kontrak tanpa bertanya.)
+Status: **P1 sudah diimplementasi (1 Nov 2026, keputusan K-1..K-5 sesuai rekomendasi)**: 4 DELETE master data diperbaiki, `DELETE /siklus/{id}/populasi/{pid}`, dan `PATCH /siklus/{id}`. P2 (siklus, formulasi, wadah, alat, kandang) dan P3 belum dikerjakan.
 
-## 1. Kondisi sekarang
+## 1. Kondisi sebelum P1
 
 DELETE hanya ada untuk master data (`jenis-ayam`, `fase`, `nutrisi`, `bahan-pakan`) dan `penugasan` (soft: status `BERAKHIR`).
 Tidak ada DELETE untuk kandang, alat, wadah, siklus, perubahan populasi, formulasi, pekerja, dan notifikasi.

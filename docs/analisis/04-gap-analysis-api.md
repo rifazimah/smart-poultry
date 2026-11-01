@@ -5,6 +5,8 @@ Sumber kontrak: [`../spesifikasi/API_CONTRACT.md`](../spesifikasi/API_CONTRACT.m
 > (lihat [03](03-review-kode.md)); baris tersebut kini berstatus ✅ kecuali dicatat lain. Masih ❌/⚠️: template (BR-13), paginasi,
 > S-1, S-4, S-6, S-7, S-15 (lihat [06](06-analisis-endpoint-delete.md)).
 
+> **P1 DELETE (1 Nov 2026):** DELETE master data kini 409 bila dipakai (S-15 selesai); ditambah `PATCH /siklus/{id}` dan `DELETE /siklus/{id}/populasi/{pid}`. Endpoint ini ada di luar kontrak awal dan sudah ditambahkan ke `API_CONTRACT.md`.
+
 Legenda: ✅ sesuai · ⚠️ ada tapi menyimpang/berisiko (rujuk ID temuan di [03](03-review-kode.md)) · ❌ belum ada.
 
 | # | Bagian kontrak | Endpoint | Status | Catatan |

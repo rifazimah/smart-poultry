@@ -67,6 +67,10 @@ endpoint untuk **simulator alat**. Tidak ada endpoint jadwal/pengajuan
 
 ## 4. Master Data (UC-05)
 
+> **DELETE master data (Fase 1 – P1):** hanya Pemilik pemilik data. Bila masih dipakai → `409` dengan rincian (tanpa penghapusan diam-diam):
+> bahan pakan (dipakai wadah / item formulasi), nutrisi (kandungan bahan / kebutuhan fase / hasil formulasi), fase dan jenis ayam (dipakai siklus).
+> Kandungan bahan pakan, standar konsumsi, kebutuhan fase, dan fase milik jenis ayam ikut terhapus. Setiap penghapusan dicatat di `AuditLog` (`HAPUS_*`).
+
 Pola CRUD yang sama berlaku untuk lima resource ini (disingkat jadi satu tabel):
 
 | Resource | Path | Catatan |
@@ -94,6 +98,13 @@ Masing-masing resource mendukung `POST` (create, 201), `GET` (list, dengan `?jen
 | POST | `/template/jenis-ayam/{template_id}/salin` | `{}` | `JenisAyam` (201) — menyalin jenis ayam + fase + kebutuhan nutrisi + standar konsumsi ke akun Pemilik yang login |
 
 ## 5. Siklus & Populasi (UC-06)
+
+> **Koreksi salah input (Fase 1 – P1), hanya Pemilik & siklus `AKTIF`:**
+>
+> | Method | Path | Body | Response | Catatan |
+> |---|---|---|---|---|
+> | PATCH | `/siklus/{id}` | `{jumlah_ayam?, tanggal_mulai?}` | `SiklusKandang` | `jumlah_ayam` menggantikan nilai saat ini (≥ 0). Bila populasi berubah, formulasi aktif → `PERLU_DITINJAU` + notifikasi. Tanpa field → `400`. Audit `KOREKSI_SIKLUS` |
+> | DELETE | `/siklus/{id}/populasi/{populasi_id}` | — | 204 | Efek catatan dibalik pada `jumlah_ayam` (mortalitas/panen ditambah kembali, penambahan dikurangi). `409` bila jumlah akan negatif. Audit `HAPUS_PERUBAHAN_POPULASI` |
 
 | Method | Path | Body | Response | Catatan |
 |---|---|---|---|---|
