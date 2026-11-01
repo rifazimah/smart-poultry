@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Header, status
 from sqlmodel import Session, select
 
+from app.config import settings
 from app.database import get_session
 from app.models.enums import StatusPerintah, JenisTransaksi, StatusNotifikasi, JenisNotifikasi
 from app.models.fisik import Alat, Stok, TransaksiStok, Wadah
@@ -53,7 +54,7 @@ def device_heartbeat(
     
     return DeviceHeartbeatResponse(
         perintah_pending=perintah_pending,
-        config=DeviceConfig(heartbeat_interval_seconds=10) # 10 detik default untuk MVP
+        config=DeviceConfig(heartbeat_interval_seconds=settings.device_heartbeat_interval_seconds)
     )
 
 

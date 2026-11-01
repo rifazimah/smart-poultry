@@ -6,10 +6,10 @@ membangun hal yang belum diminta.
 
 Dokumen lain yang WAJIB dirujuk sebelum menulis kode (jangan diringkas dari
 ingatan, baca ulang file aslinya tiap sesi karena bisa sudah berubah):
-- @PRD-MVP.md — apa yang sedang dibangun dan kenapa, batas cakupan bulan ini
-- @ARCHITECTURE.md — bentuk sistem, alur data, keputusan teknis
-- @API_CONTRACT.md — bentuk endpoint yang sudah disepakati
-- @CONVENTIONS.md — aturan teknis detail (hashing, LP solver, struktur kode)
+- @../spesifikasi/PRD-MVP.md — apa yang sedang dibangun dan kenapa, batas cakupan bulan ini
+- @../spesifikasi/ARCHITECTURE.md — bentuk sistem, alur data, keputusan teknis
+- @../spesifikasi/API_CONTRACT.md — bentuk endpoint yang sudah disepakati
+- @../spesifikasi/CONVENTIONS.md — aturan teknis detail (hashing, LP solver, struktur kode)
 
 ## Prinsip umum
 
@@ -39,7 +39,7 @@ ingatan, baca ulang file aslinya tiap sesi karena bisa sudah berubah):
   disebutkan jelas sebagai bagian dari task.
 - **Jangan** membangun endpoint/fitur yang berkaitan dengan: Jadwal,
   SesiJadwal, PengajuanJadwal, Role/Permission dinamis, atau Super Admin.
-  Ini sengaja ditunda ke Fase 2 (lihat PRD-MVP.md bagian "Tidak termasuk").
+  Ini sengaja ditunda ke Fase 2 (lihat spesifikasi/PRD-MVP.md bagian "Tidak termasuk").
   Kalau sebuah task sepertinya butuh salah satu dari ini, STOP dan laporkan
   ke pengguna dulu, jangan diputuskan sendiri.
 

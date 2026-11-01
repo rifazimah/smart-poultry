@@ -73,6 +73,7 @@ class Formulasi(SQLModel, table=True):
     mode: ModeFormulasi
     total_biaya_per_kg: Optional[float] = None
     status: StatusFormulasi
+    aktif: bool = Field(default=False)  # formulasi yang sedang dipakai siklus; status = validitasnya
     dibuat_pada: datetime = Field(default_factory=utc_now)
 
     siklus: "SiklusKandang" = Relationship(back_populates="formulasi")

@@ -2,9 +2,8 @@ from sqlmodel import create_engine, Session
 
 from .config import settings
 
-# echo=True sementara berguna saat development untuk melihat SQL yang dijalankan.
-# Matikan (False) sebelum demo/deploy.
-engine = create_engine(settings.database_url, echo=True)
+# SQL_ECHO=true di .env untuk melihat SQL yang dijalankan saat development.
+engine = create_engine(settings.database_url, echo=settings.sql_echo)
 
 
 def get_session():

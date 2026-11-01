@@ -71,7 +71,7 @@ def proses_log_eksekusi(
     # Buat notifikasi
     notif = Notifikasi(
         user_id=perintah.dibuat_oleh_id,
-        jenis=JenisNotifikasi.SISTEM if req.status.value == "SUKSES" else JenisNotifikasi.ALARM,
+        jenis=JenisNotifikasi.PERINTAH_SUKSES if req.status.value == "SUKSES" else JenisNotifikasi.PERINTAH_GAGAL,
         judul="Eksekusi Perintah Selesai" if req.status.value == "SUKSES" else "Perintah Gagal",
         pesan=f"Perintah {perintah.tipe.value} telah {req.status.value}.",
         status=StatusNotifikasi.BELUM_DIBACA

@@ -121,7 +121,7 @@ def update_fase_siklus(
     active_formulas = session.exec(
         select(Formulasi).where(
             Formulasi.siklus_id == id,
-            Formulasi.status == StatusFormulasi.AKTIF
+            Formulasi.aktif == True  # noqa: E712
         )
     ).all()
     for f in active_formulas:
@@ -190,11 +190,11 @@ def akhiri_siklus(
     active_formulas = session.exec(
         select(Formulasi).where(
             Formulasi.siklus_id == id,
-            Formulasi.status == StatusFormulasi.AKTIF
+            Formulasi.aktif == True  # noqa: E712
         )
     ).all()
     for f in active_formulas:
-        f.status = StatusFormulasi.NONAKTIF
+        f.aktif = False
         session.add(f)
         
     session.commit()
