@@ -7,6 +7,8 @@ Sumber kontrak: [`../spesifikasi/API_CONTRACT.md`](../spesifikasi/API_CONTRACT.m
 
 > **P1 DELETE (1 Nov 2026):** DELETE master data kini 409 bila dipakai (S-15 selesai); ditambah `PATCH /siklus/{id}` dan `DELETE /siklus/{id}/populasi/{pid}`. Endpoint ini ada di luar kontrak awal dan sudah ditambahkan ke `API_CONTRACT.md`.
 
+> **P2 DELETE (1 Nov 2026):** `DELETE` untuk siklus, formulasi, wadah, alat, dan kandang ditambahkan (lihat [06](06-analisis-endpoint-delete.md)).
+
 Legenda: ✅ sesuai · ⚠️ ada tapi menyimpang/berisiko (rujuk ID temuan di [03](03-review-kode.md)) · ❌ belum ada.
 
 | # | Bagian kontrak | Endpoint | Status | Catatan |

@@ -16,7 +16,9 @@ from app.schemas.operasional import (
     PerubahanPopulasiCreate, PerubahanPopulasiPublic
 )
 from app.services.audit import catat_audit
+from app.models.operasional import Perintah
 from app.services.auth import get_current_pemilik, get_current_user
+from sqlalchemy import func
 from app.routers.kandang import _get_kandang_or_404
 
 router = APIRouter(tags=["Siklus & Populasi"])
@@ -284,4 +286,35 @@ def hapus_perubahan_populasi(
     siklus.jumlah_ayam = baru
     session.add(siklus)
     session.delete(perubahan)
+    session.commit()
+
+
+@router.delete("/siklus/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def hapus_siklus(
+    id: uuid.UUID,
+    current_pemilik: Annotated[User, Depends(get_current_pemilik)],
+    session: Annotated[Session, Depends(get_session)]
+):
+    """
+    Hapus siklus yang salah input beserta catatan populasi dan formulasinya.
+    Ditolak bila formulasinya sudah dipakai perintah (riwayat); gunakan POST /siklus/{id}/selesai.
+    """
+    siklus = _get_siklus_or_404(session, id, current_pemilik)
+    formulasi = session.exec(select(Formulasi).where(Formulasi.siklus_id == id)).all()
+    if formulasi:
+        n = session.exec(
+            select(func.count()).select_from(Perintah).where(Perintah.formulasi_id.in_([f.id for f in formulasi]))
+        ).one()
+        if n:
+            raise HTTPException(
+                status_code=409,
+                detail=f"Tidak dapat menghapus siklus: formulasinya sudah dipakai {n} perintah. Gunakan POST /siklus/{{id}}/selesai.",
+            )
+
+    catat_audit(session, current_pemilik.id, "HAPUS_SIKLUS", "siklus_kandang", siklus.id,
+                nilai_lama=f"jumlah_ayam={siklus.jumlah_ayam}, mulai={siklus.tanggal_mulai}, status={siklus.status.value}",
+                catatan=f"{len(formulasi)} formulasi dan catatan populasi ikut terhapus")
+    for f in formulasi:
+        session.delete(f)  # item & hasil nutrisi ikut terhapus
+    session.delete(siklus)  # catatan populasi ikut terhapus
     session.commit()

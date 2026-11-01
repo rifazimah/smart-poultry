@@ -3,6 +3,7 @@ import uuid
 from typing import Annotated, List
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import delete
 from sqlmodel import Session, select
 
 from app.database import get_session
@@ -16,6 +17,11 @@ from app.schemas.fisik import (
 )
 from app.models.masterdata import BahanPakan
 from app.services.akses import get_entity_or_404
+from app.services.audit import catat_audit
+from app.services.hapus import (
+    hapus_alat_beserta_isi, hapus_wadah_beserta_stok, jumlah_perintah_alat, pastikan_stok_nol,
+    tandai_formulasi_perlu_ditinjau, tolak_bila_dipakai, tolak_bila_wadah_pernah_dipakai,
+)
 from app.services.perintah import deteksi_offline
 from app.services.auth import get_current_user, get_current_pemilik
 
@@ -255,3 +261,90 @@ def update_wadah(
     session.commit()
     session.refresh(wadah)
     return wadah
+
+
+@router.delete("/wadah/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def hapus_wadah(
+    id: uuid.UUID,
+    current_pemilik: Annotated[User, Depends(get_current_pemilik)],
+    session: Annotated[Session, Depends(get_session)],
+):
+    """Hapus wadah yang salah input. Ditolak bila sudah pernah mengeluarkan pakan atau stok belum 0."""
+    wadah = session.get(Wadah, id)
+    if not wadah:
+        raise HTTPException(status_code=404, detail="Wadah tidak ditemukan")
+    alat = session.get(Alat, wadah.alat_id)
+    _get_kandang_or_404(session, alat.kandang_id, current_pemilik)
+
+    tolak_bila_wadah_pernah_dipakai(session, [wadah])
+    pastikan_stok_nol(session, [wadah])
+
+    bahan_id, nomor = wadah.bahan_pakan_id, wadah.nomor_wadah
+    masih_ada_bahan = bahan_id is not None and session.exec(
+        select(Wadah).where(Wadah.alat_id == alat.id, Wadah.bahan_pakan_id == bahan_id, Wadah.id != wadah.id)
+    ).first() is not None
+
+    catat_audit(session, current_pemilik.id, "HAPUS_WADAH", "wadah", wadah.id, nilai_lama=f"nomor {nomor}, bahan {bahan_id}")
+    hapus_wadah_beserta_stok(session, wadah)
+    if bahan_id is not None and not masih_ada_bahan:
+        tandai_formulasi_perlu_ditinjau(
+            session, alat.kandang_id, f"Wadah {nomor} dihapus; bahannya tidak lagi terpasang. Formulasi aktif perlu dihitung ulang."
+        )
+    session.commit()
+
+
+@router.delete("/alat/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def hapus_alat(
+    id: uuid.UUID,
+    current_pemilik: Annotated[User, Depends(get_current_pemilik)],
+    session: Annotated[Session, Depends(get_session)],
+):
+    """Hapus alat yang salah daftar beserta wadah dan stoknya. Ditolak bila sudah punya perintah atau stok belum 0."""
+    alat = session.get(Alat, id)
+    if not alat:
+        raise HTTPException(status_code=404, detail="Alat tidak ditemukan")
+    _get_kandang_or_404(session, alat.kandang_id, current_pemilik)
+
+    n = jumlah_perintah_alat(session, alat.id)
+    if n:
+        raise HTTPException(status_code=409, detail=f"Tidak dapat menghapus alat: sudah punya {n} perintah (riwayat)")
+    wadah_list = session.exec(select(Wadah).where(Wadah.alat_id == alat.id)).all()
+    pastikan_stok_nol(session, wadah_list)
+
+    catat_audit(session, current_pemilik.id, "HAPUS_ALAT", "alat", alat.id, nilai_lama=f"kandang {alat.kandang_id}, {len(wadah_list)} wadah")
+    kandang_id = alat.kandang_id
+    hapus_alat_beserta_isi(session, alat)
+    tandai_formulasi_perlu_ditinjau(session, kandang_id, "Alat dihapus dari kandang. Formulasi aktif perlu ditinjau.")
+    session.commit()
+
+
+@router.delete("/kandang/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def hapus_kandang(
+    id: uuid.UUID,
+    current_pemilik: Annotated[User, Depends(get_current_pemilik)],
+    session: Annotated[Session, Depends(get_session)],
+):
+    """
+    Hapus kandang yang salah input beserta alat, wadah, stok, dan penugasannya.
+    Ditolak bila pernah punya siklus atau perintah (gunakan PATCH status=NONAKTIF) atau stok belum 0.
+    """
+    from app.models.operasional import SiklusKandang
+
+    kandang = _get_kandang_or_404(session, id, current_pemilik)
+    alat = session.exec(select(Alat).where(Alat.kandang_id == id)).first()
+
+    tolak_bila_dipakai(session, "kandang", [("siklus", SiklusKandang, SiklusKandang.kandang_id == id)])
+    if alat:
+        n = jumlah_perintah_alat(session, alat.id)
+        if n:
+            raise HTTPException(status_code=409, detail=f"Tidak dapat menghapus kandang: alatnya sudah punya {n} perintah (riwayat)")
+        pastikan_stok_nol(session, session.exec(select(Wadah).where(Wadah.alat_id == alat.id)).all())
+
+    catat_audit(session, current_pemilik.id, "HAPUS_KANDANG", "kandang", kandang.id,
+                nilai_lama=f"{kandang.nama} ({kandang.lokasi or '-'})",
+                catatan="penugasan, alat, wadah, dan stok ikut terhapus" if alat else "penugasan ikut terhapus")
+    session.exec(delete(PenugasanKandang).where(PenugasanKandang.kandang_id == id))
+    if alat:
+        hapus_alat_beserta_isi(session, alat)
+    session.delete(kandang)
+    session.commit()
