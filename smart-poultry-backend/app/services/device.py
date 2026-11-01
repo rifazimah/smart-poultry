@@ -4,6 +4,7 @@ from app.models.fisik import Alat, Wadah, Stok, TransaksiStok
 from app.models.operasional import Perintah, LogEksekusi, FormulasiItem, Notifikasi
 from app.models.enums import StatusPerintah, JenisTransaksi, StatusNotifikasi, JenisNotifikasi
 from app.schemas.perintah import DeviceLogRequest
+from app.services.stok import get_or_create_stok
 
 def proses_log_eksekusi(
     session: Session,
@@ -47,22 +48,19 @@ def proses_log_eksekusi(
                 ).first()
                 
                 if wadah:
-                    stok = session.exec(select(Stok).where(Stok.wadah_id == wadah.id)).first()
-                    if stok:
-                        stok.jumlah_estimasi -= item.berat_per_sesi
-                        if stok.jumlah_estimasi < 0:
-                            stok.jumlah_estimasi = 0
-                        session.add(stok)
-                        
-                        # Catat transaksi
-                        tx = TransaksiStok(
-                            wadah_id=wadah.id,
-                            dilakukan_oleh_id=perintah.dibuat_oleh_id,
-                            jenis=JenisTransaksi.PENGELUARAN,
-                            jumlah=item.berat_per_sesi,
-                            alasan="Pengeluaran otomatis untuk perintah pakan"
-                        )
-                        session.add(tx)
+                    stok = get_or_create_stok(session, wadah.id)
+                    stok.jumlah_estimasi = max(0.0, stok.jumlah_estimasi - item.berat_per_sesi)
+                    session.add(stok)
+
+                    # Catat transaksi
+                    tx = TransaksiStok(
+                        wadah_id=wadah.id,
+                        dilakukan_oleh_id=perintah.dibuat_oleh_id,
+                        jenis=JenisTransaksi.PENGELUARAN,
+                        jumlah=item.berat_per_sesi,
+                        alasan="Pengeluaran otomatis untuk perintah pakan"
+                    )
+                    session.add(tx)
     else:
         perintah.status = StatusPerintah.GAGAL
         

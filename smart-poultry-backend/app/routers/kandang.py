@@ -7,7 +7,7 @@ from sqlmodel import Session, select
 
 from app.database import get_session
 from app.models.akses import User, PenugasanKandang
-from app.models.fisik import Kandang, Alat, Wadah
+from app.models.fisik import Kandang, Alat, Wadah, Stok
 from app.models.enums import PeranUser, StatusPenugasan
 from app.schemas.fisik import (
     KandangCreate, KandangUpdate, KandangPublic, KandangDetailPublic,
@@ -219,7 +219,8 @@ def create_wadah(
     wadah = Wadah(
         alat_id=id,
         nomor_wadah=wadah_in.nomor_wadah,
-        bahan_pakan_id=wadah_in.bahan_pakan_id
+        bahan_pakan_id=wadah_in.bahan_pakan_id,
+        stok=Stok(jumlah_estimasi=0),  # R14: Stok selalu ada bersama Wadah
     )
     session.add(wadah)
     session.commit()

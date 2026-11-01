@@ -13,6 +13,7 @@ from app.schemas.perintah import (
     PerintahBeriMakanRequest, PerintahPublic, PerintahDetailPublic
 )
 from app.services.auth import get_current_user
+from app.services.perintah import validasi_formulasi_untuk_beri_makan
 from app.routers.kandang import _get_kandang_or_404
 
 router = APIRouter(tags=["Perintah Manual"])
@@ -44,7 +45,9 @@ def beri_makan_manual(
     
     if active_perintah:
         raise HTTPException(status_code=409, detail="Alat sedang memproses perintah lain")
-        
+
+    validasi_formulasi_untuk_beri_makan(session, id, alat, req.formulasi_id)
+
     perintah = Perintah(
         alat_id=alat.id,
         dibuat_oleh_id=current_user.id,

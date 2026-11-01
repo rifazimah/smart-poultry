@@ -13,6 +13,7 @@ from app.schemas.stok import (
     IsiUlangStokRequest, KoreksiStokRequest, StokPublic, TransaksiStokPublic
 )
 from app.services.auth import get_current_user
+from app.services.stok import get_or_create_stok
 from app.routers.kandang import _get_kandang_or_404
 
 router = APIRouter(tags=["Manajemen Stok"])
@@ -66,15 +67,7 @@ def _get_wadah_and_stok_or_404(session: Session, wadah_id: uuid.UUID, current_us
     # Validasi akses via kandang
     _get_kandang_or_404(session, alat.kandang_id, current_user)
     
-    stok = session.exec(select(Stok).where(Stok.wadah_id == wadah.id)).first()
-    if not stok:
-        # Buat stok jika belum ada
-        stok = Stok(wadah_id=wadah.id, jumlah_estimasi=0)
-        session.add(stok)
-        session.commit()
-        session.refresh(stok)
-        
-    return wadah, stok
+    return wadah, get_or_create_stok(session, wadah.id)
 
 
 @router.post("/wadah/{id}/stok/isi-ulang", response_model=TransaksiStokPublic, status_code=status.HTTP_201_CREATED)
