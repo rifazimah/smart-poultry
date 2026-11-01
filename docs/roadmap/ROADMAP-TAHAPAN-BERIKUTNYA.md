@@ -51,7 +51,7 @@ Tujuan: alur inti tidak crash.
 | 1.9 Diagnosis infeasible | Daftar nutrisi bermasalah di `pesan` + `nutrisi_hasil` | S-1 |
 **DoD:** setiap perbaikan punya test (lihat Fase 4) atau skenario manual terdokumentasi; checklist AGENTS (§Checklist) terpenuhi.
 
-**Progres (1 Nov 2026, branch `fitur/fase-1-logika-inti`):** selesai — 1.1 (tenant isolation, `User.pemilik_id`), 1.2 (stok otomatis + backfill), 1.3 (validasi beri makan, stok cukup → 409), 1.4 (state machine, lazy-timeout, alat OFFLINE, stop darurat), 1.5 (idempotensi log 200/201, SKIPPED_STOCK), 1.7 (notifikasi ke Pemilik + pekerja), 1.8 (AuditLog). **1.6 (T-4) selesai.** Belum: 1.9 (diagnosis infeasible, S-1). Tambahan di luar rencana awal: DELETE aman + koreksi siklus (P1, lihat [analisis/06](../analisis/06-analisis-endpoint-delete.md)). Test otomatis: 46 test lulus (`pytest`, DB `smart_poultry_test`).
+**Progres (1 Nov 2026, branch `fitur/fase-1-logika-inti`):** selesai — 1.1 (tenant isolation, `User.pemilik_id`), 1.2 (stok otomatis + backfill), 1.3 (validasi beri makan, stok cukup → 409), 1.4 (state machine, lazy-timeout, alat OFFLINE, stop darurat), 1.5 (idempotensi log 200/201, SKIPPED_STOCK), 1.7 (notifikasi ke Pemilik + pekerja), 1.8 (AuditLog). **1.6 (T-4) selesai.** Belum: 1.9 (diagnosis infeasible, S-1). Tambahan di luar rencana awal: DELETE aman + koreksi siklus (P1 dan P2, lihat [analisis/06](../analisis/06-analisis-endpoint-delete.md)). Test otomatis: 46 test lulus (`pytest`, DB `smart_poultry_test`).
 
 ## Fase 2 — Kelengkapan kontrak (±3 hari)
 | Task | Rincian |

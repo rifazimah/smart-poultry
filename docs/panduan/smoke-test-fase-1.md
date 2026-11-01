@@ -179,3 +179,23 @@ Authorize sebagai admin (data demo). Catat `jenis_ayam`, `fase_starter`, `bahan_
 | K.8 | `PATCH /siklus/{siklus}` `{"jumlah_ayam":120}` | 200; bila ada formulasi aktif → `PERLU_DITINJAU` + notifikasi. Kembalikan ke jumlah semula setelahnya |
 | K.9 | Sebagai Budi (Pekerja): `PATCH /siklus/{siklus}` dan `DELETE .../populasi/{id}` | **403** (hanya Pemilik) |
 | K.10 | Audit: `select aksi, nilai_lama, nilai_baru from audit_log where aksi like 'HAPUS_%' or aksi = 'KOREKSI_SIKLUS'` | Baris sesuai aksi di atas |
+
+## L. DELETE tahap P2 (siklus, formulasi, wadah, alat, kandang)
+
+Gunakan kandang uji agar data demo utama tidak terpengaruh: `POST /kandang` `{"nama":"Kandang Hapus"}` → `POST /kandang/{id}/alat` → `POST /alat/{alat}/wadah` `{"nomor_wadah":1,"bahan_pakan_id":"<bahan_jagung>"}` (catat `kandang_h`, `alat_h`, `wadah_h`).
+
+| # | Aksi | Harapan |
+|---|---|---|
+| L.1 | `POST /wadah/{wadah_h}/stok/isi-ulang` `{"jumlah":100}` → `DELETE /wadah/{wadah_h}` | **409** `Stok belum 0: wadah 1 (100.0 g). Koreksi stok ke 0 dulu` |
+| L.2 | `POST /wadah/{wadah_h}/stok/koreksi` `{"jumlah_baru":0,"alasan":"salah wadah"}` → `DELETE /wadah/{wadah_h}` | **204**; `GET /kandang/{kandang_h}/stok` → `[]` |
+| L.3 | `POST /alat/{alat_h}/wadah` (wadah baru) → `DELETE /alat/{alat_h}` | **204** (stok 0, belum ada perintah); `GET /kandang/{kandang_h}` → `status_alat: null` |
+| L.4 | `DELETE /kandang/{kandang_h}` | **204**; `GET /kandang/{kandang_h}` → 404 |
+| L.5 | Pada **Kandang A** (data demo): `DELETE /kandang/{kandang}` | **409** `masih dipakai oleh 1 siklus` |
+| L.6 | Jalankan satu perintah beri makan sampai SUKSES di Kandang A, lalu `DELETE /siklus/{siklus}` | **409** `formulasinya sudah dipakai ... perintah` |
+| L.7 | `DELETE /formulasi/{formulasi}` untuk formulasi yang dipakai perintah itu | **409** |
+| L.8 | Formulasi percobaan baru (otomatis → simpan) lalu `DELETE /formulasi/{id_baru}` | **204**; `GET` → 404 |
+| L.9 | `DELETE /alat/{alat}` (Kandang A, sudah punya perintah) | **409** `sudah punya ... perintah` |
+| L.10 | Sebagai Budi (Pekerja) atau Pemilik B: `DELETE` salah satu di atas | 403 / 404 |
+| L.11 | Audit: `select aksi, entitas, nilai_lama from audit_log where aksi like 'HAPUS_%' order by waktu` | `HAPUS_WADAH`, `HAPUS_ALAT`, `HAPUS_KANDANG`, `HAPUS_FORMULASI` |
+
+> Jangan menghapus siklus **tanpa** perintah pada Kandang A kecuali Anda siap membuat ulang data demo (`python seed_demo.py` tidak akan mengisi ulang karena data sudah ada; gunakan kandang uji).

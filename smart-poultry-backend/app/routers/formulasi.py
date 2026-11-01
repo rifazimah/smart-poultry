@@ -94,3 +94,29 @@ def get_formulasi_lengkap(
         
     _get_siklus_or_404(session, form.siklus_id, current_user)
     return form
+
+
+@router.delete("/formulasi/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def hapus_formulasi(
+    id: uuid.UUID,
+    current_pemilik: Annotated[User, Depends(get_current_pemilik)],
+    session: Annotated[Session, Depends(get_session)]
+):
+    """Hapus formulasi percobaan/salah. Ditolak bila sudah dipakai perintah (riwayat)."""
+    from sqlalchemy import func
+    from app.models.operasional import Perintah
+    from app.services.audit import catat_audit
+
+    form = session.get(Formulasi, id)
+    if not form:
+        raise HTTPException(status_code=404, detail="Formulasi tidak ditemukan")
+    _get_siklus_or_404(session, form.siklus_id, current_pemilik)
+
+    n = session.exec(select(func.count()).select_from(Perintah).where(Perintah.formulasi_id == id)).one()
+    if n:
+        raise HTTPException(status_code=409, detail=f"Tidak dapat menghapus formulasi: sudah dipakai {n} perintah")
+
+    catat_audit(session, current_pemilik.id, "HAPUS_FORMULASI", "formulasi", form.id,
+                nilai_lama=f"mode={form.mode.value}, status={form.status.value}, aktif={form.aktif}")
+    session.delete(form)  # item & hasil nutrisi ikut terhapus
+    session.commit()

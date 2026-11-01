@@ -54,6 +54,14 @@ endpoint untuk **simulator alat**. Tidak ada endpoint jadwal/pengajuan
 
 ## 3. Kandang & Alat (UC-03, UC-04)
 
+> **Hapus data salah input (Fase 1 – P2), hanya Pemilik pemilik data.** Penghapusan keras hanya bila belum ada riwayat; selain itu `409` dengan rincian. Semuanya tercatat di `AuditLog` (`HAPUS_*`).
+>
+> | Method | Path | Aturan |
+> |---|---|---|
+> | DELETE | `/wadah/{id}` | Ditolak bila wadah pernah mengeluarkan pakan (ada transaksi `PENGELUARAN`) atau stok belum 0 (koreksi ke 0 dulu). Stok dan transaksi isi ulang/koreksi ikut terhapus. Bila bahannya tidak lagi terpasang di wadah lain, formulasi aktif → `PERLU_DITINJAU` |
+> | DELETE | `/alat/{id}` | Ditolak bila alat sudah punya perintah (riwayat) atau stok wadah belum 0. Wadah, stok, dan transaksi stoknya ikut terhapus; formulasi aktif → `PERLU_DITINJAU` |
+> | DELETE | `/kandang/{id}` | Ditolak bila pernah punya siklus, alatnya punya perintah, atau stok belum 0 (gunakan `PATCH status=NONAKTIF`). Penugasan, alat, wadah, dan stok ikut terhapus |
+
 | Method | Path | Body | Response | Otorisasi |
 |---|---|---|---|---|
 | POST | `/kandang` | `{nama, lokasi}` | `Kandang` (201) | Pemilik |
@@ -105,6 +113,8 @@ Masing-masing resource mendukung `POST` (create, 201), `GET` (list, dengan `?jen
 > |---|---|---|---|---|
 > | PATCH | `/siklus/{id}` | `{jumlah_ayam?, tanggal_mulai?}` | `SiklusKandang` | `jumlah_ayam` menggantikan nilai saat ini (≥ 0). Bila populasi berubah, formulasi aktif → `PERLU_DITINJAU` + notifikasi. Tanpa field → `400`. Audit `KOREKSI_SIKLUS` |
 > | DELETE | `/siklus/{id}/populasi/{populasi_id}` | — | 204 | Efek catatan dibalik pada `jumlah_ayam` (mortalitas/panen ditambah kembali, penambahan dikurangi). `409` bila jumlah akan negatif. Audit `HAPUS_PERUBAHAN_POPULASI` |
+>
+> **Hapus siklus salah input (P2), hanya Pemilik:** `DELETE /siklus/{id}` → `204`. Catatan populasi dan formulasi (beserta item/hasil nutrisi) ikut terhapus. `409` bila formulasinya sudah dipakai perintah — gunakan `POST /siklus/{id}/selesai`.
 
 | Method | Path | Body | Response | Catatan |
 |---|---|---|---|---|
@@ -122,6 +132,8 @@ Masing-masing resource mendukung `POST` (create, 201), `GET` (list, dengan `?jen
 > `POST /formulasi` **tidak mempercayai angka dari klien**: server hanya memakai `mode` dan komposisi (`item[].bahan_pakan_id`, `proporsi`), lalu menghitung ulang
 > biaya, berat per sesi, nilai dan status nutrisi. Mode `OTOMATIS` harus cocok dengan hasil LP terbaru (biaya dalam toleransi 0,1% dan `batas_maksimum` bahan terpenuhi),
 > bila tidak `409` (hitung ulang). Komposisi kosong → `400`; siklus sudah selesai → `409`.
+>
+> `DELETE /formulasi/{id}` (hanya Pemilik) → `204`; item dan hasil nutrisi ikut terhapus. `409` bila formulasi sudah dipakai perintah (riwayat).
 
 | Method | Path | Body | Response |
 |---|---|---|---|

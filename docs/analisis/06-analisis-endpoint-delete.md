@@ -1,7 +1,7 @@
 # 06 — Analisis Endpoint DELETE
 
 Tanggal: 1 November 2026 · Pemicu: pengguna ingin bisa menghapus data yang salah input.
-Status: **P1 sudah diimplementasi (1 Nov 2026, keputusan K-1..K-5 sesuai rekomendasi)**: 4 DELETE master data diperbaiki, `DELETE /siklus/{id}/populasi/{pid}`, dan `PATCH /siklus/{id}`. P2 (siklus, formulasi, wadah, alat, kandang) dan P3 belum dikerjakan.
+Status: **P1 sudah diimplementasi (1 Nov 2026, keputusan K-1..K-5 sesuai rekomendasi)**: 4 DELETE master data diperbaiki, `DELETE /siklus/{id}/populasi/{pid}`, dan `PATCH /siklus/{id}`. **P2 sudah diimplementasi (1 Nov 2026):** `DELETE` siklus, formulasi, wadah, alat, dan kandang (K-4: stok harus 0 dulu; wadah/alat/kandang berriwayat ditolak). P3 (Pekerja, notifikasi) tidak dikerjakan sesuai rekomendasi K-2.
 
 ## 1. Kondisi sebelum P1
 
@@ -59,11 +59,11 @@ referensi dari data operasional: siklus→jenis_ayam,fase ; formulasi_item→bah
 |---|---|---|---|
 | **P1** | `DELETE /siklus/{id}/populasi/{pid}` | Salah catat mortalitas/panen/penambahan | Hanya siklus `AKTIF`. Efek dibalik pada `jumlah_ayam` (MORTALITAS/PANEN → ditambah; PENAMBAHAN → dikurangi; tidak boleh < 0). Audit |
 | **P1** | `PATCH /siklus/{id}` `{jumlah_ayam?, tanggal_mulai?}` *(bukan DELETE, tetapi solusi utama salah input siklus)* | Salah jumlah awal/tanggal | Hanya siklus `AKTIF`; `jumlah_ayam` menggantikan nilai saat ini; formulasi aktif ditandai `PERLU_DITINJAU` (berat per sesi bergantung populasi) + notifikasi |
-| P2 | `DELETE /siklus/{id}` | Siklus salah jenis ayam / salah kandang | `409` bila ada `perintah` yang memakai formulasi siklus ini; selain itu populasi + formulasi (item/hasil) ikut terhapus. Siklus yang sudah berjalan → pakai `/selesai` |
-| P2 | `DELETE /formulasi/{id}` | Formulasi percobaan | `409` bila dipakai `perintah`; item/hasil ikut terhapus. Bila yang dihapus `aktif`, siklus tidak punya formulasi aktif sampai disimpan ulang |
-| P2 | `DELETE /wadah/{id}` | Wadah salah nomor/tidak jadi dipakai | `409` bila ada transaksi `PENGELUARAN` (sudah pernah dipakai makan); stok & transaksi `ISI_ULANG`/`KOREKSI_MANUAL` ikut terhapus; formulasi aktif yang memakai bahannya → `PERLU_DITINJAU` + notifikasi |
-| P2 | `DELETE /alat/{id}` | Alat salah daftar/diganti | `409` bila ada `perintah`; wadah+stok ikut terhapus (cascade yang sudah ada) |
-| P2 | `DELETE /kandang/{id}` | Kandang salah input | `409` bila ada siklus atau perintah (gunakan `PATCH status=NONAKTIF`); penugasan, alat, wadah, stok ikut terhapus |
+| P2 ✅ | `DELETE /siklus/{id}` | Siklus salah jenis ayam / salah kandang | `409` bila ada `perintah` yang memakai formulasi siklus ini; selain itu populasi + formulasi (item/hasil) ikut terhapus. Siklus yang sudah berjalan → pakai `/selesai` |
+| P2 ✅ | `DELETE /formulasi/{id}` | Formulasi percobaan | `409` bila dipakai `perintah`; item/hasil ikut terhapus. Bila yang dihapus `aktif`, siklus tidak punya formulasi aktif sampai disimpan ulang |
+| P2 ✅ | `DELETE /wadah/{id}` | Wadah salah nomor/tidak jadi dipakai | `409` bila ada transaksi `PENGELUARAN` (sudah pernah dipakai makan); stok & transaksi `ISI_ULANG`/`KOREKSI_MANUAL` ikut terhapus; formulasi aktif yang memakai bahannya → `PERLU_DITINJAU` + notifikasi |
+| P2 ✅ | `DELETE /alat/{id}` | Alat salah daftar/diganti | `409` bila ada `perintah`; wadah+stok ikut terhapus (cascade yang sudah ada) |
+| P2 ✅ | `DELETE /kandang/{id}` | Kandang salah input | `409` bila ada siklus atau perintah (gunakan `PATCH status=NONAKTIF`); penugasan, alat, wadah, stok ikut terhapus |
 | P3 | `DELETE /users/{id}` (Pekerja) | Salah email/nama | **Tidak disarankan.** Pekerja cepat punya jejak (notifikasi, perintah, transaksi, audit). Pakai `PATCH /users/{id}/status` → `NONAKTIF`. Alternatif: hapus keras hanya bila belum punya jejak apa pun — lihat keputusan K-2 |
 | P3 | `DELETE /notifikasi/{id}` | Bersihkan daftar | Hanya milik sendiri; nilai kecil, tunda sampai frontend butuh |
 | — | `DELETE` perintah, log, transaksi stok, audit log | — | **Tidak disediakan** (riwayat/jejak audit) |
