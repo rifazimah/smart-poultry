@@ -15,6 +15,7 @@ from app.schemas.user import (
     PenugasanKandangPublic
 )
 from app.routers.kandang import _get_kandang_or_404
+from app.services.audit import catat_audit
 from app.services.auth import get_current_pemilik, get_password_hash
 
 # Kita buat 2 prefix yang berbeda sesuai API Contract
@@ -91,7 +92,10 @@ def update_user_status(
 ):
     """Mengubah status pekerja (misal: dinonaktifkan). Hanya Pemilik."""
     user = _get_pekerja_or_404(session, id, current_pemilik)
+    lama = user.status.value
     user.status = status_update.status
+    catat_audit(session, current_pemilik.id, "UBAH_STATUS_USER", "user", user.id,
+                nilai_lama=lama, nilai_baru=status_update.status.value)
     session.add(user)
     session.commit()
     session.refresh(user)
@@ -126,6 +130,9 @@ def buat_penugasan(
         status=StatusPenugasan.AKTIF
     )
     session.add(penugasan)
+    session.flush()
+    catat_audit(session, current_pemilik.id, "BUAT_PENUGASAN", "penugasan_kandang", penugasan.id,
+                nilai_baru=f"user={pekerja.id} kandang={penugasan.kandang_id}")
     session.commit()
     session.refresh(penugasan)
     return penugasan
@@ -145,4 +152,6 @@ def akhiri_penugasan(
 
     penugasan.status = StatusPenugasan.BERAKHIR
     session.add(penugasan)
+    catat_audit(session, current_pemilik.id, "AKHIRI_PENUGASAN", "penugasan_kandang", penugasan.id,
+                nilai_lama="AKTIF", nilai_baru="BERAKHIR")
     session.commit()

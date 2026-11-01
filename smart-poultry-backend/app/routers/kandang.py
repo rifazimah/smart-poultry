@@ -16,6 +16,7 @@ from app.schemas.fisik import (
 )
 from app.models.masterdata import BahanPakan
 from app.services.akses import get_entity_or_404
+from app.services.perintah import deteksi_offline
 from app.services.auth import get_current_user, get_current_pemilik
 
 router = APIRouter(tags=["Kandang & Alat"])
@@ -102,8 +103,8 @@ def get_kandang(
     
     alat = session.exec(select(Alat).where(Alat.kandang_id == kandang.id)).first()
     if alat:
-        detail.status_alat = alat.status
-        
+        detail.status_alat = deteksi_offline(session, alat)
+
     # Lazy import to avoid circular dependency
     from app.models.operasional import SiklusKandang
     from app.models.enums import StatusSiklus

@@ -6,14 +6,17 @@ from sqlmodel import Session, select
 
 from app.database import get_session
 from app.models.akses import User
-from app.models.enums import TipePerintah, StatusPerintah, StatusAlat
+from app.models.enums import TipePerintah, StatusPerintah, StatusAlat, JenisNotifikasi
 from app.models.fisik import Alat
 from app.models.operasional import Perintah
 from app.schemas.perintah import (
     PerintahBeriMakanRequest, PerintahPublic, PerintahDetailPublic
 )
 from app.services.auth import get_current_user
-from app.services.perintah import validasi_formulasi_untuk_beri_makan
+from app.services.notifikasi import notify
+from app.services.perintah import (
+    batalkan_perintah_aktif, deteksi_offline, expire_perintah, validasi_formulasi_untuk_beri_makan,
+)
 from app.routers.kandang import _get_kandang_or_404
 
 router = APIRouter(tags=["Perintah Manual"])
@@ -32,9 +35,10 @@ def beri_makan_manual(
     if not alat:
         raise HTTPException(status_code=400, detail="Kandang ini belum memiliki Alat IoT")
         
-    if alat.status == StatusAlat.OFFLINE:
+    expire_perintah(session, alat)
+    if deteksi_offline(session, alat) == StatusAlat.OFFLINE:
         raise HTTPException(status_code=409, detail="Alat sedang OFFLINE")
-        
+
     # Cek apakah ada perintah yang masih PENDING atau BERJALAN
     active_perintah = session.exec(
         select(Perintah).where(
@@ -73,7 +77,12 @@ def stop_darurat(
     alat = session.exec(select(Alat).where(Alat.kandang_id == id)).first()
     if not alat:
         raise HTTPException(status_code=400, detail="Kandang ini belum memiliki Alat IoT")
-        
+
+    # Selalu boleh dikirim (walau alat offline); perintah yang sedang aktif dibatalkan.
+    batalkan_perintah_aktif(session, alat)
+    notify(session, id, JenisNotifikasi.PERINTAH_GAGAL,
+           "Stop darurat", f"Stop darurat dikirim oleh {current_user.nama}.")
+
     perintah = Perintah(
         alat_id=alat.id,
         dibuat_oleh_id=current_user.id,
@@ -101,7 +110,9 @@ def detail_perintah(
     alat = session.get(Alat, perintah.alat_id)
     # Validasi akses
     _get_kandang_or_404(session, alat.kandang_id, current_user)
-    
+
+    expire_perintah(session, alat)
+    session.refresh(perintah)
     return perintah
 
 
@@ -116,7 +127,8 @@ def riwayat_perintah(
     alat = session.exec(select(Alat).where(Alat.kandang_id == id)).first()
     if not alat:
         return []
-        
+
+    expire_perintah(session, alat)
     return session.exec(
         select(Perintah)
         .where(Perintah.alat_id == alat.id)
