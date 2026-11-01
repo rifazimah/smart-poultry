@@ -29,6 +29,7 @@ class User(SQLModel, table=True):
     kata_sandi_hash: str
     role: PeranUser
     status: StatusUser = Field(default=StatusUser.AKTIF)
+    pemilik_id: Optional[uuid.UUID] = Field(default=None, foreign_key="user.id", index=True)  # diisi untuk PEKERJA
     dibuat_pada: datetime = Field(default_factory=utc_now)
 
     # Relasi R7-R10: master data dimiliki per Pemilik
