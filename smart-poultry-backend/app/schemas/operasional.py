@@ -1,7 +1,7 @@
 import uuid
 from datetime import date
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from app.models.enums import StatusSiklus, JenisPerubahan
 
 
@@ -15,6 +15,12 @@ class SiklusKandangCreate(BaseModel):
 
 class SiklusKandangUpdateFase(BaseModel):
     fase_id: uuid.UUID
+
+
+class SiklusKandangUpdate(BaseModel):
+    """Koreksi data siklus yang salah input (Pemilik)."""
+    jumlah_ayam: Optional[int] = Field(default=None, ge=0)
+    tanggal_mulai: Optional[date] = None
 
 
 class SiklusKandangPublic(BaseModel):

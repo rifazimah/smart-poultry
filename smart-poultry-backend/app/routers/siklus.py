@@ -12,10 +12,11 @@ from app.models.fisik import Kandang
 from app.models.operasional import SiklusKandang, PerubahanPopulasi, Formulasi
 from app.models.masterdata import JenisAyam, Fase
 from app.schemas.operasional import (
-    SiklusKandangCreate, SiklusKandangUpdateFase, SiklusKandangPublic,
+    SiklusKandangCreate, SiklusKandangUpdate, SiklusKandangUpdateFase, SiklusKandangPublic,
     PerubahanPopulasiCreate, PerubahanPopulasiPublic
 )
-from app.services.auth import get_current_user
+from app.services.audit import catat_audit
+from app.services.auth import get_current_pemilik, get_current_user
 from app.routers.kandang import _get_kandang_or_404
 
 router = APIRouter(tags=["Siklus & Populasi"])
@@ -205,3 +206,82 @@ def akhiri_siklus(
     session.commit()
     session.refresh(siklus)
     return siklus
+
+
+@router.patch("/siklus/{id}", response_model=SiklusKandangPublic)
+def koreksi_siklus(
+    id: uuid.UUID,
+    data_in: SiklusKandangUpdate,
+    current_pemilik: Annotated[User, Depends(get_current_pemilik)],
+    session: Annotated[Session, Depends(get_session)]
+):
+    """
+    Koreksi jumlah ayam / tanggal mulai yang salah input (Pemilik, siklus aktif).
+    `jumlah_ayam` menggantikan nilai saat ini; formulasi aktif ditandai PERLU_DITINJAU karena berat per sesi bergantung populasi.
+    """
+    siklus = _get_siklus_or_404(session, id, current_pemilik)
+    if siklus.status != StatusSiklus.AKTIF:
+        raise HTTPException(status_code=400, detail="Siklus sudah selesai")
+
+    perubahan = data_in.model_dump(exclude_unset=True, exclude_none=True)
+    if not perubahan:
+        raise HTTPException(status_code=400, detail="Tidak ada data yang diubah")
+
+    lama = f"jumlah_ayam={siklus.jumlah_ayam}, tanggal_mulai={siklus.tanggal_mulai}"
+    populasi_berubah = "jumlah_ayam" in perubahan and perubahan["jumlah_ayam"] != siklus.jumlah_ayam
+    for key, value in perubahan.items():
+        setattr(siklus, key, value)
+    session.add(siklus)
+    catat_audit(session, current_pemilik.id, "KOREKSI_SIKLUS", "siklus_kandang", siklus.id,
+                nilai_lama=lama, nilai_baru=f"jumlah_ayam={siklus.jumlah_ayam}, tanggal_mulai={siklus.tanggal_mulai}")
+
+    if populasi_berubah:
+        aktif = session.exec(
+            select(Formulasi).where(Formulasi.siklus_id == id, Formulasi.aktif == True)  # noqa: E712
+        ).all()
+        for f in aktif:
+            f.status = StatusFormulasi.PERLU_DITINJAU
+            session.add(f)
+        if aktif:
+            notify(session, siklus.kandang_id, JenisNotifikasi.PERLU_DITINJAU,
+                   "Formulasi perlu ditinjau",
+                   "Jumlah ayam dikoreksi; formulasi aktif perlu dihitung ulang.")
+
+    session.commit()
+    session.refresh(siklus)
+    return siklus
+
+
+@router.delete("/siklus/{id}/populasi/{populasi_id}", status_code=status.HTTP_204_NO_CONTENT)
+def hapus_perubahan_populasi(
+    id: uuid.UUID,
+    populasi_id: uuid.UUID,
+    current_pemilik: Annotated[User, Depends(get_current_pemilik)],
+    session: Annotated[Session, Depends(get_session)]
+):
+    """Hapus catatan populasi yang salah input; efeknya pada jumlah ayam dibalik (Pemilik, siklus aktif)."""
+    siklus = _get_siklus_or_404(session, id, current_pemilik)
+    if siklus.status != StatusSiklus.AKTIF:
+        raise HTTPException(status_code=400, detail="Siklus sudah selesai")
+
+    perubahan = session.get(PerubahanPopulasi, populasi_id)
+    if not perubahan or perubahan.siklus_id != siklus.id:
+        raise HTTPException(status_code=404, detail="Catatan populasi tidak ditemukan")
+
+    if perubahan.jenis == JenisPerubahan.PENAMBAHAN:
+        baru = siklus.jumlah_ayam - perubahan.jumlah
+        if baru < 0:
+            raise HTTPException(
+                status_code=409,
+                detail="Tidak dapat dihapus: jumlah ayam akan menjadi negatif. Koreksi jumlah ayam lewat PATCH /siklus/{id}.",
+            )
+    else:  # MORTALITAS / PANEN dikembalikan ke populasi
+        baru = siklus.jumlah_ayam + perubahan.jumlah
+
+    catat_audit(session, current_pemilik.id, "HAPUS_PERUBAHAN_POPULASI", "perubahan_populasi", perubahan.id,
+                nilai_lama=f"{perubahan.jenis.value} {perubahan.jumlah} ({perubahan.tanggal}); jumlah_ayam {siklus.jumlah_ayam}",
+                nilai_baru=f"jumlah_ayam {baru}", catatan=perubahan.catatan)
+    siklus.jumlah_ayam = baru
+    session.add(siklus)
+    session.delete(perubahan)
+    session.commit()

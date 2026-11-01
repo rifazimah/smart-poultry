@@ -162,3 +162,20 @@ Harapan: baris `KOREKSI_STOK` (alasan di `catatan`), `BUAT_PENUGASAN`, `UBAH_STA
 | J Audit log | | |
 
 **Fase 1 dinyatakan selesai** bila semua bagian A–J sesuai harapan tanpa 500. Hal yang memang belum ada dan tidak dihitung: T-4 (simpan formulasi mempercayai preview), S-1 (infeasible tanpa rincian), STOK_MENIPIS lewat UI (tidak ada endpoint untuk mengatur `ambang_menipis`; sudah teruji otomatis).
+
+## K. DELETE aman dan koreksi salah input (P1)
+
+Authorize sebagai admin (data demo). Catat `jenis_ayam`, `fase_starter`, `bahan_jagung`, `nutrisi_kalsium` dari `GET` masing-masing.
+
+| # | Aksi | Harapan |
+|---|---|---|
+| K.1 | `DELETE /bahan-pakan/{bahan_jagung}` (terpasang di wadah) | **409** `masih dipakai oleh 1 wadah`; `GET /kandang/{kandang}/stok` tetap menampilkan Jagung |
+| K.2 | `DELETE /nutrisi/{nutrisi_kalsium}` | **409** `... kandungan bahan pakan, ... kebutuhan fase` |
+| K.3 | `DELETE /fase/{fase_starter}` dan `DELETE /jenis-ayam/{jenis_ayam}` | **409** `masih dipakai oleh 1 siklus` |
+| K.4 | `POST /bahan-pakan` `{"nama":"Salah input","harga":1}` → `DELETE` bahan itu | **204**; `GET /bahan-pakan/{id}` → 404 |
+| K.5 | `POST /siklus/{siklus}/populasi` `{"jenis":"MORTALITAS","jumlah":5,"tanggal":"2026-11-02"}` → `GET /kandang/{kandang}/siklus/aktif` | `jumlah_ayam` turun 5 |
+| K.6 | `DELETE /siklus/{siklus}/populasi/{populasi_id}` (ID dari respons K.5) | **204**; `jumlah_ayam` kembali |
+| K.7 | `PATCH /siklus/{siklus}` `{}` | **400** `Tidak ada data yang diubah` |
+| K.8 | `PATCH /siklus/{siklus}` `{"jumlah_ayam":120}` | 200; bila ada formulasi aktif → `PERLU_DITINJAU` + notifikasi. Kembalikan ke jumlah semula setelahnya |
+| K.9 | Sebagai Budi (Pekerja): `PATCH /siklus/{siklus}` dan `DELETE .../populasi/{id}` | **403** (hanya Pemilik) |
+| K.10 | Audit: `select aksi, nilai_lama, nilai_baru from audit_log where aksi like 'HAPUS_%' or aksi = 'KOREKSI_SIKLUS'` | Baris sesuai aksi di atas |

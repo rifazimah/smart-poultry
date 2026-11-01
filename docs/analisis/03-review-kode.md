@@ -70,7 +70,7 @@ Legenda severity: **K** = Kritis (fitur inti gagal / data salah), **T** = Tinggi
 | S-12 ✅ *diperbaiki (`SQL_ECHO`)* | `database.py:7` | `echo=True` (komentar menyuruh dimatikan sebelum demo) – log SQL berisik & bocor data | Jadikan setting `SQL_ECHO` default `False` |
 | S-13 ✅ *diperbaiki (CORS, `CORS_ORIGINS`)* | `main.py` | Tidak ada CORS → React (origin berbeda) akan diblok browser | `CORSMiddleware` dengan origin dari settings |
 | S-14 ✅ *diperbaiki Fase 1, 1 Nov 2026* | `models/akses.py` `AuditLog` | Tabel ada, tak pernah ditulis (BR-03/BR-34: koreksi stok, penugasan, perubahan status) | Tulis audit di koreksi stok, penugasan, nonaktifkan user |
-| S-15 | `routers/masterdata.py` DELETE | Hapus `BahanPakan` yang terpasang di wadah / dipakai `FormulasiItem`, atau `Nutrisi` yang dipakai → `IntegrityError` 500 | Cek referensi → 409 dengan pesan |
+| S-15 ✅ *diperbaiki 1 Nov 2026 (P1 DELETE)* | `routers/masterdata.py` DELETE | Hapus `BahanPakan` yang terpasang di wadah / dipakai `FormulasiItem`, atau `Nutrisi` yang dipakai → `IntegrityError` 500 | Cek referensi → 409 dengan pesan |
 | S-16 | `config.py:9` | `jwt_secret` default `"ganti-ini-di-.env"` – app tetap jalan dengan secret lemah | Gagal start bila production & secret default |
 
 ### Rendah / kebersihan

@@ -19,7 +19,11 @@ from app.schemas.masterdata import (
     KandunganNutrisiBahanInput, KandunganNutrisiBahanPublic,
     KebutuhanNutrisiFaseInput, KebutuhanNutrisiFasePublic
 )
+from app.models.fisik import Wadah
+from app.models.operasional import FormulasiItem, FormulasiNutrisiHasil, SiklusKandang
 from app.services.akses import get_entity_or_404
+from app.services.audit import catat_audit
+from app.services.hapus import tolak_bila_dipakai
 from app.services.auth import get_current_pemilik
 
 router = APIRouter(tags=["Master Data"])
@@ -80,6 +84,10 @@ def delete_jenis_ayam(
     session: Annotated[Session, Depends(get_session)]
 ):
     db_obj = get_entity_or_404(session, JenisAyam, id, current_pemilik.id)
+    tolak_bila_dipakai(session, "jenis ayam", [
+        ("siklus", SiklusKandang, SiklusKandang.jenis_ayam_id == id),
+    ])
+    catat_audit(session, current_pemilik.id, "HAPUS_JENIS_AYAM", "jenis_ayam", db_obj.id, nilai_lama=db_obj.nama)
     session.delete(db_obj)
     session.commit()
 
@@ -154,6 +162,10 @@ def delete_fase(
     if not fase:
         raise HTTPException(status_code=404, detail="Fase tidak ditemukan")
     get_entity_or_404(session, JenisAyam, fase.jenis_ayam_id, current_pemilik.id)
+    tolak_bila_dipakai(session, "fase", [
+        ("siklus", SiklusKandang, SiklusKandang.fase_id == id),
+    ])
+    catat_audit(session, current_pemilik.id, "HAPUS_FASE", "fase", fase.id, nilai_lama=fase.nama)
     session.delete(fase)
     session.commit()
 
@@ -275,6 +287,12 @@ def delete_nutrisi(
     session: Annotated[Session, Depends(get_session)]
 ):
     db_obj = get_entity_or_404(session, Nutrisi, id, current_pemilik.id)
+    tolak_bila_dipakai(session, "nutrisi", [
+        ("kandungan bahan pakan", KandunganNutrisiBahan, KandunganNutrisiBahan.nutrisi_id == id),
+        ("kebutuhan fase", KebutuhanNutrisiFase, KebutuhanNutrisiFase.nutrisi_id == id),
+        ("hasil formulasi", FormulasiNutrisiHasil, FormulasiNutrisiHasil.nutrisi_id == id),
+    ])
+    catat_audit(session, current_pemilik.id, "HAPUS_NUTRISI", "nutrisi", db_obj.id, nilai_lama=db_obj.nama)
     session.delete(db_obj)
     session.commit()
 
@@ -334,6 +352,11 @@ def delete_bahan_pakan(
     session: Annotated[Session, Depends(get_session)]
 ):
     db_obj = get_entity_or_404(session, BahanPakan, id, current_pemilik.id)
+    tolak_bila_dipakai(session, "bahan pakan", [
+        ("wadah", Wadah, Wadah.bahan_pakan_id == id),
+        ("item formulasi", FormulasiItem, FormulasiItem.bahan_pakan_id == id),
+    ])
+    catat_audit(session, current_pemilik.id, "HAPUS_BAHAN_PAKAN", "bahan_pakan", db_obj.id, nilai_lama=db_obj.nama)
     session.delete(db_obj)
     session.commit()
 
