@@ -34,9 +34,9 @@ API_CONTRACT.md).
 2. **FastAPI Backend** — repo ini. Satu-satunya yang bicara ke database.
 3. **PostgreSQL** — dijalankan lewat `docker-compose.yml` di root repo
    (`docker compose up -d`); backend hanya konek lewat `DATABASE_URL`.
-4. **Simulator Alat** — repo/folder **terpisah** di luar
-   `smart-poultry-backend/`, dijalankan manual (`python run.py`) saat
-   testing. Ini BUKAN bagian dari backend FastAPI, dan tidak boleh
+4. **Simulator Alat** — folder **terpisah** `simulator/` di luar
+   `smart-poultry-backend/`, dijalankan manual (`python simulator/run.py --device-token ...`) saat
+   testing (lihat `docs/panduan/simulator.md`). Ini BUKAN bagian dari backend FastAPI, dan tidak boleh
    di-import sebagai modul backend.
 
 ## Dua jalur autentikasi — jangan dicampur

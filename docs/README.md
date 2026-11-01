@@ -19,6 +19,7 @@ Semua dokumen proyek berada di folder ini. Baca berurutan bila baru bergabung.
 | [panduan/setup-backend.md](panduan/setup-backend.md) | Menjalankan DB, migrasi, server | Developer |
 | [panduan/smoke-test-swagger.md](panduan/smoke-test-swagger.md) | Skenario smoke test lewat Swagger UI | Developer, QA |
 | [panduan/smoke-test-fase-1.md](panduan/smoke-test-fase-1.md) | Smoke test khusus perilaku baru Fase 1 | Developer, QA |
+| [panduan/simulator.md](panduan/simulator.md) | Simulator alat IoT (cara pakai, opsi, skenario demo) | Developer, QA |
 | [panduan/AGENTS.md](panduan/AGENTS.md) | Aturan untuk AI coding agent | Agent/Developer |
 
 ## Aturan pemeliharaan
