@@ -10,6 +10,7 @@ Semua dokumen proyek berada di folder ini. Baca berurutan bila baru bergabung.
 | [analisis/03-review-kode.md](analisis/03-review-kode.md) | Temuan review kode (severity, file:baris, perbaikan) | Developer |
 | [analisis/04-gap-analysis-api.md](analisis/04-gap-analysis-api.md) | Kontrak API vs implementasi | Developer, FE |
 | [analisis/05-risiko-dan-technical-debt.md](analisis/05-risiko-dan-technical-debt.md) | Risiko, utang teknis, keputusan terbuka | Tim, PO |
+| [analisis/06-analisis-endpoint-delete.md](analisis/06-analisis-endpoint-delete.md) | Analisis & usulan endpoint DELETE | Developer, PO |
 | [roadmap/ROADMAP-TAHAPAN-BERIKUTNYA.md](roadmap/ROADMAP-TAHAPAN-BERIKUTNYA.md) | Fase 0–6 menuju selesai | Semua |
 | [spesifikasi/PRD-MVP.md](spesifikasi/PRD-MVP.md) | Cakupan & definisi selesai MVP | Semua |
 | [spesifikasi/ARCHITECTURE.md](spesifikasi/ARCHITECTURE.md) | Komponen, alur data, keputusan teknis final | Developer |

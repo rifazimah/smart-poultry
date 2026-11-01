@@ -3,7 +3,7 @@
 Sumber kontrak: [`../spesifikasi/API_CONTRACT.md`](../spesifikasi/API_CONTRACT.md). Implementasi: `smart-poultry-backend/app/routers/`.
 > **Pembaruan 1 Nov 2026:** baris yang merujuk T-1, T-2, T-3, T-5..T-12, K-1..K-3 dan S-5/S-9/S-14 sudah diperbaiki
 > (lihat [03](03-review-kode.md)); baris tersebut kini berstatus ✅ kecuali dicatat lain. Masih ❌/⚠️: template (BR-13), paginasi,
-> S-1, S-4, S-6, S-7, S-15, T-4.
+> S-1, S-4, S-6, S-7, S-15 (lihat [06](06-analisis-endpoint-delete.md)).
 
 Legenda: ✅ sesuai · ⚠️ ada tapi menyimpang/berisiko (rujuk ID temuan di [03](03-review-kode.md)) · ❌ belum ada.
 

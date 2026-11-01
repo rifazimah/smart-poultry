@@ -108,6 +108,9 @@ Masing-masing resource mendukung `POST` (create, 201), `GET` (list, dengan `?jen
 > **Fase 1:** endpoint `otomatis`, `manual`, dan `POST /formulasi` hanya untuk **Pemilik** (Pekerja `403`); `GET` tetap untuk Pekerja yang ditugaskan.
 > Objek `Formulasi` memuat field `aktif` (boolean): hanya satu formulasi VALID per siklus yang `aktif=true`; `status` menyatakan validitas
 > (`VALID`/`TIDAK_SEMPURNA`/`PERLU_DITINJAU`).
+> `POST /formulasi` **tidak mempercayai angka dari klien**: server hanya memakai `mode` dan komposisi (`item[].bahan_pakan_id`, `proporsi`), lalu menghitung ulang
+> biaya, berat per sesi, nilai dan status nutrisi. Mode `OTOMATIS` harus cocok dengan hasil LP terbaru (biaya dalam toleransi 0,1% dan `batas_maksimum` bahan terpenuhi),
+> bila tidak `409` (hitung ulang). Komposisi kosong → `400`; siklus sudah selesai → `409`.
 
 | Method | Path | Body | Response |
 |---|---|---|---|
