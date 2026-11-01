@@ -12,7 +12,9 @@ from app.models.masterdata import BahanPakan
 from app.schemas.stok import (
     IsiUlangStokRequest, KoreksiStokRequest, StokPublic, TransaksiStokPublic
 )
+from app.services.audit import catat_audit
 from app.services.auth import get_current_user
+from app.services.stok import get_or_create_stok
 from app.routers.kandang import _get_kandang_or_404
 
 router = APIRouter(tags=["Manajemen Stok"])
@@ -66,15 +68,7 @@ def _get_wadah_and_stok_or_404(session: Session, wadah_id: uuid.UUID, current_us
     # Validasi akses via kandang
     _get_kandang_or_404(session, alat.kandang_id, current_user)
     
-    stok = session.exec(select(Stok).where(Stok.wadah_id == wadah.id)).first()
-    if not stok:
-        # Buat stok jika belum ada
-        stok = Stok(wadah_id=wadah.id, jumlah_estimasi=0)
-        session.add(stok)
-        session.commit()
-        session.refresh(stok)
-        
-    return wadah, stok
+    return wadah, get_or_create_stok(session, wadah.id)
 
 
 @router.post("/wadah/{id}/stok/isi-ulang", response_model=TransaksiStokPublic, status_code=status.HTTP_201_CREATED)
@@ -120,10 +114,13 @@ def koreksi_stok(
         
     wadah, stok = _get_wadah_and_stok_or_404(session, id, current_user)
     
-    selisih = req.jumlah_baru - stok.jumlah_estimasi
+    lama = stok.jumlah_estimasi
+    selisih = req.jumlah_baru - lama
     stok.jumlah_estimasi = req.jumlah_baru
     session.add(stok)
-    
+    catat_audit(session, current_user.id, "KOREKSI_STOK", "stok", stok.id,
+                nilai_lama=str(lama), nilai_baru=str(req.jumlah_baru), catatan=req.alasan)
+
     tx = TransaksiStok(
         wadah_id=wadah.id,
         dilakukan_oleh_id=current_user.id,

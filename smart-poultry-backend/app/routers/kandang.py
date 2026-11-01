@@ -7,13 +7,16 @@ from sqlmodel import Session, select
 
 from app.database import get_session
 from app.models.akses import User, PenugasanKandang
-from app.models.fisik import Kandang, Alat, Wadah
+from app.models.fisik import Kandang, Alat, Wadah, Stok
 from app.models.enums import PeranUser, StatusPenugasan
 from app.schemas.fisik import (
     KandangCreate, KandangUpdate, KandangPublic, KandangDetailPublic,
     AlatWithToken, TokenRotasiResponse,
     WadahCreate, WadahUpdate, WadahPublic
 )
+from app.models.masterdata import BahanPakan
+from app.services.akses import get_entity_or_404
+from app.services.perintah import deteksi_offline
 from app.services.auth import get_current_user, get_current_pemilik
 
 router = APIRouter(tags=["Kandang & Alat"])
@@ -100,8 +103,8 @@ def get_kandang(
     
     alat = session.exec(select(Alat).where(Alat.kandang_id == kandang.id)).first()
     if alat:
-        detail.status_alat = alat.status
-        
+        detail.status_alat = deteksi_offline(session, alat)
+
     # Lazy import to avoid circular dependency
     from app.models.operasional import SiklusKandang
     from app.models.enums import StatusSiklus
@@ -210,11 +213,15 @@ def create_wadah(
     ).first()
     if existing_wadah:
         raise HTTPException(status_code=400, detail=f"Wadah nomor {wadah_in.nomor_wadah} sudah ada")
-        
+
+    if wadah_in.bahan_pakan_id is not None:
+        get_entity_or_404(session, BahanPakan, wadah_in.bahan_pakan_id, current_pemilik.id)
+
     wadah = Wadah(
         alat_id=id,
         nomor_wadah=wadah_in.nomor_wadah,
-        bahan_pakan_id=wadah_in.bahan_pakan_id
+        bahan_pakan_id=wadah_in.bahan_pakan_id,
+        stok=Stok(jumlah_estimasi=0),  # R14: Stok selalu ada bersama Wadah
     )
     session.add(wadah)
     session.commit()
@@ -238,9 +245,12 @@ def update_wadah(
     alat = session.get(Alat, wadah.alat_id)
     _get_kandang_or_404(session, alat.kandang_id, current_pemilik)
     
-    if wadah_update.bahan_pakan_id is not None:
+    # exclude_unset: null eksplisit berarti melepas bahan dari wadah
+    if "bahan_pakan_id" in wadah_update.model_fields_set:
+        if wadah_update.bahan_pakan_id is not None:
+            get_entity_or_404(session, BahanPakan, wadah_update.bahan_pakan_id, current_pemilik.id)
         wadah.bahan_pakan_id = wadah_update.bahan_pakan_id
-        
+
     session.add(wadah)
     session.commit()
     session.refresh(wadah)

@@ -35,7 +35,7 @@ Tujuan: alur inti tidak crash.
 | 0.6 Smoke test manual (Swagger/curl) | login → master data → kandang/alat/wadah → siklus → formulasi manual+otomatis → simpan → beri makan → (curl meniru device) → stok & notifikasi | — |
 **DoD:** skenario smoke test lulus tanpa 500; hasil dicatat di dokumen uji.
 
-**Progres (1 Nov 2026):** 0.1–0.5 selesai di kode (kolom `aktif` + migrasi `b7c1a2d93e5f` ditulis manual karena DB/Docker tidak tersedia; belum dijalankan). 0.6 smoke test **belum** dilakukan.
+**Progres:** Fase 0 **selesai** (1 Nov 2026). Smoke test Swagger (0.6) lulus semua skenario.
 
 ## Fase 1 — Kebenaran logika inti & keamanan (±4 hari)
 | Task | Rincian | Acuan |
@@ -50,6 +50,8 @@ Tujuan: alur inti tidak crash.
 | 1.8 Audit | Tulis `AuditLog` untuk koreksi stok, penugasan, ubah status user | S-14 |
 | 1.9 Diagnosis infeasible | Daftar nutrisi bermasalah di `pesan` + `nutrisi_hasil` | S-1 |
 **DoD:** setiap perbaikan punya test (lihat Fase 4) atau skenario manual terdokumentasi; checklist AGENTS (§Checklist) terpenuhi.
+
+**Progres (1 Nov 2026, branch `fitur/fase-1-logika-inti`):** selesai — 1.1 (tenant isolation, `User.pemilik_id`), 1.2 (stok otomatis + backfill), 1.3 (validasi beri makan, stok cukup → 409), 1.4 (state machine, lazy-timeout, alat OFFLINE, stop darurat), 1.5 (idempotensi log 200/201, SKIPPED_STOCK), 1.7 (notifikasi ke Pemilik + pekerja), 1.8 (AuditLog). **Belum:** 1.6 (simpan formulasi hitung ulang server-side, T-4) dan 1.9 (diagnosis infeasible, S-1). Test otomatis: 46 test lulus (`pytest`, DB `smart_poultry_test`).
 
 ## Fase 2 — Kelengkapan kontrak (±3 hari)
 | Task | Rincian |

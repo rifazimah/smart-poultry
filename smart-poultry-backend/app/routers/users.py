@@ -14,10 +14,20 @@ from app.schemas.user import (
     PenugasanKandangCreate, 
     PenugasanKandangPublic
 )
+from app.routers.kandang import _get_kandang_or_404
+from app.services.audit import catat_audit
 from app.services.auth import get_current_pemilik, get_password_hash
 
 # Kita buat 2 prefix yang berbeda sesuai API Contract
 router = APIRouter(tags=["User & Penugasan"])
+
+
+def _get_pekerja_or_404(session: Session, user_id: uuid.UUID, pemilik: User) -> User:
+    """Pekerja harus milik Pemilik yang login."""
+    pekerja = session.get(User, user_id)
+    if not pekerja or pekerja.role != PeranUser.PEKERJA or pekerja.pemilik_id != pemilik.id:
+        raise HTTPException(status_code=404, detail="Pekerja tidak ditemukan")
+    return pekerja
 
 
 @router.post("/users", response_model=UserPublic, status_code=status.HTTP_201_CREATED)
@@ -49,8 +59,9 @@ def create_user(
         email=user_in.email,
         kata_sandi_hash=get_password_hash(user_in.kata_sandi),
         role=user_in.role,
+        pemilik_id=current_pemilik.id,
     )
-    
+
     session.add(db_user)
     session.commit()
     session.refresh(db_user)
@@ -64,14 +75,12 @@ def get_users(
     session: Annotated[Session, Depends(get_session)],
 ):
     """Mendapatkan daftar pekerja (hanya Pemilik)."""
-    # Untuk MVP, kita ambil semua PEKERJA, 
-    # karena saat ini tidak ada relasi langsung Pemilik->Pekerja di tabel User.
-    # Jika diinginkan hanya pekerja tertentu, relasinya perlu ditambahkan.
-    pekerja_list = session.exec(
-        select(User).where(User.role == PeranUser.PEKERJA)
+    return session.exec(
+        select(User).where(
+            User.role == PeranUser.PEKERJA,
+            User.pemilik_id == current_pemilik.id,
+        )
     ).all()
-    
-    return pekerja_list
 
 
 @router.patch("/users/{id}/status", response_model=UserPublic)
@@ -82,11 +91,11 @@ def update_user_status(
     session: Annotated[Session, Depends(get_session)],
 ):
     """Mengubah status pekerja (misal: dinonaktifkan). Hanya Pemilik."""
-    user = session.get(User, id)
-    if not user or user.role != PeranUser.PEKERJA:
-        raise HTTPException(status_code=404, detail="Pekerja tidak ditemukan")
-        
+    user = _get_pekerja_or_404(session, id, current_pemilik)
+    lama = user.status.value
     user.status = status_update.status
+    catat_audit(session, current_pemilik.id, "UBAH_STATUS_USER", "user", user.id,
+                nilai_lama=lama, nilai_baru=status_update.status.value)
     session.add(user)
     session.commit()
     session.refresh(user)
@@ -101,14 +110,19 @@ def buat_penugasan(
     session: Annotated[Session, Depends(get_session)],
 ):
     """Menugaskan Pekerja ke sebuah Kandang."""
-    # Verifikasi pekerja ada
-    pekerja = session.get(User, id)
-    if not pekerja or pekerja.role != PeranUser.PEKERJA:
-        raise HTTPException(status_code=404, detail="Pekerja tidak ditemukan")
-        
-    # Verifikasi kandang (dan milik pemilik ini) - di-skip detailnya untuk MVP, tapi idealnya dicek
-    # ...
-    
+    pekerja = _get_pekerja_or_404(session, id, current_pemilik)
+    _get_kandang_or_404(session, penugasan_in.kandang_id, current_pemilik)
+
+    sudah_ada = session.exec(
+        select(PenugasanKandang).where(
+            PenugasanKandang.user_id == pekerja.id,
+            PenugasanKandang.kandang_id == penugasan_in.kandang_id,
+            PenugasanKandang.status == StatusPenugasan.AKTIF,
+        )
+    ).first()
+    if sudah_ada:
+        raise HTTPException(status_code=409, detail="Pekerja sudah ditugaskan ke kandang ini")
+
     penugasan = PenugasanKandang(
         user_id=pekerja.id,
         kandang_id=penugasan_in.kandang_id,
@@ -116,6 +130,9 @@ def buat_penugasan(
         status=StatusPenugasan.AKTIF
     )
     session.add(penugasan)
+    session.flush()
+    catat_audit(session, current_pemilik.id, "BUAT_PENUGASAN", "penugasan_kandang", penugasan.id,
+                nilai_baru=f"user={pekerja.id} kandang={penugasan.kandang_id}")
     session.commit()
     session.refresh(penugasan)
     return penugasan
@@ -131,7 +148,10 @@ def akhiri_penugasan(
     penugasan = session.get(PenugasanKandang, id)
     if not penugasan:
         raise HTTPException(status_code=404, detail="Penugasan tidak ditemukan")
-        
+    _get_kandang_or_404(session, penugasan.kandang_id, current_pemilik)
+
     penugasan.status = StatusPenugasan.BERAKHIR
     session.add(penugasan)
+    catat_audit(session, current_pemilik.id, "AKHIRI_PENUGASAN", "penugasan_kandang", penugasan.id,
+                nilai_lama="AKTIF", nilai_baru="BERAKHIR")
     session.commit()

@@ -13,7 +13,7 @@ from app.schemas.formulasi import (
     FormulasiPreview, FormulasiManualRequest, 
     FormulasiLengkapPublic, FormulasiPublic
 )
-from app.services.auth import get_current_user
+from app.services.auth import get_current_pemilik, get_current_user
 from app.services.formulasi import (
     hitung_formulasi_otomatis, hitung_formulasi_manual, FormulasiException
 )
@@ -25,7 +25,7 @@ router = APIRouter(tags=["Formulasi"])
 @router.post("/siklus/{id}/formulasi/otomatis", response_model=FormulasiPreview)
 def generate_formulasi_otomatis_endpoint(
     id: uuid.UUID,
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Depends(get_current_pemilik)],
     session: Annotated[Session, Depends(get_session)]
 ):
     siklus = _get_siklus_or_404(session, id, current_user)
@@ -40,7 +40,7 @@ def generate_formulasi_otomatis_endpoint(
 def generate_formulasi_manual_endpoint(
     id: uuid.UUID,
     req: FormulasiManualRequest,
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Depends(get_current_pemilik)],
     session: Annotated[Session, Depends(get_session)]
 ):
     siklus = _get_siklus_or_404(session, id, current_user)
@@ -54,7 +54,7 @@ def generate_formulasi_manual_endpoint(
 @router.post("/formulasi", response_model=FormulasiPublic, status_code=status.HTTP_201_CREATED)
 def simpan_formulasi(
     preview: FormulasiPreview,
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Depends(get_current_pemilik)],
     session: Annotated[Session, Depends(get_session)]
 ):
     """

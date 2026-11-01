@@ -19,17 +19,10 @@ from app.schemas.masterdata import (
     KandunganNutrisiBahanInput, KandunganNutrisiBahanPublic,
     KebutuhanNutrisiFaseInput, KebutuhanNutrisiFasePublic
 )
+from app.services.akses import get_entity_or_404
 from app.services.auth import get_current_pemilik
 
 router = APIRouter(tags=["Master Data"])
-
-
-# --- Helper ---
-def get_entity_or_404(session: Session, model_class, entity_id: uuid.UUID, pemilik_id: uuid.UUID):
-    entity = session.get(model_class, entity_id)
-    if not entity or entity.pemilik_id != pemilik_id:
-        raise HTTPException(status_code=404, detail=f"{model_class.__name__} tidak ditemukan")
-    return entity
 
 
 # --- JENIS AYAM ---
