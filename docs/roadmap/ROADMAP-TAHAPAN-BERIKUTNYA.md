@@ -64,6 +64,8 @@ Tujuan: alur inti tidak crash.
 | 2.6 Pembaruan kontrak | Sinkronkan `docs/spesifikasi/API_CONTRACT.md` dengan perubahan nyata |
 
 ## Fase 3 — Simulator alat & seed demo (±2 hari, paralel setelah Fase 0)
+
+> ✅ **Selesai (1 Nov 2026):** `simulator/run.py` (opsi `--fail-rate`, `--skip-stock-rate`, `--proses-delay`, `--offline-after`, `--once`, dst.), 9 test, dan uji nyata uvicorn + CLI. Panduan: [simulator.md](../panduan/simulator.md). Seed demo sudah ada sejak sebelumnya (`seed_demo.py`).
 - Folder `simulator/` (di luar `smart-poultry-backend/`): `run.py --device-token ... --base-url ...` memakai `httpx`.
 - Perilaku: heartbeat tiap `heartbeat_interval_seconds`; ambil → delay → mulai → delay → log; opsi `--fail-rate`, `--delay`, `--offline-after`; `id_eksekusi_unik=uuid4`.
 - ✅ *Seed demo sudah ada (`seed_demo.py`, 1 Nov 2026).* Semula: skrip seed demo (`seed_demo.py`): Pemilik+Pekerja, jenis ayam broiler (starter/grower/finisher), nutrisi (protein, energi, kalsium, fosfor, lisin), 5–6 bahan berharga & kandungan, kebutuhan per fase, standar konsumsi.

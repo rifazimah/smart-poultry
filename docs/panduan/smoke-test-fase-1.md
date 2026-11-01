@@ -5,6 +5,8 @@ Prasyarat: data demo ada (`python seed_demo.py`, lihat [setup-backend](setup-bac
 
 ## 0. Persiapan
 
+> **Tip:** langkah manual `/device/*` (heartbeat, ambil, mulai, log) pada bagian B–G dapat digantikan oleh [simulator](simulator.md): `python simulator/run.py --device-token <TOKEN> --interval 3`.
+
 ```bash
 cd smart-poultry-backend
 .venv\Scripts\activate
