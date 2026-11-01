@@ -8,7 +8,7 @@ from typing import List, Dict, Optional
 from sqlmodel import Session, select
 from scipy.optimize import linprog
 
-from app.models.enums import ModeFormulasi, StatusFormulasi, StatusNutrisi
+from app.models.enums import ModeFormulasi, StatusFormulasi, StatusNutrisi, StatusSiklus
 from app.models.masterdata import (
     Nutrisi, BahanPakan, KandunganNutrisiBahan,
     KebutuhanNutrisiFase, StandarKonsumsi
@@ -282,72 +282,104 @@ def hitung_formulasi_manual(
     )
 
 
+TOLERANSI_BIAYA_REL = 1e-3  # preview OTOMATIS boleh selisih 0,1% dari optimum (pembulatan di klien)
+
+
 def simpan_formulasi_service(
     session: Session,
     preview: FormulasiPreview,
     current_user: User
 ) -> Formulasi:
+    """
+    Simpan formulasi sebagai snapshot. Angka dari klien TIDAK dipercaya: hanya komposisi
+    (bahan + proporsi) yang dipakai, lalu semua nilai dihitung ulang di server dari data terkini.
+    Untuk mode OTOMATIS, komposisi harus sama dengan hasil LP terbaru (biaya sama dalam toleransi
+    dan batas_maksimum per bahan terpenuhi); bila tidak, 409 dan klien diminta menghitung ulang.
+    """
     from app.routers.siklus import _get_siklus_or_404
     siklus = _get_siklus_or_404(session, preview.siklus_id, current_user)
-    
-    # Validasi wadah: pastikan bahan_pakan_id di item masih terpasang di wadah alat
+    if siklus.status != StatusSiklus.AKTIF:
+        raise FormulasiException("Siklus sudah selesai", 409)
+    if not preview.item:
+        raise FormulasiException("Formulasi tanpa bahan tidak dapat disimpan", 400)
+
+    # Bahan harus masih terpasang di wadah alat (409 bila dilepas sejak preview dibuat)
     alat = session.exec(select(Alat).where(Alat.kandang_id == siklus.kandang_id)).first()
     if not alat:
         raise FormulasiException("Kandang tidak memiliki alat IoT", 400)
-        
     wadah_list = session.exec(select(Wadah).where(Wadah.alat_id == alat.id)).all()
     bahan_terpasang = {w.bahan_pakan_id for w in wadah_list if w.bahan_pakan_id is not None}
-    
     for item in preview.item:
         if item.bahan_pakan_id not in bahan_terpasang:
             raise FormulasiException(
                 f"Bahan pakan {item.nama_bahan} sudah dilepas dari wadah sejak preview dibuat.", 409
             )
-            
+
+    # Hitung ulang dari komposisi (validasi proporsi, nutrisi, biaya, berat per sesi)
+    hasil = hitung_formulasi_manual(
+        session, siklus,
+        [FormulasiItemInput(bahan_pakan_id=i.bahan_pakan_id, proporsi=i.proporsi) for i in preview.item],
+    )
+
+    if preview.mode == ModeFormulasi.OTOMATIS:
+        acuan = hitung_formulasi_otomatis(session, siklus)
+        if acuan.status != StatusFormulasi.VALID or acuan.total_biaya_per_kg is None:
+            raise FormulasiException("Formulasi otomatis tidak lagi dapat dipenuhi; hitung ulang.", 409)
+        bahan = {
+            b.id: b for b in session.exec(
+                select(BahanPakan).where(BahanPakan.id.in_([i.bahan_pakan_id for i in hasil.item]))
+            ).all()
+        }
+        melebihi = [
+            i.nama_bahan for i in hasil.item
+            if bahan[i.bahan_pakan_id].batas_maksimum is not None
+            and i.proporsi > bahan[i.bahan_pakan_id].batas_maksimum + 1e-4
+        ]
+        if melebihi:
+            raise FormulasiException("Proporsi melebihi batas maksimum bahan: " + ", ".join(melebihi), 409)
+        if hasil.total_biaya_per_kg is None or abs(hasil.total_biaya_per_kg - acuan.total_biaya_per_kg) > max(
+            0.01, TOLERANSI_BIAYA_REL * acuan.total_biaya_per_kg
+        ):
+            raise FormulasiException(
+                "Komposisi tidak sesuai hasil perhitungan otomatis terbaru; hitung ulang formulasi.", 409
+            )
+
     # Nonaktifkan formulasi lama yang aktif
-    old_formulas = session.exec(
+    for f in session.exec(
         select(Formulasi).where(
-            Formulasi.siklus_id == preview.siklus_id,
+            Formulasi.siklus_id == siklus.id,
             Formulasi.aktif == True  # noqa: E712
         )
-    ).all()
-    for f in old_formulas:
+    ).all():
         f.aktif = False
         session.add(f)
-        
-    # Buat Formulasi baru
+
     db_form = Formulasi(
-        siklus_id=preview.siklus_id,
+        siklus_id=siklus.id,
         dibuat_oleh_id=current_user.id,
         mode=preview.mode,
-        total_biaya_per_kg=preview.total_biaya_per_kg,
-        status=preview.status,
-        aktif=preview.status == StatusFormulasi.VALID
+        total_biaya_per_kg=hasil.total_biaya_per_kg,
+        status=hasil.status,
+        aktif=hasil.status == StatusFormulasi.VALID,
     )
     session.add(db_form)
-    session.commit()
-    session.refresh(db_form)
-    
-    # Simpan Items
-    for item in preview.item:
-        db_item = FormulasiItem(
+    session.flush()  # db_form.id
+
+    for item in hasil.item:
+        session.add(FormulasiItem(
             formulasi_id=db_form.id,
             bahan_pakan_id=item.bahan_pakan_id,
             proporsi=item.proporsi,
-            berat_per_sesi=item.berat_per_sesi
-        )
-        session.add(db_item)
-        
-    # Simpan Nutrisi Hasil
-    for nh in preview.nutrisi_hasil:
-        db_nh = FormulasiNutrisiHasil(
+            berat_per_sesi=item.berat_per_sesi,
+        ))
+    for nh in hasil.nutrisi_hasil:
+        session.add(FormulasiNutrisiHasil(
             formulasi_id=db_form.id,
             nutrisi_id=nh.nutrisi_id,
             nilai_hasil=nh.nilai_hasil,
-            status=nh.status
-        )
-        session.add(db_nh)
-        
+            status=nh.status,
+        ))
+
     session.commit()
     session.refresh(db_form)
     return db_form
