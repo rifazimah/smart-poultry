@@ -66,7 +66,7 @@ Tujuan: alur inti tidak crash.
 ## Fase 3 — Simulator alat & seed demo (±2 hari, paralel setelah Fase 0)
 - Folder `simulator/` (di luar `smart-poultry-backend/`): `run.py --device-token ... --base-url ...` memakai `httpx`.
 - Perilaku: heartbeat tiap `heartbeat_interval_seconds`; ambil → delay → mulai → delay → log; opsi `--fail-rate`, `--delay`, `--offline-after`; `id_eksekusi_unik=uuid4`.
-- Skrip seed demo (`seed_demo.py`): Pemilik+Pekerja, jenis ayam broiler (starter/grower/finisher), nutrisi (protein, energi, kalsium, fosfor, lisin), 5–6 bahan berharga & kandungan, kebutuhan per fase, standar konsumsi.
+- ✅ *Seed demo sudah ada (`seed_demo.py`, 1 Nov 2026).* Semula: skrip seed demo (`seed_demo.py`): Pemilik+Pekerja, jenis ayam broiler (starter/grower/finisher), nutrisi (protein, energi, kalsium, fosfor, lisin), 5–6 bahan berharga & kandungan, kebutuhan per fase, standar konsumsi.
 **DoD:** demo CLI tanpa frontend: dari seed sampai stok turun dan notifikasi muncul.
 
 ## Fase 4 — Kualitas & operasional (±4 hari)

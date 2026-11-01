@@ -119,4 +119,18 @@ pytest -q
 ```
 
 Setiap sesi test menghapus schema `public` pada DB test, menjalankan `alembic upgrade head` dari nol, dan mengosongkan tabel antar test.
-Jangan arahkan `TEST_DATABASE_URL` ke database yang berisi data penting.
+**Peringatan:** test menjalankan `DROP SCHEMA public CASCADE` pada database test. `tests/conftest.py` menolak berjalan bila nama database tidak berakhiran `_test`; jangan arahkan `TEST_DATABASE_URL` ke database berisi data penting.
+
+## Data Demo
+
+Untuk mengisi database dev dengan data siap pakai (idempoten, aman dijalankan ulang):
+
+```bash
+cd smart-poultry-backend
+pip install -r requirements-dev.txt
+python seed_demo.py
+```
+
+Membuat: Pemilik `admin@smartpoultry.com` / `admin123`, master data (3 nutrisi, 4 bahan + kandungan, Broiler Starter/Grower), Kandang A dengan alat,
+4 wadah berstok, siklus aktif 100 ekor, dan Pekerja `budi@example.com` / `budi12345` (belum ditugaskan). `X-Device-Token` hanya tampil sekali di output;
+bila terlewat, buat ulang lewat `POST /alat/{id}/rotasi-token`.

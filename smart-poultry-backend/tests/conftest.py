@@ -14,12 +14,20 @@ def _test_database_url() -> str:
     explicit = os.environ.get("TEST_DATABASE_URL")
     if explicit:
         return explicit
-    from app.config import Settings  # hanya membaca .env, belum membuat engine
-    base = Settings().database_url
+    # Jangan import app.config di sini: modul itu membuat `settings` saat diimport,
+    # sehingga akan membaca DATABASE_URL dev sebelum kita sempat menimpanya.
+    from dotenv import dotenv_values
+    base = os.environ.get("DATABASE_URL") or dotenv_values(BACKEND_DIR / ".env").get("DATABASE_URL")
+    if not base:
+        raise RuntimeError("Set TEST_DATABASE_URL atau DATABASE_URL di .env untuk menjalankan test")
     return base.rsplit("/", 1)[0] + "/smart_poultry_test"
 
 
+BACKEND_DIR = Path(__file__).resolve().parents[1]
 TEST_URL = _test_database_url()
+# Pengaman: test menghapus seluruh schema, jadi hanya boleh berjalan pada database *_test.
+if not TEST_URL.rsplit("/", 1)[-1].split("?")[0].endswith("_test"):
+    raise RuntimeError(f"Nama database test harus berakhiran '_test': {TEST_URL.rsplit('/', 1)[-1]}")
 os.environ["DATABASE_URL"] = TEST_URL
 
 import pytest  # noqa: E402
@@ -34,7 +42,7 @@ from app.models.akses import User  # noqa: E402
 from app.models.enums import PeranUser, StatusUser  # noqa: E402
 from app.services.auth import get_password_hash  # noqa: E402
 
-BACKEND_DIR = Path(__file__).resolve().parents[1]
+assert engine.url.database.endswith("_test"), f"Engine menunjuk ke {engine.url.database}, bukan database test"
 
 
 @pytest.fixture(scope="session", autouse=True)
