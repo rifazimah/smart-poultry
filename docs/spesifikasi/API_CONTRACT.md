@@ -41,6 +41,9 @@ endpoint untuk **simulator alat**. Tidak ada endpoint jadwal/pengajuan
 
 ## 2. User & Penugasan (BR-02, BR-03)
 
+> **Fase 1:** Pekerja dimiliki Pemilik yang membuatnya (`User.pemilik_id`, tidak diekspos di response). `GET /users` dan `PATCH /users/{id}/status` hanya
+> menjangkau Pekerja milik Pemilik yang login; penugasan memvalidasi kandang & Pekerja milik Pemilik, penugasan aktif ganda → `409`.
+
 | Method | Path | Body | Response | Otorisasi |
 |---|---|---|---|---|
 | POST | `/users` | `{nama, email, kata_sandi, role}` | `User` (201) | Hanya Pemilik; role yang dibuat harus `PEKERJA` |
@@ -102,6 +105,10 @@ Masing-masing resource mendukung `POST` (create, 201), `GET` (list, dengan `?jen
 
 ## 6. Formulasi — inti MVP (UC-07, BR-08/BR-09)
 
+> **Fase 1:** endpoint `otomatis`, `manual`, dan `POST /formulasi` hanya untuk **Pemilik** (Pekerja `403`); `GET` tetap untuk Pekerja yang ditugaskan.
+> Objek `Formulasi` memuat field `aktif` (boolean): hanya satu formulasi VALID per siklus yang `aktif=true`; `status` menyatakan validitas
+> (`VALID`/`TIDAK_SEMPURNA`/`PERLU_DITINJAU`).
+
 | Method | Path | Body | Response |
 |---|---|---|---|
 | POST | `/siklus/{id}/formulasi/otomatis` | `{}` | `FormulasiPreview` (lihat bentuk di bawah) — **belum tersimpan** |
@@ -132,6 +139,11 @@ Masing-masing resource mendukung `POST` (create, 201), `GET` (list, dengan `?jen
 
 ## 7. Beri Makan Manual & Perintah (UC-08, BR-24/BR-26)
 
+> **Aturan tambahan (Fase 1):** `beri-makan` mengembalikan `404` bila formulasi tidak ada dan `409` bila formulasi bukan milik siklus aktif kandang,
+> tidak `aktif`/bukan `VALID`, atau stok bahan tidak cukup (pesan merinci bahan yang kurang). Perintah yang tidak diproses alat menjadi `TIMEOUT`
+> (PENDING/DIAMBIL > 60 dtk, BERJALAN > 300 dtk; konfigurabel) dan alat yang tidak heartbeat > 3x interval dianggap `OFFLINE`; keduanya dievaluasi saat request (tanpa job latar).
+> `stop-darurat` membatalkan perintah aktif (→ `GAGAL`) dan boleh dikirim walau alat offline.
+
 | Method | Path | Body | Response | Catatan |
 |---|---|---|---|---|
 | POST | `/kandang/{id}/perintah/beri-makan` | `{formulasi_id}` | `Perintah` (201, `status=PENDING`) | 409 jika alat offline atau ada perintah lain yang masih `PENDING`/`BERJALAN` |
@@ -150,7 +162,7 @@ Semua endpoint di bawah pakai header `X-Device-Token`, **bukan** JWT.
 | POST | `/device/heartbeat` | `{status: "ONLINE"\|"ERROR"}` | `{perintah_pending: Perintah \| null, config: {heartbeat_interval_seconds}}` | Dipanggil simulator tiap beberapa detik (lihat `DEVICE_HEARTBEAT_INTERVAL_SECONDS`). Server update `waktu_terakhir_sinkron` & `status` alat, lalu balas perintah yang menunggu (kalau ada) |
 | POST | `/device/perintah/{id}/ambil` | `{}` | `Perintah` | status → `DIAMBIL` |
 | POST | `/device/perintah/{id}/mulai` | `{}` | `Perintah` | status → `BERJALAN` |
-| POST | `/device/perintah/{id}/log` | `{id_eksekusi_unik, berat_aktual, status: "SUKSES"\|"GAGAL"}` | `LogEksekusi` (201) | Idempoten lewat `id_eksekusi_unik` — kirim ulang dengan id sama tidak membuat log ganda (balas log yang sudah ada, 200 bukan 201). Server otomatis: update `Perintah.status`, kurangi `Stok` kalau SUKSES, catat `TransaksiStok` jenis `PENGELUARAN`, buat `Notifikasi` |
+| POST | `/device/perintah/{id}/log` | `{id_eksekusi_unik, berat_aktual, status: "SUKSES"\|"GAGAL"}` | `LogEksekusi` (201) | Idempoten lewat `id_eksekusi_unik` — kirim ulang dengan id sama tidak membuat log ganda (balas log yang sudah ada, **200** bukan 201). Log kedua dengan id berbeda untuk perintah yang sama, atau id yang dipakai perintah lain → `409`; perintah harus berstatus `DIAMBIL`/`BERJALAN` (selain itu `409`). `SKIPPED_STOCK` menjadikan perintah `GAGAL` tanpa mengurangi stok. Server otomatis: update `Perintah.status`, kurangi `Stok` kalau SUKSES, catat `TransaksiStok` jenis `PENGELUARAN`, buat `Notifikasi` |
 
 Simulator alat sendiri (skrip Python terpisah, **bukan** bagian backend ini) meniru perilaku di atas: poll `/device/heartbeat`, kalau dapat perintah → panggil `ambil` → delay beberapa detik (mensimulasikan proses fisik) → `mulai` → delay lagi → `log`.
 

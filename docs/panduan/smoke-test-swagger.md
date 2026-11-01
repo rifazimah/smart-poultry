@@ -1,7 +1,7 @@
 # Skenario Smoke Test via Swagger UI
 
 Tujuan: membuktikan alur inti MVP berjalan tanpa error 500 setelah perbaikan Fase 0 (K-1, K-2, K-3), dan
-mengonfirmasi temuan yang belum diperbaiki (mis. T-6). Waktu: ±30–45 menit. Acuan temuan: [03-review-kode](../analisis/03-review-kode.md).
+mengonfirmasi perilaku setelah perbaikan Fase 1. Waktu: ±30–45 menit. Acuan temuan: [03-review-kode](../analisis/03-review-kode.md).
 
 ## 0. Persiapan
 
@@ -84,7 +84,7 @@ Kandungan nutrisi per bahan — `PUT /bahan-pakan/{id}/nutrisi` (200, array hasi
 | 4.13 | `POST /wadah/{wadah1}/stok/koreksi` | `{"jumlah_baru":20000,"alasan":""}` | **422** `Alasan koreksi wajib diisi` (BR-34) |
 | 4.14 | `GET /kandang/{kandang}/stok` | — | 4 baris dengan nama bahan |
 
-> Langkah 4.9–4.12 sengaja dilakukan **sebelum** beri makan: baris `Stok` baru dibuat saat endpoint stok dipanggil (temuan T-6). Untuk mengonfirmasi T-6, ulangi skenario dengan wadah baru yang **tidak** diisi ulang dan lihat stoknya tidak berubah setelah langkah 9.
+> Sejak Fase 1, baris `Stok` dibuat otomatis bersama wadah (bernilai 0). Langkah 4.9–4.12 tetap perlu: tanpa isi ulang, `beri-makan` ditolak 409 karena stok tidak cukup.
 
 ## 5. Siklus (UC-06)
 
@@ -135,13 +135,14 @@ Endpoint `/device/*` memakai header, bukan JWT. Di Swagger, isi kolom **x-device
 | 8.4 | `GET /kandang/{kandang}` | — | `status_alat: ONLINE` |
 | 8.5 | `POST /kandang/{kandang}/perintah/beri-makan` | `{"formulasi_id":"<formulasi>"}` | 201, `status: PENDING` → `perintah` |
 | 8.6 | ulangi 8.5 | sama | 409 `Alat sedang memproses perintah lain` |
+| 8.6a | `POST /device/perintah/{perintah}/mulai` sebelum `ambil` | `{}` | 409 transisi tidak valid |
 | 8.7 | `POST /device/heartbeat` | `{"status":"ONLINE"}` | `perintah_pending.id` = `perintah` |
 | 8.8 | `POST /device/perintah/{perintah}/ambil` | `{}` | 200, `status: DIAMBIL` |
 | 8.9 | `GET /perintah/{perintah}` (JWT) | — | `status: DIAMBIL` |
 | 8.10 | `POST /device/perintah/{perintah}/mulai` | `{}` | 200, `status: BERJALAN` |
 | 8.11 | `POST /device/perintah/{perintah}/log` | `{"id_eksekusi_unik":"<uuid-baru>","berat_aktual":1250,"status":"SUKSES"}` | **201** (K-3: sebelumnya crash). Buat UUID bebas, mis. `3f1c2b7e-8a44-4d1e-9a31-5b6c0d9e7a10`; catat |
 | 8.12 | `GET /perintah/{perintah}` | — | `status: SUKSES`, `log_eksekusi` terisi |
-| 8.13 | ulangi 8.11 persis (UUID sama) | sama | Tidak membuat log ganda. Kontrak minta **200**; implementasi saat ini 201 (T-10) — catat sebagai temuan, bukan kegagalan |
+| 8.13 | ulangi 8.11 persis (UUID sama) | sama | **200** dengan log yang sama (bukan 201); stok tidak berkurang lagi |
 
 ## 9. Efek ke stok, notifikasi, riwayat
 
@@ -192,6 +193,6 @@ Salin tabel ini, isi PASS/FAIL, dan lampirkan JSON error bila ada 500:
 | 10 Selesai siklus (K-2) | | |
 | 11 Otorisasi | | |
 
-**Kriteria lulus Fase 0:** bagian 0–10 tanpa 500, dan hasil formulasi 6.1/6.2 `VALID`. Penyimpangan yang *diperkirakan* (bukan kegagalan): 8.13 mengembalikan 201 (T-10), infeasible tanpa rincian nutrisi (S-1), stok tak berubah bila wadah belum pernah disentuh endpoint stok (T-6).
+**Kriteria lulus Fase 0:** bagian 0–10 tanpa 500, dan hasil formulasi 6.1/6.2 `VALID`. Penyimpangan yang masih *diperkirakan* (bukan kegagalan): infeasible tanpa rincian nutrisi (S-1) dan `POST /formulasi` yang masih mempercayai preview klien (T-4). Pada bagian 11, `GET /users` kini hanya menampilkan Pekerja milik Pemilik yang login.
 
 **Bila menemukan 500:** lihat terminal uvicorn (traceback), catat endpoint + body + pesan, lalu kirim ke saya untuk diperbaiki.

@@ -100,3 +100,23 @@ smart-poultry/               ← monorepo root (git is here)
       main.py                → FastAPI entrypoint
     alembic/                 → schema migrations
 ```
+
+## Menjalankan Test
+
+Test memakai database terpisah `smart_poultry_test` pada server Postgres yang sama (atau set `TEST_DATABASE_URL`).
+Buat sekali:
+
+```bash
+docker exec smart-poultry-db psql -U admin -d postgres -c "CREATE DATABASE smart_poultry_test"
+```
+
+Lalu:
+
+```bash
+cd smart-poultry-backend
+pip install -r requirements-dev.txt
+pytest -q
+```
+
+Setiap sesi test menghapus schema `public` pada DB test, menjalankan `alembic upgrade head` dari nol, dan mengosongkan tabel antar test.
+Jangan arahkan `TEST_DATABASE_URL` ke database yang berisi data penting.
