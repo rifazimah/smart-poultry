@@ -2,7 +2,7 @@ import secrets
 import uuid
 from typing import Annotated, List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy import delete
 from sqlmodel import Session, select
 
@@ -23,6 +23,7 @@ from app.services.hapus import (
     tandai_formulasi_perlu_ditinjau, tolak_bila_dipakai, tolak_bila_wadah_pernah_dipakai,
 )
 from app.services.perintah import deteksi_offline
+from app.services.paginasi import Paginasi, terapkan
 from app.services.auth import get_current_user, get_current_pemilik
 
 router = APIRouter(tags=["Kandang & Alat"])
@@ -50,6 +51,8 @@ def create_kandang(
 def list_kandang(
     current_user: Annotated[User, Depends(get_current_user)],
     session: Annotated[Session, Depends(get_session)],
+    response: Response,
+    p: Annotated[Paginasi, Depends()],
 ):
     """
     List kandang.
@@ -57,8 +60,8 @@ def list_kandang(
     Jika Pekerja: kembalikan kandang yang ditugaskan kepadanya.
     """
     if current_user.role == PeranUser.PEMILIK:
-        statement = select(Kandang).where(Kandang.pemilik_id == current_user.id)
-        return session.exec(statement).all()
+        statement = select(Kandang).where(Kandang.pemilik_id == current_user.id).order_by(Kandang.nama, Kandang.id)
+        return terapkan(session, response, statement, p)
     else:
         # Pekerja
         statement = (
@@ -68,8 +71,9 @@ def list_kandang(
                 PenugasanKandang.user_id == current_user.id,
                 PenugasanKandang.status == StatusPenugasan.AKTIF
             )
+            .order_by(Kandang.nama, Kandang.id)
         )
-        return session.exec(statement).all()
+        return terapkan(session, response, statement, p)
 
 
 def _get_kandang_or_404(session: Session, kandang_id: uuid.UUID, user: User) -> Kandang:

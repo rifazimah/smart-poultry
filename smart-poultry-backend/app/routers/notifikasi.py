@@ -1,7 +1,7 @@
 import uuid
 from typing import Annotated, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlmodel import Session, select
 
 from app.database import get_session
@@ -10,6 +10,7 @@ from app.models.enums import StatusNotifikasi
 from app.models.operasional import Notifikasi
 from app.schemas.notifikasi import NotifikasiPublic
 from app.services.auth import get_current_user
+from app.services.paginasi import Paginasi, terapkan
 
 router = APIRouter(tags=["Notifikasi"])
 
@@ -18,14 +19,16 @@ router = APIRouter(tags=["Notifikasi"])
 def list_notifikasi(
     current_user: Annotated[User, Depends(get_current_user)],
     session: Annotated[Session, Depends(get_session)],
+    response: Response,
+    p: Annotated[Paginasi, Depends()],
     status: Optional[StatusNotifikasi] = None
 ):
     query = select(Notifikasi).where(Notifikasi.user_id == current_user.id)
     if status:
         query = query.where(Notifikasi.status == status)
-        
-    query = query.order_by(Notifikasi.dibuat_pada.desc())
-    return session.exec(query).all()
+
+    query = query.order_by(Notifikasi.dibuat_pada.desc(), Notifikasi.id)
+    return terapkan(session, response, query, p)
 
 
 @router.patch("/notifikasi/baca-semua", status_code=status.HTTP_204_NO_CONTENT)

@@ -1,7 +1,7 @@
 import uuid
 from typing import Annotated, List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlmodel import Session, select
 
 from app.database import get_session
@@ -14,6 +14,7 @@ from app.schemas.formulasi import (
     FormulasiLengkapPublic, FormulasiPublic
 )
 from app.services.auth import get_current_pemilik, get_current_user
+from app.services.paginasi import Paginasi, terapkan
 from app.services.formulasi import (
     hitung_formulasi_otomatis, hitung_formulasi_manual, FormulasiException
 )
@@ -71,15 +72,17 @@ def simpan_formulasi(
 def riwayat_formulasi(
     id: uuid.UUID,
     current_user: Annotated[User, Depends(get_current_user)],
-    session: Annotated[Session, Depends(get_session)]
+    session: Annotated[Session, Depends(get_session)],
+    response: Response,
+    p: Annotated[Paginasi, Depends()],
 ):
     _get_siklus_or_404(session, id, current_user)
-    
-    return session.exec(
-        select(Formulasi)
-        .where(Formulasi.siklus_id == id)
-        .order_by(Formulasi.dibuat_pada.desc())
-    ).all()
+
+    return terapkan(
+        session, response,
+        select(Formulasi).where(Formulasi.siklus_id == id).order_by(Formulasi.dibuat_pada.desc(), Formulasi.id),
+        p,
+    )
 
 
 @router.get("/formulasi/{id}", response_model=FormulasiLengkapPublic)

@@ -1,7 +1,7 @@
 import uuid
 from typing import Annotated, List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlmodel import Session, select
 
 from app.database import get_session
@@ -15,6 +15,7 @@ from app.schemas.stok import (
 from app.services.audit import catat_audit
 from app.services.auth import get_current_user
 from app.services.stok import get_or_create_stok
+from app.services.paginasi import Paginasi, terapkan
 from app.routers.kandang import _get_kandang_or_404
 
 router = APIRouter(tags=["Manajemen Stok"])
@@ -138,12 +139,14 @@ def koreksi_stok(
 def riwayat_transaksi_stok(
     id: uuid.UUID,
     current_user: Annotated[User, Depends(get_current_user)],
-    session: Annotated[Session, Depends(get_session)]
+    session: Annotated[Session, Depends(get_session)],
+    response: Response,
+    p: Annotated[Paginasi, Depends()],
 ):
     _get_wadah_and_stok_or_404(session, id, current_user)
-    
-    return session.exec(
-        select(TransaksiStok)
-        .where(TransaksiStok.wadah_id == id)
-        .order_by(TransaksiStok.dibuat_pada.desc())
-    ).all()
+
+    return terapkan(
+        session, response,
+        select(TransaksiStok).where(TransaksiStok.wadah_id == id).order_by(TransaksiStok.dibuat_pada.desc(), TransaksiStok.id),
+        p,
+    )
