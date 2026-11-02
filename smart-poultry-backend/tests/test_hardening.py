@@ -35,7 +35,8 @@ def test_production_menolak_jwt_secret_lemah(rahasia):
         Settings(_env_file=None, environment="production", jwt_secret=rahasia)
 
 
-def test_production_menolak_secret_bawaan_bila_tidak_diisi():
+def test_production_menolak_secret_bawaan_bila_tidak_diisi(monkeypatch):
+    monkeypatch.delenv("JWT_SECRET", raising=False)  # CI mengisinya lewat environment
     with pytest.raises(ValidationError, match="JWT_SECRET"):
         Settings(_env_file=None, environment="production")
 
@@ -45,13 +46,15 @@ def test_production_menerima_secret_kuat_dan_mematikan_sql_echo():
     assert s.sql_echo is False
 
 
-def test_development_menerima_secret_bawaan():
+def test_development_menerima_secret_bawaan(monkeypatch):
+    monkeypatch.delenv("JWT_SECRET", raising=False)
     s = Settings(_env_file=None, environment="development")
     assert s.jwt_secret and s.environment == "development"
 
 
 def test_environment_dari_variabel_lingkungan(monkeypatch):
     monkeypatch.setenv("ENVIRONMENT", "production")
+    monkeypatch.delenv("JWT_SECRET", raising=False)
     with pytest.raises(ValidationError):
         Settings(_env_file=None)
     monkeypatch.setenv("JWT_SECRET", SECRET_KUAT)
