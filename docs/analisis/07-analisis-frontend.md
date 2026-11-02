@@ -146,18 +146,20 @@ Dibuktikan dengan memeriksa OpenAPI (`main`, 76 operasi). Semuanya baca-saja ata
 
 Tidak diperlukan: WebSocket (polling sesuai arsitektur), refresh token (kedaluwarsa 24 jam; 401 → login ulang).
 
-## 9. Keputusan desain yang memerlukan jawaban tim
+## 9. Keputusan desain
 
-| # | Keputusan | Rekomendasi |
+**Diputuskan 2 November 2026** (jawaban pemilik proyek): F-1, F-2, F-3, F-4, F-5, dan F-8 mengikuti rekomendasi; cakupan awal = **potongan demo dulu** (5A + 5B + 5C + 5D + 5E, master data lewat seed/template). F-6 dan F-7 adalah usulan yang belum dikonfirmasi.
+
+| # | Keputusan | Rekomendasi / status |
 |---|---|---|
-| F-1 | JavaScript atau TypeScript | **TypeScript** (tipe dari OpenAPI mencegah selisih kontrak) |
-| F-2 | Pengambilan data | **TanStack Query** (polling & cache bawaan) |
-| F-3 | Komponen UI | Komponen sendiri di atas **Radix** (gaya shadcn/ui) |
-| F-4 | Identitas visual | Merek sendiri dengan token tema (usulan: hijau-kuning agri); tema merah acuan hanya bila tim menghendaki; **tanpa** logo Telkom/BRIN kecuali pemilik proyek meminta |
-| F-5 | Lokasi kode | `frontend/` di monorepo ini (satu PR dapat mengubah API dan UI; CI bersama) |
+| F-1 | JavaScript atau TypeScript | **DIPUTUSKAN: TypeScript** (tipe dari OpenAPI mencegah selisih kontrak) |
+| F-2 | Pengambilan data | **DIPUTUSKAN: TanStack Query** (polling & cache bawaan) |
+| F-3 | Komponen UI | **DIPUTUSKAN:** komponen sendiri di atas **Radix** (gaya shadcn/ui) |
+| F-4 | Identitas visual | **DIPUTUSKAN:** merek sendiri hijau-kuning agri dengan token tema; tanpa logo Telkom/BRIN |
+| F-5 | Lokasi kode | **DIPUTUSKAN:** `frontend/` di monorepo ini (satu PR dapat mengubah API dan UI; CI bersama) |
 | F-6 | Penyimpanan token | `localStorage` (seperti acuan; risiko XSS dikurangi dengan tanpa HTML mentah + CSP di Nginx). Alternatif cookie httpOnly menuntut perubahan backend (ditunda) |
 | F-7 | Prioritas ponsel | Layar Pekerja (beri makan, stok, populasi) **mobile-first**; layar Pemilik/master data desktop-first tetap responsif |
-| F-8 | Celah API A1–A5 | Setuju ditambahkan lebih dulu (P1) |
+| F-8 | Celah API A1–A5 | **DIPUTUSKAN:** ditambahkan lebih dulu (P1); A6–A7 menyusul bila dibutuhkan |
 
 ## 10. Rencana bertahap (Fase 5)
 
