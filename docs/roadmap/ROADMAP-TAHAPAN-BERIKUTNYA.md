@@ -94,6 +94,8 @@ Teknis: React + Vite + TypeScript, TanStack Query, generator tipe dari OpenAPI b
 **DoD:** skenario "Definisi selesai MVP" (PRD) dapat didemokan di UI.
 
 ## Fase 6 — Demo & finalisasi (±3 hari)
+
+> Keputusan 2 Nov 2026 (D-10): tiap anggota memakai database lokal. Bagian "deploy backend + Postgres managed" di bawah baru dikerjakan bila tim membutuhkan staging online bersama (rencana awal: Supabase untuk DB + Render/Railway untuk backend; perlu Dockerfile backend).
 - Deploy backend + Postgres managed (D-7), `alembic upgrade head`, seed demo, CORS untuk domain frontend.
 - Skrip & checklist demo (akun, data seed, urutan klik, rencana cadangan: rekaman layar, simulator lokal).
 - Latihan demo ≥2 kali; bekukan fitur 2 hari sebelum presentasi.
