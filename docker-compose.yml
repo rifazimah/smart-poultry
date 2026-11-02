@@ -45,11 +45,26 @@ services:
       DATABASE_URL: postgresql+psycopg://admin:popuri123@db:5432/smart_poultry
       JWT_SECRET: ${JWT_SECRET:-dev-only-ganti-di-production}
       ENVIRONMENT: ${ENVIRONMENT:-development}
+      # Origin frontend yang boleh memanggil API (daftar JSON). Tambahkan alamat publik frontend di server.
+      CORS_ORIGINS: ${CORS_ORIGINS:-["http://localhost:5173","http://localhost:3000","http://localhost:8080"]}
     ports:
       - "${BACKEND_PORT:-8000}:8000"
     depends_on:
       db:
         condition: service_healthy
+
+  # Frontend statis (Nginx) dalam container (opsional). Jalankan dengan:
+  #   docker compose --profile web up -d --build
+  # Alamat backend ditanam saat build: VITE_API_BASE_URL=http://localhost:8000 (origin saja). Panduan: docs/panduan/frontend.md
+  web:
+    profiles: ["web"]
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-8080}:80"
 
 volumes:
   smart_poultry_pgdata:

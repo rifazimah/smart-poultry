@@ -45,7 +45,7 @@ function stubDetail(tambahan: Parameters<typeof server.use> = []) {
     http.get(`${API}/kandang/${ID}/stok`, () =>
       HttpResponse.json([
         { id: "s1", wadah_id: "w1", nama_bahan: "Dedak", jumlah_estimasi: 5, ambang_menipis: 10 },
-        { id: "s2", wadah_id: "w2", nama_bahan: "Jagung", jumlah_estimasi: 50, ambang_menipis: 10 },
+        { id: "s2", wadah_id: "w2", nama_bahan: "Jagung", jumlah_estimasi: 20000, ambang_menipis: 10 },
       ]),
     ),
     http.get(`${API}/kandang/${ID}/siklus/aktif`, () =>
@@ -82,6 +82,9 @@ describe("detail kandang", () => {
     const wadah = await screen.findAllByText(/^Wadah \d$/);
     expect(wadah.map((e) => e.textContent)).toEqual(["Wadah 1", "Wadah 2"]);
     expect(await screen.findAllByText("Menipis")).toHaveLength(1);
+    // stok bersatuan gram di server; ditampilkan sebagai g atau kg
+    expect(await screen.findByText("5 g")).toBeInTheDocument();
+    expect(await screen.findByText("20 kg")).toBeInTheDocument();
     expect(await screen.findByText("Broiler")).toBeInTheDocument();
     expect(await screen.findByText("Starter")).toBeInTheDocument();
     expect(await screen.findByText(/Mortalitas/)).toBeInTheDocument();
@@ -121,7 +124,7 @@ describe("detail kandang", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Terjadi kesalahan di server");
     expect(await screen.findByText("Broiler")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Coba lagi" }));
-    expect(await screen.findByText("20 kg")).toBeInTheDocument();
+    expect(await screen.findByText("20 g")).toBeInTheDocument();
   });
 
   it("kartu di dashboard membuka detail kandang", async () => {
