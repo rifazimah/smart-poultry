@@ -1,0 +1,67 @@
+name: CI
+
+# Lint + migrasi + test backend pada setiap push dan Pull Request ke main.
+# Panduan membaca hasilnya: docs/panduan/operasional.md
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: popuri123
+          POSTGRES_DB: smart_poultry
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U admin -d smart_poultry"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    defaults:
+      run:
+        working-directory: smart-poultry-backend
+
+    env:
+      # Kredensial ini hanya untuk database sementara di runner CI.
+      DATABASE_URL: postgresql+psycopg://admin:popuri123@localhost:5432/smart_poultry
+      JWT_SECRET: ci-secret-hanya-untuk-pipeline-ci-0123456789
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: smart-poultry-backend/requirements*.txt
+
+      - name: Pasang dependency
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint (ruff)
+        run: ruff check .
+
+      - name: Migrasi dari database kosong dan deteksi drift model-migrasi
+        run: |
+          alembic upgrade head
+          test "$(alembic heads | wc -l)" = "1"
+          alembic check
+
+      - name: Test (pytest)
+        run: pytest -q
