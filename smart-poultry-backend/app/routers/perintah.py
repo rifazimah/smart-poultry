@@ -34,7 +34,7 @@ def beri_makan_manual(
     
     alat = session.exec(select(Alat).where(Alat.kandang_id == id)).first()
     if not alat:
-        raise HTTPException(status_code=400, detail="Kandang ini belum memiliki Alat IoT")
+        raise HTTPException(status_code=409, detail="Kandang ini belum memiliki Alat IoT")
         
     expire_perintah(session, alat)
     if deteksi_offline(session, alat) == StatusAlat.OFFLINE:
@@ -77,7 +77,7 @@ def stop_darurat(
     
     alat = session.exec(select(Alat).where(Alat.kandang_id == id)).first()
     if not alat:
-        raise HTTPException(status_code=400, detail="Kandang ini belum memiliki Alat IoT")
+        raise HTTPException(status_code=409, detail="Kandang ini belum memiliki Alat IoT")
 
     # Selalu boleh dikirim (walau alat offline); perintah yang sedang aktif dibatalkan.
     batalkan_perintah_aktif(session, alat)

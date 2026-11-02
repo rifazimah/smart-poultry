@@ -6,7 +6,7 @@ from sqlmodel import Session, select
 
 from app.database import get_session
 from app.models.akses import User
-from app.models.enums import StatusSiklus, JenisPerubahan, StatusFormulasi, JenisNotifikasi
+from app.models.enums import StatusSiklus, JenisPerubahan, StatusFormulasi, JenisNotifikasi, StatusKandang
 from app.services.notifikasi import notify
 from app.models.fisik import Kandang
 from app.models.operasional import SiklusKandang, PerubahanPopulasi, Formulasi
@@ -43,6 +43,8 @@ def create_siklus(
 ):
     """Memulai siklus baru di sebuah kandang. Ditolak jika masih ada siklus aktif."""
     kandang = _get_kandang_or_404(session, id, current_user)
+    if kandang.status != StatusKandang.AKTIF:
+        raise HTTPException(status_code=409, detail="Kandang NONAKTIF; aktifkan dulu sebelum memulai siklus")
     
     # Cek apakah ada siklus aktif
     active_siklus = session.exec(
@@ -111,7 +113,7 @@ def update_fase_siklus(
     siklus = _get_siklus_or_404(session, id, current_user)
     
     if siklus.status != StatusSiklus.AKTIF:
-        raise HTTPException(status_code=400, detail="Siklus sudah selesai")
+        raise HTTPException(status_code=409, detail="Siklus sudah selesai")
         
     # Validasi fase baru
     fase_baru = session.get(Fase, fase_update.fase_id)
@@ -152,8 +154,19 @@ def catat_perubahan_populasi(
     siklus = _get_siklus_or_404(session, id, current_user)
     
     if siklus.status != StatusSiklus.AKTIF:
-        raise HTTPException(status_code=400, detail="Siklus sudah selesai")
+        raise HTTPException(status_code=409, detail="Siklus sudah selesai")
         
+    # Hitung populasi baru dan validasi sebelum mengubah objek apa pun
+    if data_in.jenis == JenisPerubahan.PENAMBAHAN:
+        jumlah_baru = siklus.jumlah_ayam + data_in.jumlah
+    else:  # MORTALITAS / PANEN
+        jumlah_baru = siklus.jumlah_ayam - data_in.jumlah
+    if jumlah_baru < 0:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Jumlah ayam tidak bisa kurang dari 0 (populasi saat ini {siklus.jumlah_ayam})",
+        )
+
     perubahan = PerubahanPopulasi(
         siklus_id=id,
         jenis=data_in.jenis,
@@ -162,16 +175,7 @@ def catat_perubahan_populasi(
         catatan=data_in.catatan
     )
     session.add(perubahan)
-    
-    # Update populasi total di siklus
-    if data_in.jenis in [JenisPerubahan.MORTALITAS, JenisPerubahan.PANEN]:
-        siklus.jumlah_ayam -= data_in.jumlah
-    elif data_in.jenis == JenisPerubahan.PENAMBAHAN:
-        siklus.jumlah_ayam += data_in.jumlah
-        
-    if siklus.jumlah_ayam < 0:
-        raise HTTPException(status_code=400, detail="Jumlah ayam tidak bisa kurang dari 0")
-        
+    siklus.jumlah_ayam = jumlah_baru
     session.add(siklus)
     session.commit()
     session.refresh(perubahan)
@@ -189,7 +193,7 @@ def akhiri_siklus(
     siklus = _get_siklus_or_404(session, id, current_user)
     
     if siklus.status != StatusSiklus.AKTIF:
-        raise HTTPException(status_code=400, detail="Siklus sudah selesai")
+        raise HTTPException(status_code=409, detail="Siklus sudah selesai")
         
     siklus.status = StatusSiklus.SELESAI
     session.add(siklus)
@@ -223,7 +227,7 @@ def koreksi_siklus(
     """
     siklus = _get_siklus_or_404(session, id, current_pemilik)
     if siklus.status != StatusSiklus.AKTIF:
-        raise HTTPException(status_code=400, detail="Siklus sudah selesai")
+        raise HTTPException(status_code=409, detail="Siklus sudah selesai")
 
     perubahan = data_in.model_dump(exclude_unset=True, exclude_none=True)
     if not perubahan:
@@ -264,7 +268,7 @@ def hapus_perubahan_populasi(
     """Hapus catatan populasi yang salah input; efeknya pada jumlah ayam dibalik (Pemilik, siklus aktif)."""
     siklus = _get_siklus_or_404(session, id, current_pemilik)
     if siklus.status != StatusSiklus.AKTIF:
-        raise HTTPException(status_code=400, detail="Siklus sudah selesai")
+        raise HTTPException(status_code=409, detail="Siklus sudah selesai")
 
     perubahan = session.get(PerubahanPopulasi, populasi_id)
     if not perubahan or perubahan.siklus_id != siklus.id:

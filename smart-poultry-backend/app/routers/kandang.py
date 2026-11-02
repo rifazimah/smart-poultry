@@ -209,7 +209,7 @@ def register_alat(
     # Cek apakah sudah ada alat (karena 1 kandang = max 1 alat di skema kita, unique index)
     existing_alat = session.exec(select(Alat).where(Alat.kandang_id == id)).first()
     if existing_alat:
-        raise HTTPException(status_code=400, detail="Kandang ini sudah memiliki Alat IoT")
+        raise HTTPException(status_code=409, detail="Kandang ini sudah memiliki Alat IoT")
         
     new_token = secrets.token_hex(32)
     alat = Alat(
@@ -265,7 +265,7 @@ def create_wadah(
         select(Wadah).where(Wadah.alat_id == id, Wadah.nomor_wadah == wadah_in.nomor_wadah)
     ).first()
     if existing_wadah:
-        raise HTTPException(status_code=400, detail=f"Wadah nomor {wadah_in.nomor_wadah} sudah ada")
+        raise HTTPException(status_code=409, detail=f"Wadah nomor {wadah_in.nomor_wadah} sudah ada")
 
     if wadah_in.bahan_pakan_id is not None:
         get_entity_or_404(session, BahanPakan, wadah_in.bahan_pakan_id, current_pemilik.id)

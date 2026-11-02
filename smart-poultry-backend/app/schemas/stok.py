@@ -1,16 +1,16 @@
 import uuid
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from app.models.enums import JenisTransaksi
 
 
 class IsiUlangStokRequest(BaseModel):
-    jumlah: float
+    jumlah: float = Field(gt=0)
 
 
 class KoreksiStokRequest(BaseModel):
-    jumlah_baru: float
+    jumlah_baru: float = Field(ge=0)
     alasan: str
 
 

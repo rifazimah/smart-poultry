@@ -81,8 +81,6 @@ def isi_ulang_stok(
 ):
     wadah, stok = _get_wadah_and_stok_or_404(session, id, current_user)
     
-    if req.jumlah <= 0:
-        raise HTTPException(status_code=400, detail="Jumlah isi ulang harus lebih dari 0")
         
     stok.jumlah_estimasi += req.jumlah
     session.add(stok)
@@ -110,8 +108,6 @@ def koreksi_stok(
     if not req.alasan or not req.alasan.strip():
         raise HTTPException(status_code=422, detail="Alasan koreksi wajib diisi")
         
-    if req.jumlah_baru < 0:
-        raise HTTPException(status_code=400, detail="Jumlah baru tidak boleh negatif")
         
     wadah, stok = _get_wadah_and_stok_or_404(session, id, current_user)
     
