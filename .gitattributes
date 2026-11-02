@@ -1,0 +1,2 @@
+# Skrip shell harus selalu LF agar berjalan di container Linux (meski di-clone di Windows).
+*.sh text eol=lf

@@ -1,7 +1,14 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from sqlalchemy import text
 
 from .config import settings
+from .database import engine
+
+logger = logging.getLogger("smart_poultry")
 
 app = FastAPI(
     title="Smart Poultry API",
@@ -23,6 +30,18 @@ app.add_middleware(
 def health():
     """Cek cepat: server jalan & bisa dipanggil. Belum menyentuh database."""
     return {"status": "ok"}
+
+
+@app.get("/health/db")
+def health_db():
+    """Cek kesiapan: server dapat menjalankan query ke database. 503 bila database tidak terjangkau."""
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+    except Exception:
+        logger.exception("Health check database gagal")
+        return JSONResponse(status_code=503, content={"status": "error", "database": "tidak terjangkau"})
+    return {"status": "ok", "database": "ok"}
 
 
 from .routers import auth, users, kandang, masterdata, siklus, formulasi, perintah, device, stok, notifikasi, template  # noqa: E402
