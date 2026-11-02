@@ -9,7 +9,7 @@ from app.models.enums import StatusSiklus, JenisPerubahan
 class SiklusKandangCreate(BaseModel):
     jenis_ayam_id: uuid.UUID
     fase_id: uuid.UUID
-    jumlah_ayam: int
+    jumlah_ayam: int = Field(gt=0)
     tanggal_mulai: date
 
 
@@ -39,7 +39,7 @@ class SiklusKandangPublic(BaseModel):
 # --- PERUBAHAN POPULASI ---
 class PerubahanPopulasiCreate(BaseModel):
     jenis: JenisPerubahan
-    jumlah: int
+    jumlah: int = Field(gt=0)
     tanggal: date
     catatan: Optional[str] = None
 

@@ -1,7 +1,7 @@
 import uuid
 from typing import Annotated, List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlmodel import Session, select
 
 from app.database import get_session
@@ -24,6 +24,7 @@ from app.models.operasional import FormulasiItem, FormulasiNutrisiHasil, SiklusK
 from app.services.akses import get_entity_or_404
 from app.services.audit import catat_audit
 from app.services.hapus import tolak_bila_dipakai
+from app.services.paginasi import Paginasi, terapkan
 from app.services.auth import get_current_pemilik
 
 router = APIRouter(tags=["Master Data"])
@@ -46,9 +47,12 @@ def create_jenis_ayam(
 @router.get("/jenis-ayam", response_model=List[JenisAyamPublic])
 def list_jenis_ayam(
     current_pemilik: Annotated[User, Depends(get_current_pemilik)],
-    session: Annotated[Session, Depends(get_session)]
+    session: Annotated[Session, Depends(get_session)],
+    response: Response,
+    p: Annotated[Paginasi, Depends()],
 ):
-    return session.exec(select(JenisAyam).where(JenisAyam.pemilik_id == current_pemilik.id)).all()
+    query = select(JenisAyam).where(JenisAyam.pemilik_id == current_pemilik.id).order_by(JenisAyam.nama, JenisAyam.id)
+    return terapkan(session, response, query, p)
 
 
 @router.get("/jenis-ayam/{id}", response_model=JenisAyamPublic)
@@ -112,10 +116,13 @@ def create_fase(
 def list_fase(
     id: uuid.UUID,
     current_pemilik: Annotated[User, Depends(get_current_pemilik)],
-    session: Annotated[Session, Depends(get_session)]
+    session: Annotated[Session, Depends(get_session)],
+    response: Response,
+    p: Annotated[Paginasi, Depends()],
 ):
     get_entity_or_404(session, JenisAyam, id, current_pemilik.id)
-    return session.exec(select(Fase).where(Fase.jenis_ayam_id == id)).all()
+    query = select(Fase).where(Fase.jenis_ayam_id == id).order_by(Fase.umur_min_hari, Fase.id)
+    return terapkan(session, response, query, p)
 
 
 @router.get("/fase/{id}", response_model=FasePublic)
@@ -249,9 +256,12 @@ def create_nutrisi(
 @router.get("/nutrisi", response_model=List[NutrisiPublic])
 def list_nutrisi(
     current_pemilik: Annotated[User, Depends(get_current_pemilik)],
-    session: Annotated[Session, Depends(get_session)]
+    session: Annotated[Session, Depends(get_session)],
+    response: Response,
+    p: Annotated[Paginasi, Depends()],
 ):
-    return session.exec(select(Nutrisi).where(Nutrisi.pemilik_id == current_pemilik.id)).all()
+    query = select(Nutrisi).where(Nutrisi.pemilik_id == current_pemilik.id).order_by(Nutrisi.nama, Nutrisi.id)
+    return terapkan(session, response, query, p)
 
 
 @router.get("/nutrisi/{id}", response_model=NutrisiPublic)
@@ -314,9 +324,12 @@ def create_bahan_pakan(
 @router.get("/bahan-pakan", response_model=List[BahanPakanPublic])
 def list_bahan_pakan(
     current_pemilik: Annotated[User, Depends(get_current_pemilik)],
-    session: Annotated[Session, Depends(get_session)]
+    session: Annotated[Session, Depends(get_session)],
+    response: Response,
+    p: Annotated[Paginasi, Depends()],
 ):
-    return session.exec(select(BahanPakan).where(BahanPakan.pemilik_id == current_pemilik.id)).all()
+    query = select(BahanPakan).where(BahanPakan.pemilik_id == current_pemilik.id).order_by(BahanPakan.nama, BahanPakan.id)
+    return terapkan(session, response, query, p)
 
 
 @router.get("/bahan-pakan/{id}", response_model=BahanPakanPublic)

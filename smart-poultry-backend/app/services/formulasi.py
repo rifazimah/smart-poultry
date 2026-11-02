@@ -29,14 +29,14 @@ class FormulasiException(Exception):
 def _get_alat_and_bahan(session: Session, kandang_id: uuid.UUID):
     alat = session.exec(select(Alat).where(Alat.kandang_id == kandang_id)).first()
     if not alat:
-        raise FormulasiException("Kandang belum memiliki Alat IoT", 400)
+        raise FormulasiException("Kandang belum memiliki Alat IoT", 409)
 
     wadah_list = session.exec(
         select(Wadah).where(Wadah.alat_id == alat.id, Wadah.bahan_pakan_id != None)
     ).all()
     
     if not wadah_list:
-        raise FormulasiException("Tidak ada bahan pakan yang terpasang di wadah", 400)
+        raise FormulasiException("Tidak ada bahan pakan yang terpasang di wadah", 409)
 
     bahan_ids = [w.bahan_pakan_id for w in wadah_list]
     bahan_list = session.exec(select(BahanPakan).where(BahanPakan.id.in_(bahan_ids))).all()
@@ -49,13 +49,13 @@ def _get_kebutuhan_and_standar(session: Session, fase_id: uuid.UUID):
         select(KebutuhanNutrisiFase).where(KebutuhanNutrisiFase.fase_id == fase_id)
     ).all()
     if not kebutuhan:
-        raise FormulasiException("Kebutuhan nutrisi untuk fase ini belum diatur", 400)
+        raise FormulasiException("Kebutuhan nutrisi untuk fase ini belum diatur", 409)
         
     standar = session.exec(
         select(StandarKonsumsi).where(StandarKonsumsi.fase_id == fase_id)
     ).first()
     if not standar:
-        raise FormulasiException("Standar konsumsi untuk fase ini belum diatur", 400)
+        raise FormulasiException("Standar konsumsi untuk fase ini belum diatur", 409)
         
     return kebutuhan, standar
 
@@ -306,7 +306,7 @@ def simpan_formulasi_service(
     # Bahan harus masih terpasang di wadah alat (409 bila dilepas sejak preview dibuat)
     alat = session.exec(select(Alat).where(Alat.kandang_id == siklus.kandang_id)).first()
     if not alat:
-        raise FormulasiException("Kandang tidak memiliki alat IoT", 400)
+        raise FormulasiException("Kandang tidak memiliki alat IoT", 409)
     wadah_list = session.exec(select(Wadah).where(Wadah.alat_id == alat.id)).all()
     bahan_terpasang = {w.bahan_pakan_id for w in wadah_list if w.bahan_pakan_id is not None}
     for item in preview.item:

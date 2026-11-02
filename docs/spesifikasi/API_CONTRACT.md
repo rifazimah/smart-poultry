@@ -13,15 +13,16 @@ endpoint untuk **simulator alat**. Tidak ada endpoint jadwal/pengajuan
 - Body & response: JSON. Semua `id` adalah UUID string.
 - Semua angka uang: `number` (desimal), dikirim sebagai string di JSON kalau presisi jadi masalah — untuk MVP cukup `number` biasa.
 - Error: `{"detail": "pesan"}` dengan status code HTTP standar (400 validasi, 401 tidak terautentikasi, 403 tidak berizin, 404 tidak ditemukan, 409 konflik state, 422 validasi body).
-- Daftar (list) mendukung `?skip=0&limit=20` (default `limit=20`, maksimum `100`).
+- Daftar (list) mendukung `?skip=0&limit=20` (default `limit=20`, maksimum `100`; di luar rentang → `422`) dengan urutan tetap. Total seluruh data (tanpa paginasi) dikirim di header **`X-Total-Count`** (diekspos untuk CORS). Berlaku untuk: jenis-ayam, fase per jenis, nutrisi, bahan-pakan, kandang, users, notifikasi, riwayat formulasi, riwayat perintah, transaksi stok. Tidak dipaginasi karena kecil/terbatas: `GET /kandang/{id}/stok`, `GET /template/jenis-ayam`.
 - Endpoint yang mengubah data milik Pekerja/Pemilik mengecek kepemilikan/penugasan kandang di level service, bukan hanya role — lihat kolom "Otorisasi" tiap endpoint.
 
 ## Ringkasan status code khusus
 
 | Situasi | Status |
 |---|---|
-| Validasi gagal (body salah bentuk) | 422 |
-| Aturan bisnis gagal (mis. formulasi tidak feasible, alat offline) | 409 |
+| Validasi gagal (body salah bentuk/nilai, mis. `jumlah` ≤ 0, `limit` > 100) | 422 |
+| Nilai request tidak valid terhadap aturan (mis. total proporsi ≠ 1, fase bukan milik jenis ayam, tidak ada field yang diubah) | 400 |
+| Bertentangan dengan keadaan data (siklus sudah selesai, alat/wadah sudah ada, kandang belum punya alat, alat offline, stok tidak cukup, masih dipakai saat dihapus, kandang NONAKTIF) | 409 |
 | Berhasil membuat resource | 201 |
 | Berhasil, tidak ada body balik | 204 |
 
@@ -72,6 +73,7 @@ endpoint untuk **simulator alat**. Tidak ada endpoint jadwal/pengajuan
 | POST | `/alat/{id}/rotasi-token` | `{}` | `{device_token}` | Pemilik |
 | POST | `/alat/{id}/wadah` | `{nomor_wadah, bahan_pakan_id?}` | `Wadah` (201) | Pemilik |
 | PATCH | `/wadah/{id}` | `{bahan_pakan_id}` | `Wadah` | Pemilik — memetakan ulang wadah ke bahan pakan |
+| GET | `/kandang/{id}/alat` | — | `AlatDetail \| null` | Pemilik pemilik / Pekerja ditugaskan. Alat + `wadah[]` (`nomor_wadah`, `bahan_pakan_id`, `nama_bahan`, `jumlah_stok`, `ambang_menipis`). Status memperhitungkan heartbeat kedaluwarsa; **tanpa** `device_token`. `null` bila belum ada alat |
 
 ## 4. Master Data (UC-05)
 
@@ -102,8 +104,11 @@ Masing-masing resource mendukung `POST` (create, 201), `GET` (list, dengan `?jen
 
 | Method | Path | Body | Response |
 |---|---|---|---|
-| GET | `/template/jenis-ayam` | — | Daftar template bawaan (read-only, tidak terikat `pemilik_id`) |
-| POST | `/template/jenis-ayam/{template_id}/salin` | `{}` | `JenisAyam` (201) — menyalin jenis ayam + fase + kebutuhan nutrisi + standar konsumsi ke akun Pemilik yang login |
+| GET | `/template/jenis-ayam` | — | `TemplateJenisAyam[]` (`id`, `nama`, `deskripsi`, `fase[]` dengan `kebutuhan[]` dan `standar_konsumsi`) — data statis bawaan (`broiler`, `petelur`), read-only, tidak terikat `pemilik_id`. **Hanya Pemilik** |
+| POST | `/template/jenis-ayam/{template_id}/salin` | `{}` atau `{"nama": "..."}` (opsional) | `JenisAyam` (201) — menyalin jenis ayam + fase + kebutuhan nutrisi + standar konsumsi ke akun Pemilik yang login |
+
+Aturan salin: nutrisi dicocokkan berdasarkan **nama** (tanpa membedakan huruf) dengan nutrisi milik Pemilik; yang belum ada dibuat otomatis (`Protein`, `Energi Metabolis`, `Kalsium`, `Fosfor Tersedia`, `Lisin`). Nama jenis ayam yang sudah ada → `409` (kirim `nama` lain). Template tidak dikenal → `404`. Dicatat di `AuditLog` (`SALIN_TEMPLATE`).
+**Nilai template hanya contoh berdasarkan kisaran umum, bukan rekomendasi gizi resmi** — Pemilik wajib menyesuaikannya sebelum dipakai.
 
 ## 5. Siklus & Populasi (UC-06)
 
@@ -141,7 +146,7 @@ Masing-masing resource mendukung `POST` (create, 201), `GET` (list, dengan `?jen
 | POST | `/siklus/{id}/formulasi/manual` | `{item: [{bahan_pakan_id, proporsi}]}` | `FormulasiPreview` — dihitung & divalidasi, **belum tersimpan** |
 | POST | `/formulasi` | `FormulasiPreview` (hasil salah satu endpoint di atas) | `Formulasi` (201) — baru disimpan permanen sebagai snapshot di sini |
 | GET | `/siklus/{id}/formulasi` | — | `Formulasi[]` (riwayat snapshot, terbaru dulu) |
-| GET | `/formulasi/{id}` | — | `Formulasi` lengkap dengan `item[]` dan `nutrisi_hasil[]` |
+| GET | `/formulasi/{id}` | — | `Formulasi` lengkap dengan `item[]` (memuat `nama_bahan`) dan `nutrisi_hasil[]` (memuat `nama_nutrisi`, `satuan`) |
 
 **`FormulasiPreview` (bentuk response, bukan tabel):**
 ```json

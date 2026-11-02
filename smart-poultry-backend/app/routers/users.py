@@ -1,7 +1,7 @@
 import uuid
 from typing import Annotated, List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlmodel import Session, select
 
 from app.database import get_session
@@ -17,6 +17,7 @@ from app.schemas.user import (
 from app.routers.kandang import _get_kandang_or_404
 from app.services.audit import catat_audit
 from app.services.auth import get_current_pemilik, get_password_hash
+from app.services.paginasi import Paginasi, terapkan
 
 # Kita buat 2 prefix yang berbeda sesuai API Contract
 router = APIRouter(tags=["User & Penugasan"])
@@ -73,14 +74,15 @@ def create_user(
 def get_users(
     current_pemilik: Annotated[User, Depends(get_current_pemilik)],
     session: Annotated[Session, Depends(get_session)],
+    response: Response,
+    p: Annotated[Paginasi, Depends()],
 ):
     """Mendapatkan daftar pekerja (hanya Pemilik)."""
-    return session.exec(
-        select(User).where(
-            User.role == PeranUser.PEKERJA,
-            User.pemilik_id == current_pemilik.id,
-        )
-    ).all()
+    query = select(User).where(
+        User.role == PeranUser.PEKERJA,
+        User.pemilik_id == current_pemilik.id,
+    ).order_by(User.nama, User.id)
+    return terapkan(session, response, query, p)
 
 
 @router.patch("/users/{id}/status", response_model=UserPublic)

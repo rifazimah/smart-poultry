@@ -128,7 +128,7 @@ def test_hapus_populasi_siklus_selesai_atau_tidak_ada(client, pemilik, setup):
     p = catat(client, pemilik, k.siklus_id, "MORTALITAS", 1)
     assert hapus(client, pemilik, f"/siklus/{k.siklus_id}/populasi/{uuid.uuid4()}").status_code == 404
     post(client, pemilik, f"/siklus/{k.siklus_id}/selesai")
-    assert hapus(client, pemilik, f"/siklus/{k.siklus_id}/populasi/{p['id']}").status_code == 400
+    assert hapus(client, pemilik, f"/siklus/{k.siklus_id}/populasi/{p['id']}").status_code == 409
 
 
 def test_hapus_populasi_hanya_pemilik_yang_berhak(client, pemilik, pemilik_lain, setup):
@@ -170,7 +170,7 @@ def test_koreksi_siklus_validasi(client, pemilik, setup):
     assert client.patch(url, json={}, headers=pemilik).status_code == 400
     assert client.patch(url, json={"jumlah_ayam": -1}, headers=pemilik).status_code == 422
     post(client, pemilik, f"/siklus/{k.siklus_id}/selesai")
-    assert client.patch(url, json={"jumlah_ayam": 5}, headers=pemilik).status_code == 400
+    assert client.patch(url, json={"jumlah_ayam": 5}, headers=pemilik).status_code == 409
 
 
 def test_koreksi_siklus_hanya_pemilik_sendiri(client, pemilik, pemilik_lain, setup):

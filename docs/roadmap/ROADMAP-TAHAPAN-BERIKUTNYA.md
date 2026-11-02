@@ -54,6 +54,8 @@ Tujuan: alur inti tidak crash.
 **Progres (1 Nov 2026, branch `fitur/fase-1-logika-inti`):** selesai — 1.1 (tenant isolation, `User.pemilik_id`), 1.2 (stok otomatis + backfill), 1.3 (validasi beri makan, stok cukup → 409), 1.4 (state machine, lazy-timeout, alat OFFLINE, stop darurat), 1.5 (idempotensi log 200/201, SKIPPED_STOCK), 1.7 (notifikasi ke Pemilik + pekerja), 1.8 (AuditLog). **1.6 (T-4) selesai.** Belum: 1.9 (diagnosis infeasible, S-1). Tambahan di luar rencana awal: DELETE aman + koreksi siklus (P1 dan P2, lihat [analisis/06](../analisis/06-analisis-endpoint-delete.md)). Test otomatis: 46 test lulus (`pytest`, DB `smart_poultry_test`).
 
 ## Fase 2 — Kelengkapan kontrak (±3 hari)
+
+> ✅ **Selesai (2 Nov 2026):** 2.1 template, 2.2 paginasi, 2.3 `GET /kandang/{id}/alat` + nama di formulasi, 2.4 hapus aman (P1/P2), 2.5 validasi & konsistensi kode error, 2.6 kontrak diperbarui. Skenario uji manual: [smoke-test-fase-2.md](../panduan/smoke-test-fase-2.md).
 | Task | Rincian |
 |---|---|
 | 2.1 Template jenis ayam (BR-13) | `GET /template/jenis-ayam`, `POST …/{id}/salin`; sumber JSON statis (D-6) |
