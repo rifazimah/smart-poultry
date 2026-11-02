@@ -1,13 +1,14 @@
 import uuid
-from typing import Annotated, Optional
+from typing import Annotated, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlmodel import Session, select
 
 from app.database import get_session
 from app.models.akses import User
 from app.models.enums import StatusSiklus, JenisPerubahan, StatusFormulasi, JenisNotifikasi, StatusKandang
 from app.services.notifikasi import notify
+from app.services.paginasi import Paginasi, terapkan
 from app.models.operasional import SiklusKandang, PerubahanPopulasi, Formulasi
 from app.models.masterdata import JenisAyam, Fase
 from app.schemas.operasional import (
@@ -321,3 +322,21 @@ def hapus_siklus(
         session.delete(f)  # item & hasil nutrisi ikut terhapus
     session.delete(siklus)  # catatan populasi ikut terhapus
     session.commit()
+
+
+@router.get("/siklus/{id}/populasi", response_model=List[PerubahanPopulasiPublic])
+def list_perubahan_populasi(
+    id: uuid.UUID,
+    current_user: Annotated[User, Depends(get_current_user)],
+    session: Annotated[Session, Depends(get_session)],
+    response: Response,
+    p: Annotated[Paginasi, Depends()],
+):
+    """Riwayat catatan populasi siklus (tanggal terbaru dulu), berpaginasi."""
+    _get_siklus_or_404(session, id, current_user)
+    query = (
+        select(PerubahanPopulasi)
+        .where(PerubahanPopulasi.siklus_id == id)
+        .order_by(PerubahanPopulasi.tanggal.desc(), PerubahanPopulasi.id)
+    )
+    return terapkan(session, response, query, p)

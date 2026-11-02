@@ -1,0 +1,7195 @@
+{
+  "components": {
+    "schemas": {
+      "AlatDetailPublic": {
+        "description": "Alat + wadah + bahan + stok untuk layar kandang. Tidak memuat device_token.",
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kandang_id": {
+            "format": "uuid",
+            "title": "Kandang Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusAlat"
+          },
+          "versi_jadwal_aktif": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Versi Jadwal Aktif"
+          },
+          "wadah": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/WadahDetailPublic"
+            },
+            "title": "Wadah",
+            "type": "array"
+          },
+          "waktu_terakhir_sinkron": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Waktu Terakhir Sinkron"
+          }
+        },
+        "required": [
+          "id",
+          "kandang_id",
+          "status"
+        ],
+        "title": "AlatDetailPublic",
+        "type": "object"
+      },
+      "AlatWithToken": {
+        "properties": {
+          "device_token": {
+            "title": "Device Token",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kandang_id": {
+            "format": "uuid",
+            "title": "Kandang Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusAlat"
+          },
+          "versi_jadwal_aktif": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Versi Jadwal Aktif"
+          },
+          "waktu_terakhir_sinkron": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Waktu Terakhir Sinkron"
+          }
+        },
+        "required": [
+          "id",
+          "kandang_id",
+          "status",
+          "device_token"
+        ],
+        "title": "AlatWithToken",
+        "type": "object"
+      },
+      "BahanPakanCreate": {
+        "properties": {
+          "batas_maksimum": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batas Maksimum"
+          },
+          "harga": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Harga"
+          },
+          "nama": {
+            "title": "Nama",
+            "type": "string"
+          }
+        },
+        "required": [
+          "nama"
+        ],
+        "title": "BahanPakanCreate",
+        "type": "object"
+      },
+      "BahanPakanPublic": {
+        "properties": {
+          "batas_maksimum": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batas Maksimum"
+          },
+          "harga": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Harga"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "nama": {
+            "title": "Nama",
+            "type": "string"
+          },
+          "pemilik_id": {
+            "format": "uuid",
+            "title": "Pemilik Id",
+            "type": "string"
+          },
+          "status_sistem": {
+            "$ref": "#/components/schemas/StatusBahan"
+          }
+        },
+        "required": [
+          "id",
+          "pemilik_id",
+          "nama",
+          "status_sistem"
+        ],
+        "title": "BahanPakanPublic",
+        "type": "object"
+      },
+      "BahanPakanUpdate": {
+        "properties": {
+          "batas_maksimum": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batas Maksimum"
+          },
+          "harga": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Harga"
+          },
+          "nama": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nama"
+          },
+          "status_sistem": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StatusBahan"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "BahanPakanUpdate",
+        "type": "object"
+      },
+      "DeviceConfig": {
+        "properties": {
+          "heartbeat_interval_seconds": {
+            "title": "Heartbeat Interval Seconds",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "heartbeat_interval_seconds"
+        ],
+        "title": "DeviceConfig",
+        "type": "object"
+      },
+      "DeviceHeartbeatRequest": {
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/StatusAlat"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "DeviceHeartbeatRequest",
+        "type": "object"
+      },
+      "DeviceHeartbeatResponse": {
+        "properties": {
+          "config": {
+            "$ref": "#/components/schemas/DeviceConfig"
+          },
+          "perintah_pending": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PerintahPublic"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "perintah_pending",
+          "config"
+        ],
+        "title": "DeviceHeartbeatResponse",
+        "type": "object"
+      },
+      "DeviceLogRequest": {
+        "properties": {
+          "berat_aktual": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Berat Aktual"
+          },
+          "id_eksekusi_unik": {
+            "format": "uuid",
+            "title": "Id Eksekusi Unik",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusEksekusi"
+          }
+        },
+        "required": [
+          "id_eksekusi_unik",
+          "status"
+        ],
+        "title": "DeviceLogRequest",
+        "type": "object"
+      },
+      "FaseCreate": {
+        "properties": {
+          "nama": {
+            "title": "Nama",
+            "type": "string"
+          },
+          "umur_max_hari": {
+            "title": "Umur Max Hari",
+            "type": "integer"
+          },
+          "umur_min_hari": {
+            "title": "Umur Min Hari",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "nama",
+          "umur_min_hari",
+          "umur_max_hari"
+        ],
+        "title": "FaseCreate",
+        "type": "object"
+      },
+      "FasePublic": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "jenis_ayam_id": {
+            "format": "uuid",
+            "title": "Jenis Ayam Id",
+            "type": "string"
+          },
+          "nama": {
+            "title": "Nama",
+            "type": "string"
+          },
+          "umur_max_hari": {
+            "title": "Umur Max Hari",
+            "type": "integer"
+          },
+          "umur_min_hari": {
+            "title": "Umur Min Hari",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "jenis_ayam_id",
+          "nama",
+          "umur_min_hari",
+          "umur_max_hari"
+        ],
+        "title": "FasePublic",
+        "type": "object"
+      },
+      "FaseUpdate": {
+        "properties": {
+          "nama": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nama"
+          },
+          "umur_max_hari": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Umur Max Hari"
+          },
+          "umur_min_hari": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Umur Min Hari"
+          }
+        },
+        "title": "FaseUpdate",
+        "type": "object"
+      },
+      "FormulasiItemInput": {
+        "properties": {
+          "bahan_pakan_id": {
+            "format": "uuid",
+            "title": "Bahan Pakan Id",
+            "type": "string"
+          },
+          "proporsi": {
+            "title": "Proporsi",
+            "type": "number"
+          }
+        },
+        "required": [
+          "bahan_pakan_id",
+          "proporsi"
+        ],
+        "title": "FormulasiItemInput",
+        "type": "object"
+      },
+      "FormulasiItemOutput": {
+        "properties": {
+          "bahan_pakan_id": {
+            "format": "uuid",
+            "title": "Bahan Pakan Id",
+            "type": "string"
+          },
+          "berat_per_sesi": {
+            "title": "Berat Per Sesi",
+            "type": "number"
+          },
+          "nama_bahan": {
+            "title": "Nama Bahan",
+            "type": "string"
+          },
+          "proporsi": {
+            "title": "Proporsi",
+            "type": "number"
+          }
+        },
+        "required": [
+          "bahan_pakan_id",
+          "nama_bahan",
+          "proporsi",
+          "berat_per_sesi"
+        ],
+        "title": "FormulasiItemOutput",
+        "type": "object"
+      },
+      "FormulasiItemPublic": {
+        "properties": {
+          "bahan_pakan_id": {
+            "format": "uuid",
+            "title": "Bahan Pakan Id",
+            "type": "string"
+          },
+          "berat_per_sesi": {
+            "title": "Berat Per Sesi",
+            "type": "number"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "nama_bahan": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nama Bahan"
+          },
+          "proporsi": {
+            "title": "Proporsi",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "bahan_pakan_id",
+          "proporsi",
+          "berat_per_sesi"
+        ],
+        "title": "FormulasiItemPublic",
+        "type": "object"
+      },
+      "FormulasiLengkapPublic": {
+        "properties": {
+          "aktif": {
+            "title": "Aktif",
+            "type": "boolean"
+          },
+          "dibuat_oleh_id": {
+            "format": "uuid",
+            "title": "Dibuat Oleh Id",
+            "type": "string"
+          },
+          "dibuat_pada": {
+            "format": "date-time",
+            "title": "Dibuat Pada",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "item": {
+            "items": {
+              "$ref": "#/components/schemas/FormulasiItemPublic"
+            },
+            "title": "Item",
+            "type": "array"
+          },
+          "mode": {
+            "$ref": "#/components/schemas/ModeFormulasi"
+          },
+          "nutrisi_hasil": {
+            "items": {
+              "$ref": "#/components/schemas/FormulasiNutrisiHasilPublic"
+            },
+            "title": "Nutrisi Hasil",
+            "type": "array"
+          },
+          "siklus_id": {
+            "format": "uuid",
+            "title": "Siklus Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusFormulasi"
+          },
+          "total_biaya_per_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Biaya Per Kg"
+          }
+        },
+        "required": [
+          "id",
+          "siklus_id",
+          "dibuat_oleh_id",
+          "mode",
+          "status",
+          "aktif",
+          "dibuat_pada",
+          "item",
+          "nutrisi_hasil"
+        ],
+        "title": "FormulasiLengkapPublic",
+        "type": "object"
+      },
+      "FormulasiManualRequest": {
+        "properties": {
+          "item": {
+            "items": {
+              "$ref": "#/components/schemas/FormulasiItemInput"
+            },
+            "title": "Item",
+            "type": "array"
+          }
+        },
+        "required": [
+          "item"
+        ],
+        "title": "FormulasiManualRequest",
+        "type": "object"
+      },
+      "FormulasiNutrisiHasilPublic": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "nama_nutrisi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nama Nutrisi"
+          },
+          "nilai_hasil": {
+            "title": "Nilai Hasil",
+            "type": "number"
+          },
+          "nutrisi_id": {
+            "format": "uuid",
+            "title": "Nutrisi Id",
+            "type": "string"
+          },
+          "satuan": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Satuan"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusNutrisi"
+          }
+        },
+        "required": [
+          "id",
+          "nutrisi_id",
+          "nilai_hasil",
+          "status"
+        ],
+        "title": "FormulasiNutrisiHasilPublic",
+        "type": "object"
+      },
+      "FormulasiPreview": {
+        "description": "Tidak disimpan ke DB langsung, ini adalah respon dari proses formulasi (baik OTOMATIS maupun MANUAL).\nJika disimpan, struktur ini akan diubah jadi entitas Formulasi, FormulasiItem, FormulasiNutrisiHasil.",
+        "properties": {
+          "item": {
+            "items": {
+              "$ref": "#/components/schemas/FormulasiItemOutput"
+            },
+            "title": "Item",
+            "type": "array"
+          },
+          "mode": {
+            "$ref": "#/components/schemas/ModeFormulasi"
+          },
+          "nutrisi_hasil": {
+            "items": {
+              "$ref": "#/components/schemas/NutrisiHasilOutput"
+            },
+            "title": "Nutrisi Hasil",
+            "type": "array"
+          },
+          "pesan": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pesan"
+          },
+          "siklus_id": {
+            "format": "uuid",
+            "title": "Siklus Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusFormulasi"
+          },
+          "total_biaya_per_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Biaya Per Kg"
+          }
+        },
+        "required": [
+          "siklus_id",
+          "mode",
+          "status",
+          "item",
+          "nutrisi_hasil"
+        ],
+        "title": "FormulasiPreview",
+        "type": "object"
+      },
+      "FormulasiPublic": {
+        "properties": {
+          "aktif": {
+            "title": "Aktif",
+            "type": "boolean"
+          },
+          "dibuat_oleh_id": {
+            "format": "uuid",
+            "title": "Dibuat Oleh Id",
+            "type": "string"
+          },
+          "dibuat_pada": {
+            "format": "date-time",
+            "title": "Dibuat Pada",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "mode": {
+            "$ref": "#/components/schemas/ModeFormulasi"
+          },
+          "siklus_id": {
+            "format": "uuid",
+            "title": "Siklus Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusFormulasi"
+          },
+          "total_biaya_per_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Biaya Per Kg"
+          }
+        },
+        "required": [
+          "id",
+          "siklus_id",
+          "dibuat_oleh_id",
+          "mode",
+          "status",
+          "aktif",
+          "dibuat_pada"
+        ],
+        "title": "FormulasiPublic",
+        "type": "object"
+      },
+      "GantiKataSandiRequest": {
+        "properties": {
+          "kata_sandi_baru": {
+            "title": "Kata Sandi Baru",
+            "type": "string"
+          },
+          "kata_sandi_lama": {
+            "title": "Kata Sandi Lama",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kata_sandi_lama",
+          "kata_sandi_baru"
+        ],
+        "title": "GantiKataSandiRequest",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "IsiUlangStokRequest": {
+        "properties": {
+          "jumlah": {
+            "exclusiveMinimum": 0.0,
+            "title": "Jumlah",
+            "type": "number"
+          }
+        },
+        "required": [
+          "jumlah"
+        ],
+        "title": "IsiUlangStokRequest",
+        "type": "object"
+      },
+      "JenisAyamCreate": {
+        "properties": {
+          "nama": {
+            "title": "Nama",
+            "type": "string"
+          }
+        },
+        "required": [
+          "nama"
+        ],
+        "title": "JenisAyamCreate",
+        "type": "object"
+      },
+      "JenisAyamPublic": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "nama": {
+            "title": "Nama",
+            "type": "string"
+          },
+          "pemilik_id": {
+            "format": "uuid",
+            "title": "Pemilik Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "pemilik_id",
+          "nama"
+        ],
+        "title": "JenisAyamPublic",
+        "type": "object"
+      },
+      "JenisAyamUpdate": {
+        "properties": {
+          "nama": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nama"
+          }
+        },
+        "title": "JenisAyamUpdate",
+        "type": "object"
+      },
+      "JenisNotifikasi": {
+        "enum": [
+          "PERINTAH_SUKSES",
+          "PERINTAH_GAGAL",
+          "ALAT_OFFLINE",
+          "ALAT_ERROR",
+          "STOK_MENIPIS",
+          "STOK_KOSONG",
+          "PERLU_DITINJAU"
+        ],
+        "title": "JenisNotifikasi",
+        "type": "string"
+      },
+      "JenisPerubahan": {
+        "enum": [
+          "MORTALITAS",
+          "PANEN",
+          "PENAMBAHAN"
+        ],
+        "title": "JenisPerubahan",
+        "type": "string"
+      },
+      "JenisTransaksi": {
+        "enum": [
+          "ISI_ULANG",
+          "KOREKSI_MANUAL",
+          "PENGELUARAN"
+        ],
+        "title": "JenisTransaksi",
+        "type": "string"
+      },
+      "KandangCreate": {
+        "properties": {
+          "lokasi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lokasi"
+          },
+          "nama": {
+            "title": "Nama",
+            "type": "string"
+          }
+        },
+        "required": [
+          "nama"
+        ],
+        "title": "KandangCreate",
+        "type": "object"
+      },
+      "KandangDetailPublic": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "lokasi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lokasi"
+          },
+          "nama": {
+            "title": "Nama",
+            "type": "string"
+          },
+          "pemilik_id": {
+            "format": "uuid",
+            "title": "Pemilik Id",
+            "type": "string"
+          },
+          "siklus_aktif_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Siklus Aktif Id"
+          },
+          "siklus_aktif_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Siklus Aktif Status"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusKandang"
+          },
+          "status_alat": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StatusAlat"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "pemilik_id",
+          "nama",
+          "status"
+        ],
+        "title": "KandangDetailPublic",
+        "type": "object"
+      },
+      "KandangPublic": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "lokasi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lokasi"
+          },
+          "nama": {
+            "title": "Nama",
+            "type": "string"
+          },
+          "pemilik_id": {
+            "format": "uuid",
+            "title": "Pemilik Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusKandang"
+          }
+        },
+        "required": [
+          "id",
+          "pemilik_id",
+          "nama",
+          "status"
+        ],
+        "title": "KandangPublic",
+        "type": "object"
+      },
+      "KandangUpdate": {
+        "properties": {
+          "lokasi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lokasi"
+          },
+          "nama": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nama"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StatusKandang"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "KandangUpdate",
+        "type": "object"
+      },
+      "KandunganNutrisiBahanDetail": {
+        "description": "Kandungan nutrisi bahan + nama dan satuan nutrisi (untuk layar edit).",
+        "properties": {
+          "bahan_pakan_id": {
+            "format": "uuid",
+            "title": "Bahan Pakan Id",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "nama_nutrisi": {
+            "title": "Nama Nutrisi",
+            "type": "string"
+          },
+          "nilai_per_kg": {
+            "title": "Nilai Per Kg",
+            "type": "number"
+          },
+          "nutrisi_id": {
+            "format": "uuid",
+            "title": "Nutrisi Id",
+            "type": "string"
+          },
+          "satuan": {
+            "title": "Satuan",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "bahan_pakan_id",
+          "nutrisi_id",
+          "nilai_per_kg",
+          "nama_nutrisi",
+          "satuan"
+        ],
+        "title": "KandunganNutrisiBahanDetail",
+        "type": "object"
+      },
+      "KandunganNutrisiBahanInput": {
+        "properties": {
+          "nilai_per_kg": {
+            "title": "Nilai Per Kg",
+            "type": "number"
+          },
+          "nutrisi_id": {
+            "format": "uuid",
+            "title": "Nutrisi Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "nutrisi_id",
+          "nilai_per_kg"
+        ],
+        "title": "KandunganNutrisiBahanInput",
+        "type": "object"
+      },
+      "KandunganNutrisiBahanPublic": {
+        "properties": {
+          "bahan_pakan_id": {
+            "format": "uuid",
+            "title": "Bahan Pakan Id",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "nilai_per_kg": {
+            "title": "Nilai Per Kg",
+            "type": "number"
+          },
+          "nutrisi_id": {
+            "format": "uuid",
+            "title": "Nutrisi Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "bahan_pakan_id",
+          "nutrisi_id",
+          "nilai_per_kg"
+        ],
+        "title": "KandunganNutrisiBahanPublic",
+        "type": "object"
+      },
+      "KebutuhanNutrisiFaseDetail": {
+        "description": "Kebutuhan nutrisi fase + nama dan satuan nutrisi (untuk layar edit).",
+        "properties": {
+          "batas_max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batas Max"
+          },
+          "batas_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batas Min"
+          },
+          "fase_id": {
+            "format": "uuid",
+            "title": "Fase Id",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "nama_nutrisi": {
+            "title": "Nama Nutrisi",
+            "type": "string"
+          },
+          "nutrisi_id": {
+            "format": "uuid",
+            "title": "Nutrisi Id",
+            "type": "string"
+          },
+          "satuan": {
+            "title": "Satuan",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "fase_id",
+          "nutrisi_id",
+          "nama_nutrisi",
+          "satuan"
+        ],
+        "title": "KebutuhanNutrisiFaseDetail",
+        "type": "object"
+      },
+      "KebutuhanNutrisiFaseInput": {
+        "properties": {
+          "batas_max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batas Max"
+          },
+          "batas_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batas Min"
+          },
+          "nutrisi_id": {
+            "format": "uuid",
+            "title": "Nutrisi Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "nutrisi_id"
+        ],
+        "title": "KebutuhanNutrisiFaseInput",
+        "type": "object"
+      },
+      "KebutuhanNutrisiFasePublic": {
+        "properties": {
+          "batas_max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batas Max"
+          },
+          "batas_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batas Min"
+          },
+          "fase_id": {
+            "format": "uuid",
+            "title": "Fase Id",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "nutrisi_id": {
+            "format": "uuid",
+            "title": "Nutrisi Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "fase_id",
+          "nutrisi_id"
+        ],
+        "title": "KebutuhanNutrisiFasePublic",
+        "type": "object"
+      },
+      "KoreksiStokRequest": {
+        "properties": {
+          "alasan": {
+            "title": "Alasan",
+            "type": "string"
+          },
+          "jumlah_baru": {
+            "minimum": 0.0,
+            "title": "Jumlah Baru",
+            "type": "number"
+          }
+        },
+        "required": [
+          "jumlah_baru",
+          "alasan"
+        ],
+        "title": "KoreksiStokRequest",
+        "type": "object"
+      },
+      "LogEksekusiPublic": {
+        "properties": {
+          "berat_aktual": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Berat Aktual"
+          },
+          "dilaporkan_pada": {
+            "format": "date-time",
+            "title": "Dilaporkan Pada",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "id_eksekusi_unik": {
+            "format": "uuid",
+            "title": "Id Eksekusi Unik",
+            "type": "string"
+          },
+          "perintah_id": {
+            "format": "uuid",
+            "title": "Perintah Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusEksekusi"
+          }
+        },
+        "required": [
+          "id",
+          "perintah_id",
+          "id_eksekusi_unik",
+          "status",
+          "dilaporkan_pada"
+        ],
+        "title": "LogEksekusiPublic",
+        "type": "object"
+      },
+      "LoginRequest": {
+        "properties": {
+          "email": {
+            "format": "email",
+            "title": "Email",
+            "type": "string"
+          },
+          "kata_sandi": {
+            "title": "Kata Sandi",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "kata_sandi"
+        ],
+        "title": "LoginRequest",
+        "type": "object"
+      },
+      "ModeFormulasi": {
+        "enum": [
+          "OTOMATIS",
+          "MANUAL"
+        ],
+        "title": "ModeFormulasi",
+        "type": "string"
+      },
+      "NotifikasiPublic": {
+        "properties": {
+          "dibuat_pada": {
+            "format": "date-time",
+            "title": "Dibuat Pada",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "jenis": {
+            "$ref": "#/components/schemas/JenisNotifikasi"
+          },
+          "judul": {
+            "title": "Judul",
+            "type": "string"
+          },
+          "pesan": {
+            "title": "Pesan",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusNotifikasi"
+          },
+          "user_id": {
+            "format": "uuid",
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "jenis",
+          "judul",
+          "pesan",
+          "status",
+          "dibuat_pada"
+        ],
+        "title": "NotifikasiPublic",
+        "type": "object"
+      },
+      "NutrisiCreate": {
+        "properties": {
+          "nama": {
+            "title": "Nama",
+            "type": "string"
+          },
+          "satuan": {
+            "title": "Satuan",
+            "type": "string"
+          },
+          "tipe_batas": {
+            "$ref": "#/components/schemas/TipeBatas"
+          }
+        },
+        "required": [
+          "nama",
+          "satuan",
+          "tipe_batas"
+        ],
+        "title": "NutrisiCreate",
+        "type": "object"
+      },
+      "NutrisiHasilOutput": {
+        "properties": {
+          "batas_max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batas Max"
+          },
+          "batas_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batas Min"
+          },
+          "keterangan": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Keterangan"
+          },
+          "nama_nutrisi": {
+            "title": "Nama Nutrisi",
+            "type": "string"
+          },
+          "nilai_hasil": {
+            "title": "Nilai Hasil",
+            "type": "number"
+          },
+          "nutrisi_id": {
+            "format": "uuid",
+            "title": "Nutrisi Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusNutrisi"
+          }
+        },
+        "required": [
+          "nutrisi_id",
+          "nama_nutrisi",
+          "nilai_hasil",
+          "status"
+        ],
+        "title": "NutrisiHasilOutput",
+        "type": "object"
+      },
+      "NutrisiPublic": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "nama": {
+            "title": "Nama",
+            "type": "string"
+          },
+          "pemilik_id": {
+            "format": "uuid",
+            "title": "Pemilik Id",
+            "type": "string"
+          },
+          "satuan": {
+            "title": "Satuan",
+            "type": "string"
+          },
+          "tipe_batas": {
+            "$ref": "#/components/schemas/TipeBatas"
+          }
+        },
+        "required": [
+          "id",
+          "pemilik_id",
+          "nama",
+          "satuan",
+          "tipe_batas"
+        ],
+        "title": "NutrisiPublic",
+        "type": "object"
+      },
+      "NutrisiUpdate": {
+        "properties": {
+          "nama": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nama"
+          },
+          "satuan": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Satuan"
+          },
+          "tipe_batas": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TipeBatas"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "NutrisiUpdate",
+        "type": "object"
+      },
+      "PenugasanDetailPublic": {
+        "description": "Penugasan + nama pekerja dan kandang agar daftar dapat ditampilkan tanpa request tambahan.",
+        "properties": {
+          "email_pekerja": {
+            "title": "Email Pekerja",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kandang_id": {
+            "format": "uuid",
+            "title": "Kandang Id",
+            "type": "string"
+          },
+          "nama_kandang": {
+            "title": "Nama Kandang",
+            "type": "string"
+          },
+          "nama_pekerja": {
+            "title": "Nama Pekerja",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusPenugasan"
+          },
+          "tanggal_mulai": {
+            "format": "date",
+            "title": "Tanggal Mulai",
+            "type": "string"
+          },
+          "user_id": {
+            "format": "uuid",
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "kandang_id",
+          "tanggal_mulai",
+          "status",
+          "nama_pekerja",
+          "email_pekerja",
+          "nama_kandang"
+        ],
+        "title": "PenugasanDetailPublic",
+        "type": "object"
+      },
+      "PenugasanKandangCreate": {
+        "description": "Schema untuk membuat penugasan.",
+        "properties": {
+          "kandang_id": {
+            "format": "uuid",
+            "title": "Kandang Id",
+            "type": "string"
+          },
+          "tanggal_mulai": {
+            "format": "date",
+            "title": "Tanggal Mulai",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kandang_id",
+          "tanggal_mulai"
+        ],
+        "title": "PenugasanKandangCreate",
+        "type": "object"
+      },
+      "PenugasanKandangPublic": {
+        "description": "Schema untuk mengembalikan data penugasan.",
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kandang_id": {
+            "format": "uuid",
+            "title": "Kandang Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusPenugasan"
+          },
+          "tanggal_mulai": {
+            "format": "date",
+            "title": "Tanggal Mulai",
+            "type": "string"
+          },
+          "user_id": {
+            "format": "uuid",
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "kandang_id",
+          "tanggal_mulai",
+          "status"
+        ],
+        "title": "PenugasanKandangPublic",
+        "type": "object"
+      },
+      "PeranUser": {
+        "enum": [
+          "PEMILIK",
+          "PEKERJA"
+        ],
+        "title": "PeranUser",
+        "type": "string"
+      },
+      "PerintahBeriMakanRequest": {
+        "properties": {
+          "formulasi_id": {
+            "format": "uuid",
+            "title": "Formulasi Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "formulasi_id"
+        ],
+        "title": "PerintahBeriMakanRequest",
+        "type": "object"
+      },
+      "PerintahDetailPublic": {
+        "properties": {
+          "alat_id": {
+            "format": "uuid",
+            "title": "Alat Id",
+            "type": "string"
+          },
+          "command_id": {
+            "format": "uuid",
+            "title": "Command Id",
+            "type": "string"
+          },
+          "dibuat_oleh_id": {
+            "format": "uuid",
+            "title": "Dibuat Oleh Id",
+            "type": "string"
+          },
+          "dibuat_pada": {
+            "format": "date-time",
+            "title": "Dibuat Pada",
+            "type": "string"
+          },
+          "formulasi_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Formulasi Id"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "log_eksekusi": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LogEksekusiPublic"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusPerintah"
+          },
+          "tipe": {
+            "$ref": "#/components/schemas/TipePerintah"
+          }
+        },
+        "required": [
+          "id",
+          "alat_id",
+          "dibuat_oleh_id",
+          "tipe",
+          "command_id",
+          "status",
+          "dibuat_pada"
+        ],
+        "title": "PerintahDetailPublic",
+        "type": "object"
+      },
+      "PerintahPublic": {
+        "properties": {
+          "alat_id": {
+            "format": "uuid",
+            "title": "Alat Id",
+            "type": "string"
+          },
+          "command_id": {
+            "format": "uuid",
+            "title": "Command Id",
+            "type": "string"
+          },
+          "dibuat_oleh_id": {
+            "format": "uuid",
+            "title": "Dibuat Oleh Id",
+            "type": "string"
+          },
+          "dibuat_pada": {
+            "format": "date-time",
+            "title": "Dibuat Pada",
+            "type": "string"
+          },
+          "formulasi_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Formulasi Id"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusPerintah"
+          },
+          "tipe": {
+            "$ref": "#/components/schemas/TipePerintah"
+          }
+        },
+        "required": [
+          "id",
+          "alat_id",
+          "dibuat_oleh_id",
+          "tipe",
+          "command_id",
+          "status",
+          "dibuat_pada"
+        ],
+        "title": "PerintahPublic",
+        "type": "object"
+      },
+      "PerubahanPopulasiCreate": {
+        "properties": {
+          "catatan": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Catatan"
+          },
+          "jenis": {
+            "$ref": "#/components/schemas/JenisPerubahan"
+          },
+          "jumlah": {
+            "exclusiveMinimum": 0.0,
+            "title": "Jumlah",
+            "type": "integer"
+          },
+          "tanggal": {
+            "format": "date",
+            "title": "Tanggal",
+            "type": "string"
+          }
+        },
+        "required": [
+          "jenis",
+          "jumlah",
+          "tanggal"
+        ],
+        "title": "PerubahanPopulasiCreate",
+        "type": "object"
+      },
+      "PerubahanPopulasiPublic": {
+        "properties": {
+          "catatan": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Catatan"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "jenis": {
+            "$ref": "#/components/schemas/JenisPerubahan"
+          },
+          "jumlah": {
+            "title": "Jumlah",
+            "type": "integer"
+          },
+          "siklus_id": {
+            "format": "uuid",
+            "title": "Siklus Id",
+            "type": "string"
+          },
+          "tanggal": {
+            "format": "date",
+            "title": "Tanggal",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "siklus_id",
+          "jenis",
+          "jumlah",
+          "tanggal"
+        ],
+        "title": "PerubahanPopulasiPublic",
+        "type": "object"
+      },
+      "SalinTemplateRequest": {
+        "description": "Body opsional: nama lain untuk jenis ayam hasil salinan (default nama template).",
+        "properties": {
+          "nama": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nama"
+          }
+        },
+        "title": "SalinTemplateRequest",
+        "type": "object"
+      },
+      "SiklusKandangCreate": {
+        "properties": {
+          "fase_id": {
+            "format": "uuid",
+            "title": "Fase Id",
+            "type": "string"
+          },
+          "jenis_ayam_id": {
+            "format": "uuid",
+            "title": "Jenis Ayam Id",
+            "type": "string"
+          },
+          "jumlah_ayam": {
+            "exclusiveMinimum": 0.0,
+            "title": "Jumlah Ayam",
+            "type": "integer"
+          },
+          "tanggal_mulai": {
+            "format": "date",
+            "title": "Tanggal Mulai",
+            "type": "string"
+          }
+        },
+        "required": [
+          "jenis_ayam_id",
+          "fase_id",
+          "jumlah_ayam",
+          "tanggal_mulai"
+        ],
+        "title": "SiklusKandangCreate",
+        "type": "object"
+      },
+      "SiklusKandangPublic": {
+        "properties": {
+          "fase_id": {
+            "format": "uuid",
+            "title": "Fase Id",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "jenis_ayam_id": {
+            "format": "uuid",
+            "title": "Jenis Ayam Id",
+            "type": "string"
+          },
+          "jumlah_ayam": {
+            "title": "Jumlah Ayam",
+            "type": "integer"
+          },
+          "kandang_id": {
+            "format": "uuid",
+            "title": "Kandang Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusSiklus"
+          },
+          "tanggal_mulai": {
+            "format": "date",
+            "title": "Tanggal Mulai",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kandang_id",
+          "jenis_ayam_id",
+          "fase_id",
+          "jumlah_ayam",
+          "tanggal_mulai",
+          "status"
+        ],
+        "title": "SiklusKandangPublic",
+        "type": "object"
+      },
+      "SiklusKandangUpdate": {
+        "description": "Koreksi data siklus yang salah input (Pemilik).",
+        "properties": {
+          "jumlah_ayam": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Jumlah Ayam"
+          },
+          "tanggal_mulai": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tanggal Mulai"
+          }
+        },
+        "title": "SiklusKandangUpdate",
+        "type": "object"
+      },
+      "SiklusKandangUpdateFase": {
+        "properties": {
+          "fase_id": {
+            "format": "uuid",
+            "title": "Fase Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "fase_id"
+        ],
+        "title": "SiklusKandangUpdateFase",
+        "type": "object"
+      },
+      "StandarKonsumsiCreateUpdate": {
+        "properties": {
+          "durasi_aduk": {
+            "title": "Durasi Aduk",
+            "type": "integer"
+          },
+          "frekuensi_makan": {
+            "title": "Frekuensi Makan",
+            "type": "integer"
+          },
+          "gram_per_ekor_per_hari": {
+            "title": "Gram Per Ekor Per Hari",
+            "type": "number"
+          },
+          "volume_air": {
+            "title": "Volume Air",
+            "type": "number"
+          }
+        },
+        "required": [
+          "gram_per_ekor_per_hari",
+          "frekuensi_makan",
+          "durasi_aduk",
+          "volume_air"
+        ],
+        "title": "StandarKonsumsiCreateUpdate",
+        "type": "object"
+      },
+      "StandarKonsumsiPublic": {
+        "properties": {
+          "durasi_aduk": {
+            "title": "Durasi Aduk",
+            "type": "integer"
+          },
+          "fase_id": {
+            "format": "uuid",
+            "title": "Fase Id",
+            "type": "string"
+          },
+          "frekuensi_makan": {
+            "title": "Frekuensi Makan",
+            "type": "integer"
+          },
+          "gram_per_ekor_per_hari": {
+            "title": "Gram Per Ekor Per Hari",
+            "type": "number"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "volume_air": {
+            "title": "Volume Air",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "fase_id",
+          "gram_per_ekor_per_hari",
+          "frekuensi_makan",
+          "durasi_aduk",
+          "volume_air"
+        ],
+        "title": "StandarKonsumsiPublic",
+        "type": "object"
+      },
+      "StatusAlat": {
+        "enum": [
+          "ONLINE",
+          "OFFLINE",
+          "ERROR"
+        ],
+        "title": "StatusAlat",
+        "type": "string"
+      },
+      "StatusBahan": {
+        "enum": [
+          "DI_DALAM_SISTEM",
+          "DI_LUAR_SISTEM"
+        ],
+        "title": "StatusBahan",
+        "type": "string"
+      },
+      "StatusEksekusi": {
+        "enum": [
+          "SUKSES",
+          "GAGAL",
+          "SKIPPED_STOCK"
+        ],
+        "title": "StatusEksekusi",
+        "type": "string"
+      },
+      "StatusFormulasi": {
+        "enum": [
+          "VALID",
+          "TIDAK_SEMPURNA",
+          "PERLU_DITINJAU"
+        ],
+        "title": "StatusFormulasi",
+        "type": "string"
+      },
+      "StatusKandang": {
+        "enum": [
+          "AKTIF",
+          "NONAKTIF"
+        ],
+        "title": "StatusKandang",
+        "type": "string"
+      },
+      "StatusNotifikasi": {
+        "enum": [
+          "BELUM_DIBACA",
+          "SUDAH_DIBACA"
+        ],
+        "title": "StatusNotifikasi",
+        "type": "string"
+      },
+      "StatusNutrisi": {
+        "enum": [
+          "KURANG",
+          "SESUAI",
+          "BERLEBIH"
+        ],
+        "title": "StatusNutrisi",
+        "type": "string"
+      },
+      "StatusPenugasan": {
+        "enum": [
+          "AKTIF",
+          "BERAKHIR"
+        ],
+        "title": "StatusPenugasan",
+        "type": "string"
+      },
+      "StatusPerintah": {
+        "enum": [
+          "PENDING",
+          "DIAMBIL",
+          "BERJALAN",
+          "SUKSES",
+          "GAGAL",
+          "TIMEOUT"
+        ],
+        "title": "StatusPerintah",
+        "type": "string"
+      },
+      "StatusSiklus": {
+        "enum": [
+          "AKTIF",
+          "SELESAI"
+        ],
+        "title": "StatusSiklus",
+        "type": "string"
+      },
+      "StatusUser": {
+        "enum": [
+          "AKTIF",
+          "NONAKTIF",
+          "WAJIB_GANTI_SANDI"
+        ],
+        "title": "StatusUser",
+        "type": "string"
+      },
+      "StokPublic": {
+        "properties": {
+          "ambang_menipis": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ambang Menipis"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "jumlah_estimasi": {
+            "title": "Jumlah Estimasi",
+            "type": "number"
+          },
+          "nama_bahan": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nama Bahan"
+          },
+          "wadah_id": {
+            "format": "uuid",
+            "title": "Wadah Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "wadah_id",
+          "jumlah_estimasi"
+        ],
+        "title": "StokPublic",
+        "type": "object"
+      },
+      "TemplateFase": {
+        "properties": {
+          "kebutuhan": {
+            "items": {
+              "$ref": "#/components/schemas/TemplateKebutuhan"
+            },
+            "title": "Kebutuhan",
+            "type": "array"
+          },
+          "nama": {
+            "title": "Nama",
+            "type": "string"
+          },
+          "standar_konsumsi": {
+            "$ref": "#/components/schemas/TemplateStandarKonsumsi"
+          },
+          "umur_max_hari": {
+            "title": "Umur Max Hari",
+            "type": "integer"
+          },
+          "umur_min_hari": {
+            "title": "Umur Min Hari",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "nama",
+          "umur_min_hari",
+          "umur_max_hari",
+          "kebutuhan",
+          "standar_konsumsi"
+        ],
+        "title": "TemplateFase",
+        "type": "object"
+      },
+      "TemplateJenisAyam": {
+        "properties": {
+          "deskripsi": {
+            "title": "Deskripsi",
+            "type": "string"
+          },
+          "fase": {
+            "items": {
+              "$ref": "#/components/schemas/TemplateFase"
+            },
+            "title": "Fase",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "nama": {
+            "title": "Nama",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nama",
+          "deskripsi",
+          "fase"
+        ],
+        "title": "TemplateJenisAyam",
+        "type": "object"
+      },
+      "TemplateKebutuhan": {
+        "properties": {
+          "batas_max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batas Max"
+          },
+          "batas_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batas Min"
+          },
+          "nutrisi": {
+            "title": "Nutrisi",
+            "type": "string"
+          }
+        },
+        "required": [
+          "nutrisi"
+        ],
+        "title": "TemplateKebutuhan",
+        "type": "object"
+      },
+      "TemplateStandarKonsumsi": {
+        "properties": {
+          "durasi_aduk": {
+            "title": "Durasi Aduk",
+            "type": "integer"
+          },
+          "frekuensi_makan": {
+            "title": "Frekuensi Makan",
+            "type": "integer"
+          },
+          "gram_per_ekor_per_hari": {
+            "title": "Gram Per Ekor Per Hari",
+            "type": "number"
+          },
+          "volume_air": {
+            "title": "Volume Air",
+            "type": "number"
+          }
+        },
+        "required": [
+          "gram_per_ekor_per_hari",
+          "frekuensi_makan",
+          "durasi_aduk",
+          "volume_air"
+        ],
+        "title": "TemplateStandarKonsumsi",
+        "type": "object"
+      },
+      "TipeBatas": {
+        "enum": [
+          "MINIMUM",
+          "MAKSIMUM",
+          "MIN_MAKS"
+        ],
+        "title": "TipeBatas",
+        "type": "string"
+      },
+      "TipePerintah": {
+        "enum": [
+          "BERI_MAKAN",
+          "TEST",
+          "STOP_DARURAT",
+          "RESET_ERROR"
+        ],
+        "title": "TipePerintah",
+        "type": "string"
+      },
+      "TokenResponse": {
+        "properties": {
+          "access_token": {
+            "title": "Access Token",
+            "type": "string"
+          },
+          "token_type": {
+            "title": "Token Type",
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserPublic"
+          }
+        },
+        "required": [
+          "access_token",
+          "token_type",
+          "user"
+        ],
+        "title": "TokenResponse",
+        "type": "object"
+      },
+      "TokenRotasiResponse": {
+        "properties": {
+          "device_token": {
+            "title": "Device Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "device_token"
+        ],
+        "title": "TokenRotasiResponse",
+        "type": "object"
+      },
+      "TransaksiStokPublic": {
+        "properties": {
+          "alasan": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alasan"
+          },
+          "dibuat_pada": {
+            "format": "date-time",
+            "title": "Dibuat Pada",
+            "type": "string"
+          },
+          "dilakukan_oleh_id": {
+            "format": "uuid",
+            "title": "Dilakukan Oleh Id",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "jenis": {
+            "$ref": "#/components/schemas/JenisTransaksi"
+          },
+          "jumlah": {
+            "title": "Jumlah",
+            "type": "number"
+          },
+          "wadah_id": {
+            "format": "uuid",
+            "title": "Wadah Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "wadah_id",
+          "dilakukan_oleh_id",
+          "jenis",
+          "jumlah",
+          "dibuat_pada"
+        ],
+        "title": "TransaksiStokPublic",
+        "type": "object"
+      },
+      "UserCreate": {
+        "description": "Schema untuk membuat user baru.",
+        "properties": {
+          "email": {
+            "format": "email",
+            "title": "Email",
+            "type": "string"
+          },
+          "kata_sandi": {
+            "title": "Kata Sandi",
+            "type": "string"
+          },
+          "nama": {
+            "title": "Nama",
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/PeranUser"
+          }
+        },
+        "required": [
+          "nama",
+          "email",
+          "kata_sandi",
+          "role"
+        ],
+        "title": "UserCreate",
+        "type": "object"
+      },
+      "UserPublic": {
+        "description": "Schema untuk mengembalikan data User tanpa kata_sandi_hash.",
+        "properties": {
+          "dibuat_pada": {
+            "format": "date-time",
+            "title": "Dibuat Pada",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "nama": {
+            "title": "Nama",
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/PeranUser"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StatusUser"
+          }
+        },
+        "required": [
+          "id",
+          "nama",
+          "email",
+          "role",
+          "status",
+          "dibuat_pada"
+        ],
+        "title": "UserPublic",
+        "type": "object"
+      },
+      "UserStatusUpdate": {
+        "description": "Schema untuk update status user.",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/StatusUser"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "UserStatusUpdate",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "WadahCreate": {
+        "properties": {
+          "bahan_pakan_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bahan Pakan Id"
+          },
+          "nomor_wadah": {
+            "title": "Nomor Wadah",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "nomor_wadah"
+        ],
+        "title": "WadahCreate",
+        "type": "object"
+      },
+      "WadahDetailPublic": {
+        "properties": {
+          "ambang_menipis": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ambang Menipis"
+          },
+          "bahan_pakan_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bahan Pakan Id"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "jumlah_stok": {
+            "default": 0,
+            "title": "Jumlah Stok",
+            "type": "number"
+          },
+          "nama_bahan": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nama Bahan"
+          },
+          "nomor_wadah": {
+            "title": "Nomor Wadah",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "nomor_wadah"
+        ],
+        "title": "WadahDetailPublic",
+        "type": "object"
+      },
+      "WadahPublic": {
+        "properties": {
+          "alat_id": {
+            "format": "uuid",
+            "title": "Alat Id",
+            "type": "string"
+          },
+          "bahan_pakan_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bahan Pakan Id"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "nomor_wadah": {
+            "title": "Nomor Wadah",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "alat_id",
+          "nomor_wadah"
+        ],
+        "title": "WadahPublic",
+        "type": "object"
+      },
+      "WadahUpdate": {
+        "properties": {
+          "bahan_pakan_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bahan Pakan Id"
+          }
+        },
+        "title": "WadahUpdate",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "OAuth2PasswordBearer": {
+        "flows": {
+          "password": {
+            "scopes": {},
+            "tokenUrl": "/api/v1/auth/swagger-login"
+          }
+        },
+        "type": "oauth2"
+      }
+    }
+  },
+  "info": {
+    "description": "Lihat docs/spesifikasi/API_CONTRACT.md untuk daftar lengkap endpoint yang direncanakan.",
+    "title": "Smart Poultry API",
+    "version": "0.1.0-mvp"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/alat/{id}": {
+      "delete": {
+        "description": "Hapus alat yang salah daftar beserta wadah dan stoknya. Ditolak bila sudah punya perintah atau stok belum 0.",
+        "operationId": "hapus_alat_api_v1_alat__id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Hapus Alat",
+        "tags": [
+          "Kandang & Alat"
+        ]
+      }
+    },
+    "/api/v1/alat/{id}/rotasi-token": {
+      "post": {
+        "description": "Ganti device_token alat dengan yang baru. Hanya Pemilik.",
+        "operationId": "rotasi_token_alat_api_v1_alat__id__rotasi_token_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenRotasiResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Rotasi Token Alat",
+        "tags": [
+          "Kandang & Alat"
+        ]
+      }
+    },
+    "/api/v1/alat/{id}/wadah": {
+      "post": {
+        "description": "Menambahkan wadah pakan ke Alat IoT.",
+        "operationId": "create_wadah_api_v1_alat__id__wadah_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WadahCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WadahPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Create Wadah",
+        "tags": [
+          "Kandang & Alat"
+        ]
+      }
+    },
+    "/api/v1/auth/ganti-kata-sandi": {
+      "post": {
+        "description": "Ganti kata sandi untuk user yang sedang login.",
+        "operationId": "ganti_kata_sandi_api_v1_auth_ganti_kata_sandi_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GantiKataSandiRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Ganti Kata Sandi",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "description": "Login endpoint UTAMA untuk Frontend (menerima JSON).\nBody: {\"email\": \"...\", \"kata_sandi\": \"...\"}",
+        "operationId": "login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Login",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "description": "Mendapatkan profil user yang sedang login.",
+        "operationId": "get_me_api_v1_auth_me_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Me",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/bahan-pakan": {
+      "get": {
+        "operationId": "list_bahan_pakan_api_v1_bahan_pakan_get",
+        "parameters": [
+          {
+            "description": "Jumlah data yang dilewati",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "description": "Jumlah data yang dilewati",
+              "minimum": 0,
+              "title": "Skip",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Jumlah data per halaman (maksimum 100)",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "description": "Jumlah data per halaman (maksimum 100)",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BahanPakanPublic"
+                  },
+                  "title": "Response List Bahan Pakan Api V1 Bahan Pakan Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "List Bahan Pakan",
+        "tags": [
+          "Master Data"
+        ]
+      },
+      "post": {
+        "operationId": "create_bahan_pakan_api_v1_bahan_pakan_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BahanPakanCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BahanPakanPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Create Bahan Pakan",
+        "tags": [
+          "Master Data"
+        ]
+      }
+    },
+    "/api/v1/bahan-pakan/{id}": {
+      "delete": {
+        "operationId": "delete_bahan_pakan_api_v1_bahan_pakan__id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Delete Bahan Pakan",
+        "tags": [
+          "Master Data"
+        ]
+      },
+      "get": {
+        "operationId": "get_bahan_pakan_api_v1_bahan_pakan__id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BahanPakanPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Bahan Pakan",
+        "tags": [
+          "Master Data"
+        ]
+      },
+      "patch": {
+        "operationId": "update_bahan_pakan_api_v1_bahan_pakan__id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BahanPakanUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BahanPakanPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Update Bahan Pakan",
+        "tags": [
+          "Master Data"
+        ]
+      }
+    },
+    "/api/v1/bahan-pakan/{id}/nutrisi": {
+      "get": {
+        "description": "Kandungan nutrisi sebuah bahan pakan beserta nama dan satuan nutrisi (urut nama nutrisi).",
+        "operationId": "get_kandungan_nutrisi_bahan_api_v1_bahan_pakan__id__nutrisi_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/KandunganNutrisiBahanDetail"
+                  },
+                  "title": "Response Get Kandungan Nutrisi Bahan Api V1 Bahan Pakan  Id  Nutrisi Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Kandungan Nutrisi Bahan",
+        "tags": [
+          "Master Data"
+        ]
+      },
+      "put": {
+        "operationId": "upsert_kandungan_nutrisi_bahan_api_v1_bahan_pakan__id__nutrisi_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/KandunganNutrisiBahanInput"
+                },
+                "title": "Data In",
+                "type": "array"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/KandunganNutrisiBahanPublic"
+                  },
+                  "title": "Response Upsert Kandungan Nutrisi Bahan Api V1 Bahan Pakan  Id  Nutrisi Put",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Upsert Kandungan Nutrisi Bahan",
+        "tags": [
+          "Master Data"
+        ]
+      }
+    },
+    "/api/v1/device/heartbeat": {
+      "post": {
+        "description": "Heartbeat dari alat. Update status ONLINE/ERROR dan kembalikan\nperintah yang PENDING (jika ada).",
+        "operationId": "device_heartbeat_api_v1_device_heartbeat_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-device-token",
+            "required": true,
+            "schema": {
+              "title": "X-Device-Token",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceHeartbeatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceHeartbeatResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Device Heartbeat",
+        "tags": [
+          "Simulator Alat (IoT)"
+        ]
+      }
+    },
+    "/api/v1/device/perintah/{id}/ambil": {
+      "post": {
+        "operationId": "ambil_perintah_api_v1_device_perintah__id__ambil_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-device-token",
+            "required": true,
+            "schema": {
+              "title": "X-Device-Token",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PerintahPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ambil Perintah",
+        "tags": [
+          "Simulator Alat (IoT)"
+        ]
+      }
+    },
+    "/api/v1/device/perintah/{id}/log": {
+      "post": {
+        "description": "201 untuk log baru; 200 (log yang sama) bila id_eksekusi_unik dikirim ulang.",
+        "operationId": "kirim_log_eksekusi_api_v1_device_perintah__id__log_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-device-token",
+            "required": true,
+            "schema": {
+              "title": "X-Device-Token",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceLogRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogEksekusiPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Kirim Log Eksekusi",
+        "tags": [
+          "Simulator Alat (IoT)"
+        ]
+      }
+    },
+    "/api/v1/device/perintah/{id}/mulai": {
+      "post": {
+        "operationId": "mulai_perintah_api_v1_device_perintah__id__mulai_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-device-token",
+            "required": true,
+            "schema": {
+              "title": "X-Device-Token",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PerintahPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Mulai Perintah",
+        "tags": [
+          "Simulator Alat (IoT)"
+        ]
+      }
+    },
+    "/api/v1/fase/{id}": {
+      "delete": {
+        "operationId": "delete_fase_api_v1_fase__id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Delete Fase",
+        "tags": [
+          "Master Data"
+        ]
+      },
+      "get": {
+        "operationId": "get_fase_api_v1_fase__id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FasePublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Fase",
+        "tags": [
+          "Master Data"
+        ]
+      },
+      "patch": {
+        "operationId": "update_fase_api_v1_fase__id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FaseUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FasePublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Update Fase",
+        "tags": [
+          "Master Data"
+        ]
+      }
+    },
+    "/api/v1/fase/{id}/kebutuhan-nutrisi": {
+      "get": {
+        "description": "Kebutuhan nutrisi sebuah fase beserta nama dan satuan nutrisi (urut nama nutrisi).",
+        "operationId": "get_kebutuhan_nutrisi_fase_api_v1_fase__id__kebutuhan_nutrisi_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/KebutuhanNutrisiFaseDetail"
+                  },
+                  "title": "Response Get Kebutuhan Nutrisi Fase Api V1 Fase  Id  Kebutuhan Nutrisi Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Kebutuhan Nutrisi Fase",
+        "tags": [
+          "Master Data"
+        ]
+      },
+      "put": {
+        "operationId": "upsert_kebutuhan_nutrisi_fase_api_v1_fase__id__kebutuhan_nutrisi_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/KebutuhanNutrisiFaseInput"
+                },
+                "title": "Data In",
+                "type": "array"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/KebutuhanNutrisiFasePublic"
+                  },
+                  "title": "Response Upsert Kebutuhan Nutrisi Fase Api V1 Fase  Id  Kebutuhan Nutrisi Put",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Upsert Kebutuhan Nutrisi Fase",
+        "tags": [
+          "Master Data"
+        ]
+      }
+    },
+    "/api/v1/fase/{id}/standar-konsumsi": {
+      "get": {
+        "description": "Standar konsumsi fase; `null` bila belum diatur.",
+        "operationId": "get_standar_konsumsi_fase_api_v1_fase__id__standar_konsumsi_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/StandarKonsumsiPublic"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Get Standar Konsumsi Fase Api V1 Fase  Id  Standar Konsumsi Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Standar Konsumsi Fase",
+        "tags": [
+          "Master Data"
+        ]
+      },
+      "put": {
+        "operationId": "upsert_standar_konsumsi_api_v1_fase__id__standar_konsumsi_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StandarKonsumsiCreateUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StandarKonsumsiPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Upsert Standar Konsumsi",
+        "tags": [
+          "Master Data"
+        ]
+      }
+    },
+    "/api/v1/formulasi": {
+      "post": {
+        "description": "Menyimpan hasil preview menjadi formulasi resmi (snapshot).",
+        "operationId": "simpan_formulasi_api_v1_formulasi_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FormulasiPreview"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormulasiPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Simpan Formulasi",
+        "tags": [
+          "Formulasi"
+        ]
+      }
+    },
+    "/api/v1/formulasi/{id}": {
+      "delete": {
+        "description": "Hapus formulasi percobaan/salah. Ditolak bila sudah dipakai perintah (riwayat).",
+        "operationId": "hapus_formulasi_api_v1_formulasi__id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Hapus Formulasi",
+        "tags": [
+          "Formulasi"
+        ]
+      },
+      "get": {
+        "operationId": "get_formulasi_lengkap_api_v1_formulasi__id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormulasiLengkapPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Formulasi Lengkap",
+        "tags": [
+          "Formulasi"
+        ]
+      }
+    },
+    "/api/v1/jenis-ayam": {
+      "get": {
+        "operationId": "list_jenis_ayam_api_v1_jenis_ayam_get",
+        "parameters": [
+          {
+            "description": "Jumlah data yang dilewati",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "description": "Jumlah data yang dilewati",
+              "minimum": 0,
+              "title": "Skip",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Jumlah data per halaman (maksimum 100)",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "description": "Jumlah data per halaman (maksimum 100)",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/JenisAyamPublic"
+                  },
+                  "title": "Response List Jenis Ayam Api V1 Jenis Ayam Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "List Jenis Ayam",
+        "tags": [
+          "Master Data"
+        ]
+      },
+      "post": {
+        "operationId": "create_jenis_ayam_api_v1_jenis_ayam_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JenisAyamCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JenisAyamPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Create Jenis Ayam",
+        "tags": [
+          "Master Data"
+        ]
+      }
+    },
+    "/api/v1/jenis-ayam/{id}": {
+      "delete": {
+        "operationId": "delete_jenis_ayam_api_v1_jenis_ayam__id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Delete Jenis Ayam",
+        "tags": [
+          "Master Data"
+        ]
+      },
+      "get": {
+        "operationId": "get_jenis_ayam_api_v1_jenis_ayam__id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JenisAyamPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Jenis Ayam",
+        "tags": [
+          "Master Data"
+        ]
+      },
+      "patch": {
+        "operationId": "update_jenis_ayam_api_v1_jenis_ayam__id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JenisAyamUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JenisAyamPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Update Jenis Ayam",
+        "tags": [
+          "Master Data"
+        ]
+      }
+    },
+    "/api/v1/jenis-ayam/{id}/fase": {
+      "get": {
+        "operationId": "list_fase_api_v1_jenis_ayam__id__fase_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Jumlah data yang dilewati",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "description": "Jumlah data yang dilewati",
+              "minimum": 0,
+              "title": "Skip",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Jumlah data per halaman (maksimum 100)",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "description": "Jumlah data per halaman (maksimum 100)",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FasePublic"
+                  },
+                  "title": "Response List Fase Api V1 Jenis Ayam  Id  Fase Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "List Fase",
+        "tags": [
+          "Master Data"
+        ]
+      },
+      "post": {
+        "operationId": "create_fase_api_v1_jenis_ayam__id__fase_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FaseCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FasePublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Create Fase",
+        "tags": [
+          "Master Data"
+        ]
+      }
+    },
+    "/api/v1/kandang": {
+      "get": {
+        "description": "List kandang.\nJika Pemilik: kembalikan kandang miliknya.\nJika Pekerja: kembalikan kandang yang ditugaskan kepadanya.",
+        "operationId": "list_kandang_api_v1_kandang_get",
+        "parameters": [
+          {
+            "description": "Jumlah data yang dilewati",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "description": "Jumlah data yang dilewati",
+              "minimum": 0,
+              "title": "Skip",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Jumlah data per halaman (maksimum 100)",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "description": "Jumlah data per halaman (maksimum 100)",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/KandangPublic"
+                  },
+                  "title": "Response List Kandang Api V1 Kandang Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "List Kandang",
+        "tags": [
+          "Kandang & Alat"
+        ]
+      },
+      "post": {
+        "description": "Mendaftarkan kandang baru. Hanya Pemilik.",
+        "operationId": "create_kandang_api_v1_kandang_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KandangCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KandangPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Create Kandang",
+        "tags": [
+          "Kandang & Alat"
+        ]
+      }
+    },
+    "/api/v1/kandang/{id}": {
+      "delete": {
+        "description": "Hapus kandang yang salah input beserta alat, wadah, stok, dan penugasannya.\nDitolak bila pernah punya siklus atau perintah (gunakan PATCH status=NONAKTIF) atau stok belum 0.",
+        "operationId": "hapus_kandang_api_v1_kandang__id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Hapus Kandang",
+        "tags": [
+          "Kandang & Alat"
+        ]
+      },
+      "get": {
+        "description": "Detail kandang. Pemilik & Pekerja yang ditugaskan.",
+        "operationId": "get_kandang_api_v1_kandang__id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KandangDetailPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Kandang",
+        "tags": [
+          "Kandang & Alat"
+        ]
+      },
+      "patch": {
+        "description": "Update kandang. Hanya Pemilik.",
+        "operationId": "update_kandang_api_v1_kandang__id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KandangUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KandangPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Update Kandang",
+        "tags": [
+          "Kandang & Alat"
+        ]
+      }
+    },
+    "/api/v1/kandang/{id}/alat": {
+      "get": {
+        "description": "Alat kandang ini beserta wadah, bahan, dan stok (untuk layar kandang). `null` bila belum ada alat.\nStatus alat sudah memperhitungkan heartbeat kedaluwarsa. `device_token` tidak pernah dikembalikan.",
+        "operationId": "get_alat_kandang_api_v1_kandang__id__alat_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/AlatDetailPublic"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Get Alat Kandang Api V1 Kandang  Id  Alat Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Alat Kandang",
+        "tags": [
+          "Kandang & Alat"
+        ]
+      },
+      "post": {
+        "description": "Mendaftarkan alat IoT ke sebuah kandang.\ndevice_token di-generate dan HANYA DIKEMBALIKAN SEKALI di endpoint ini.",
+        "operationId": "register_alat_api_v1_kandang__id__alat_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlatWithToken"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Register Alat",
+        "tags": [
+          "Kandang & Alat"
+        ]
+      }
+    },
+    "/api/v1/kandang/{id}/penugasan": {
+      "get": {
+        "description": "Pekerja yang ditugaskan (atau pernah) di sebuah kandang. Filter `?status=AKTIF|BERAKHIR`.",
+        "operationId": "list_penugasan_kandang_api_v1_kandang__id__penugasan_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/StatusPenugasan"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "description": "Jumlah data yang dilewati",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "description": "Jumlah data yang dilewati",
+              "minimum": 0,
+              "title": "Skip",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Jumlah data per halaman (maksimum 100)",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "description": "Jumlah data per halaman (maksimum 100)",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PenugasanDetailPublic"
+                  },
+                  "title": "Response List Penugasan Kandang Api V1 Kandang  Id  Penugasan Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "List Penugasan Kandang",
+        "tags": [
+          "User & Penugasan"
+        ]
+      }
+    },
+    "/api/v1/kandang/{id}/perintah": {
+      "get": {
+        "operationId": "riwayat_perintah_api_v1_kandang__id__perintah_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Jumlah data yang dilewati",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "description": "Jumlah data yang dilewati",
+              "minimum": 0,
+              "title": "Skip",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Jumlah data per halaman (maksimum 100)",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "description": "Jumlah data per halaman (maksimum 100)",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PerintahPublic"
+                  },
+                  "title": "Response Riwayat Perintah Api V1 Kandang  Id  Perintah Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Riwayat Perintah",
+        "tags": [
+          "Perintah Manual"
+        ]
+      }
+    },
+    "/api/v1/kandang/{id}/perintah/beri-makan": {
+      "post": {
+        "operationId": "beri_makan_manual_api_v1_kandang__id__perintah_beri_makan_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PerintahBeriMakanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PerintahPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Beri Makan Manual",
+        "tags": [
+          "Perintah Manual"
+        ]
+      }
+    },
+    "/api/v1/kandang/{id}/perintah/stop-darurat": {
+      "post": {
+        "operationId": "stop_darurat_api_v1_kandang__id__perintah_stop_darurat_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PerintahPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Stop Darurat",
+        "tags": [
+          "Perintah Manual"
+        ]
+      }
+    },
+    "/api/v1/kandang/{id}/siklus": {
+      "post": {
+        "description": "Memulai siklus baru di sebuah kandang. Ditolak jika masih ada siklus aktif.",
+        "operationId": "create_siklus_api_v1_kandang__id__siklus_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SiklusKandangCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiklusKandangPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Create Siklus",
+        "tags": [
+          "Siklus & Populasi"
+        ]
+      }
+    },
+    "/api/v1/kandang/{id}/siklus/aktif": {
+      "get": {
+        "description": "Mendapatkan siklus yang sedang aktif di suatu kandang (bisa null).",
+        "operationId": "get_active_siklus_api_v1_kandang__id__siklus_aktif_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/SiklusKandangPublic"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Get Active Siklus Api V1 Kandang  Id  Siklus Aktif Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Active Siklus",
+        "tags": [
+          "Siklus & Populasi"
+        ]
+      }
+    },
+    "/api/v1/kandang/{id}/stok": {
+      "get": {
+        "operationId": "get_stok_kandang_api_v1_kandang__id__stok_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/StokPublic"
+                  },
+                  "title": "Response Get Stok Kandang Api V1 Kandang  Id  Stok Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Stok Kandang",
+        "tags": [
+          "Manajemen Stok"
+        ]
+      }
+    },
+    "/api/v1/notifikasi": {
+      "get": {
+        "operationId": "list_notifikasi_api_v1_notifikasi_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/StatusNotifikasi"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "description": "Jumlah data yang dilewati",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "description": "Jumlah data yang dilewati",
+              "minimum": 0,
+              "title": "Skip",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Jumlah data per halaman (maksimum 100)",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "description": "Jumlah data per halaman (maksimum 100)",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/NotifikasiPublic"
+                  },
+                  "title": "Response List Notifikasi Api V1 Notifikasi Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "List Notifikasi",
+        "tags": [
+          "Notifikasi"
+        ]
+      }
+    },
+    "/api/v1/notifikasi/baca-semua": {
+      "patch": {
+        "operationId": "baca_semua_notifikasi_api_v1_notifikasi_baca_semua_patch",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Baca Semua Notifikasi",
+        "tags": [
+          "Notifikasi"
+        ]
+      }
+    },
+    "/api/v1/notifikasi/{id}/baca": {
+      "patch": {
+        "operationId": "baca_notifikasi_api_v1_notifikasi__id__baca_patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotifikasiPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Baca Notifikasi",
+        "tags": [
+          "Notifikasi"
+        ]
+      }
+    },
+    "/api/v1/nutrisi": {
+      "get": {
+        "operationId": "list_nutrisi_api_v1_nutrisi_get",
+        "parameters": [
+          {
+            "description": "Jumlah data yang dilewati",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "description": "Jumlah data yang dilewati",
+              "minimum": 0,
+              "title": "Skip",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Jumlah data per halaman (maksimum 100)",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "description": "Jumlah data per halaman (maksimum 100)",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/NutrisiPublic"
+                  },
+                  "title": "Response List Nutrisi Api V1 Nutrisi Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "List Nutrisi",
+        "tags": [
+          "Master Data"
+        ]
+      },
+      "post": {
+        "operationId": "create_nutrisi_api_v1_nutrisi_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NutrisiCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NutrisiPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Create Nutrisi",
+        "tags": [
+          "Master Data"
+        ]
+      }
+    },
+    "/api/v1/nutrisi/{id}": {
+      "delete": {
+        "operationId": "delete_nutrisi_api_v1_nutrisi__id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Delete Nutrisi",
+        "tags": [
+          "Master Data"
+        ]
+      },
+      "get": {
+        "operationId": "get_nutrisi_api_v1_nutrisi__id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NutrisiPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Nutrisi",
+        "tags": [
+          "Master Data"
+        ]
+      },
+      "patch": {
+        "operationId": "update_nutrisi_api_v1_nutrisi__id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NutrisiUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NutrisiPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Update Nutrisi",
+        "tags": [
+          "Master Data"
+        ]
+      }
+    },
+    "/api/v1/penugasan/{id}": {
+      "delete": {
+        "description": "Mengakhiri penugasan (soft delete / set status BERAKHIR).",
+        "operationId": "akhiri_penugasan_api_v1_penugasan__id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Akhiri Penugasan",
+        "tags": [
+          "User & Penugasan"
+        ]
+      }
+    },
+    "/api/v1/perintah/{id}": {
+      "get": {
+        "operationId": "detail_perintah_api_v1_perintah__id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PerintahDetailPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Detail Perintah",
+        "tags": [
+          "Perintah Manual"
+        ]
+      }
+    },
+    "/api/v1/siklus/{id}": {
+      "delete": {
+        "description": "Hapus siklus yang salah input beserta catatan populasi dan formulasinya.\nDitolak bila formulasinya sudah dipakai perintah (riwayat); gunakan POST /siklus/{id}/selesai.",
+        "operationId": "hapus_siklus_api_v1_siklus__id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Hapus Siklus",
+        "tags": [
+          "Siklus & Populasi"
+        ]
+      },
+      "patch": {
+        "description": "Koreksi jumlah ayam / tanggal mulai yang salah input (Pemilik, siklus aktif).\n`jumlah_ayam` menggantikan nilai saat ini; formulasi aktif ditandai PERLU_DITINJAU karena berat per sesi bergantung populasi.",
+        "operationId": "koreksi_siklus_api_v1_siklus__id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SiklusKandangUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiklusKandangPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Koreksi Siklus",
+        "tags": [
+          "Siklus & Populasi"
+        ]
+      }
+    },
+    "/api/v1/siklus/{id}/fase": {
+      "patch": {
+        "description": "Pindah fase ayam. Formulasi lama akan otomatis ditandai PERLU_DITINJAU\nkarena kebutuhan nutrisinya berubah.",
+        "operationId": "update_fase_siklus_api_v1_siklus__id__fase_patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SiklusKandangUpdateFase"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiklusKandangPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Update Fase Siklus",
+        "tags": [
+          "Siklus & Populasi"
+        ]
+      }
+    },
+    "/api/v1/siklus/{id}/formulasi": {
+      "get": {
+        "operationId": "riwayat_formulasi_api_v1_siklus__id__formulasi_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Jumlah data yang dilewati",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "description": "Jumlah data yang dilewati",
+              "minimum": 0,
+              "title": "Skip",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Jumlah data per halaman (maksimum 100)",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "description": "Jumlah data per halaman (maksimum 100)",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FormulasiPublic"
+                  },
+                  "title": "Response Riwayat Formulasi Api V1 Siklus  Id  Formulasi Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Riwayat Formulasi",
+        "tags": [
+          "Formulasi"
+        ]
+      }
+    },
+    "/api/v1/siklus/{id}/formulasi/manual": {
+      "post": {
+        "operationId": "generate_formulasi_manual_endpoint_api_v1_siklus__id__formulasi_manual_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FormulasiManualRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormulasiPreview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Generate Formulasi Manual Endpoint",
+        "tags": [
+          "Formulasi"
+        ]
+      }
+    },
+    "/api/v1/siklus/{id}/formulasi/otomatis": {
+      "post": {
+        "operationId": "generate_formulasi_otomatis_endpoint_api_v1_siklus__id__formulasi_otomatis_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormulasiPreview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Generate Formulasi Otomatis Endpoint",
+        "tags": [
+          "Formulasi"
+        ]
+      }
+    },
+    "/api/v1/siklus/{id}/populasi": {
+      "get": {
+        "description": "Riwayat catatan populasi siklus (tanggal terbaru dulu), berpaginasi.",
+        "operationId": "list_perubahan_populasi_api_v1_siklus__id__populasi_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Jumlah data yang dilewati",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "description": "Jumlah data yang dilewati",
+              "minimum": 0,
+              "title": "Skip",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Jumlah data per halaman (maksimum 100)",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "description": "Jumlah data per halaman (maksimum 100)",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PerubahanPopulasiPublic"
+                  },
+                  "title": "Response List Perubahan Populasi Api V1 Siklus  Id  Populasi Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "List Perubahan Populasi",
+        "tags": [
+          "Siklus & Populasi"
+        ]
+      },
+      "post": {
+        "description": "Mencatat mortalitas, panen, atau penambahan ayam.",
+        "operationId": "catat_perubahan_populasi_api_v1_siklus__id__populasi_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PerubahanPopulasiCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PerubahanPopulasiPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Catat Perubahan Populasi",
+        "tags": [
+          "Siklus & Populasi"
+        ]
+      }
+    },
+    "/api/v1/siklus/{id}/populasi/{populasi_id}": {
+      "delete": {
+        "description": "Hapus catatan populasi yang salah input; efeknya pada jumlah ayam dibalik (Pemilik, siklus aktif).",
+        "operationId": "hapus_perubahan_populasi_api_v1_siklus__id__populasi__populasi_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "populasi_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Populasi Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Hapus Perubahan Populasi",
+        "tags": [
+          "Siklus & Populasi"
+        ]
+      }
+    },
+    "/api/v1/siklus/{id}/selesai": {
+      "post": {
+        "description": "Tandai siklus sebagai selesai.",
+        "operationId": "akhiri_siklus_api_v1_siklus__id__selesai_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiklusKandangPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Akhiri Siklus",
+        "tags": [
+          "Siklus & Populasi"
+        ]
+      }
+    },
+    "/api/v1/template/jenis-ayam": {
+      "get": {
+        "description": "Daftar template bawaan (read-only, tidak terikat Pemilik). Nilai hanya contoh, sesuaikan sebelum dipakai.",
+        "operationId": "list_template_api_v1_template_jenis_ayam_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TemplateJenisAyam"
+                  },
+                  "title": "Response List Template Api V1 Template Jenis Ayam Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "List Template",
+        "tags": [
+          "Template Referensi"
+        ]
+      }
+    },
+    "/api/v1/template/jenis-ayam/{template_id}/salin": {
+      "post": {
+        "description": "Salin template ke akun Pemilik: jenis ayam + fase + kebutuhan nutrisi + standar konsumsi.\nNutrisi dicocokkan berdasarkan nama dengan nutrisi milik Pemilik; yang belum ada dibuat otomatis.",
+        "operationId": "salin_api_v1_template_jenis_ayam__template_id__salin_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "template_id",
+            "required": true,
+            "schema": {
+              "title": "Template Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SalinTemplateRequest",
+                "default": {}
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JenisAyamPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Salin",
+        "tags": [
+          "Template Referensi"
+        ]
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "description": "Mendapatkan daftar pekerja (hanya Pemilik).",
+        "operationId": "get_users_api_v1_users_get",
+        "parameters": [
+          {
+            "description": "Jumlah data yang dilewati",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "description": "Jumlah data yang dilewati",
+              "minimum": 0,
+              "title": "Skip",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Jumlah data per halaman (maksimum 100)",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "description": "Jumlah data per halaman (maksimum 100)",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/UserPublic"
+                  },
+                  "title": "Response Get Users Api V1 Users Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Users",
+        "tags": [
+          "User & Penugasan"
+        ]
+      },
+      "post": {
+        "description": "Membuat user baru. Hanya Pemilik yang dapat membuat user,\ndan role yang dibuat harus PEKERJA.",
+        "operationId": "create_user_api_v1_users_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Create User",
+        "tags": [
+          "User & Penugasan"
+        ]
+      }
+    },
+    "/api/v1/users/{id}/penugasan": {
+      "get": {
+        "description": "Kandang yang ditugaskan (atau pernah) kepada seorang Pekerja. Filter `?status=AKTIF|BERAKHIR`.",
+        "operationId": "list_penugasan_pekerja_api_v1_users__id__penugasan_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/StatusPenugasan"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "description": "Jumlah data yang dilewati",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "description": "Jumlah data yang dilewati",
+              "minimum": 0,
+              "title": "Skip",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Jumlah data per halaman (maksimum 100)",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "description": "Jumlah data per halaman (maksimum 100)",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PenugasanDetailPublic"
+                  },
+                  "title": "Response List Penugasan Pekerja Api V1 Users  Id  Penugasan Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "List Penugasan Pekerja",
+        "tags": [
+          "User & Penugasan"
+        ]
+      },
+      "post": {
+        "description": "Menugaskan Pekerja ke sebuah Kandang.",
+        "operationId": "buat_penugasan_api_v1_users__id__penugasan_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PenugasanKandangCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PenugasanKandangPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Buat Penugasan",
+        "tags": [
+          "User & Penugasan"
+        ]
+      }
+    },
+    "/api/v1/users/{id}/status": {
+      "patch": {
+        "description": "Mengubah status pekerja (misal: dinonaktifkan). Hanya Pemilik.",
+        "operationId": "update_user_status_api_v1_users__id__status_patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserStatusUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Update User Status",
+        "tags": [
+          "User & Penugasan"
+        ]
+      }
+    },
+    "/api/v1/wadah/{id}": {
+      "delete": {
+        "description": "Hapus wadah yang salah input. Ditolak bila sudah pernah mengeluarkan pakan atau stok belum 0.",
+        "operationId": "hapus_wadah_api_v1_wadah__id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Hapus Wadah",
+        "tags": [
+          "Kandang & Alat"
+        ]
+      },
+      "patch": {
+        "description": "Mapping ulang bahan pakan ke wadah tertentu.",
+        "operationId": "update_wadah_api_v1_wadah__id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WadahUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WadahPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Update Wadah",
+        "tags": [
+          "Kandang & Alat"
+        ]
+      }
+    },
+    "/api/v1/wadah/{id}/stok/isi-ulang": {
+      "post": {
+        "operationId": "isi_ulang_stok_api_v1_wadah__id__stok_isi_ulang_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IsiUlangStokRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransaksiStokPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Isi Ulang Stok",
+        "tags": [
+          "Manajemen Stok"
+        ]
+      }
+    },
+    "/api/v1/wadah/{id}/stok/koreksi": {
+      "post": {
+        "operationId": "koreksi_stok_api_v1_wadah__id__stok_koreksi_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KoreksiStokRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransaksiStokPublic"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Koreksi Stok",
+        "tags": [
+          "Manajemen Stok"
+        ]
+      }
+    },
+    "/api/v1/wadah/{id}/stok/transaksi": {
+      "get": {
+        "operationId": "riwayat_transaksi_stok_api_v1_wadah__id__stok_transaksi_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Jumlah data yang dilewati",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "description": "Jumlah data yang dilewati",
+              "minimum": 0,
+              "title": "Skip",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Jumlah data per halaman (maksimum 100)",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "description": "Jumlah data per halaman (maksimum 100)",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TransaksiStokPublic"
+                  },
+                  "title": "Response Riwayat Transaksi Stok Api V1 Wadah  Id  Stok Transaksi Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Riwayat Transaksi Stok",
+        "tags": [
+          "Manajemen Stok"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "description": "Cek cepat: server jalan & bisa dipanggil. Belum menyentuh database.",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health"
+      }
+    },
+    "/health/db": {
+      "get": {
+        "description": "Cek kesiapan: server dapat menjalankan query ke database. 503 bila database tidak terjangkau.",
+        "operationId": "health_db_health_db_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health Db"
+      }
+    }
+  }
+}

@@ -43,6 +43,8 @@ endpoint untuk **simulator alat**. Tidak ada endpoint jadwal/pengajuan
 
 ## 2. User & Penugasan (BR-02, BR-03)
 
+> **Daftar penugasan (5B), hanya Pemilik:** `GET /kandang/{id}/penugasan` (pekerja di sebuah kandang) dan `GET /users/{id}/penugasan` (kandang milik seorang Pekerja). Respons `[{id, user_id, kandang_id, tanggal_mulai, status, nama_pekerja, email_pekerja, nama_kandang}]`, tanggal mulai terbaru dulu, berpaginasi (`X-Total-Count`), filter `?status=AKTIF|BERAKHIR` (nilai lain `422`). Id penugasan dipakai oleh `DELETE /penugasan/{id}`. Pekerja `403`; Pemilik lain `403/404`.
+
 > **Fase 1:** Pekerja dimiliki Pemilik yang membuatnya (`User.pemilik_id`, tidak diekspos di response). `GET /users` dan `PATCH /users/{id}/status` hanya
 > menjangkau Pekerja milik Pemilik yang login; penugasan memvalidasi kandang & Pekerja milik Pemilik, penugasan aktif ganda → `409`.
 
@@ -96,6 +98,16 @@ Masing-masing resource mendukung `POST` (create, 201), `GET` (list, dengan `?jen
 
 ### Kandungan nutrisi bahan & kebutuhan nutrisi fase
 
+> **Endpoint baca (5B, untuk layar edit di UI)** — hanya Pemilik pemilik data; `404` bila bukan miliknya:
+>
+> | Method | Path | Response |
+> |---|---|---|
+> | GET | `/bahan-pakan/{id}/nutrisi` | `[{id, bahan_pakan_id, nutrisi_id, nilai_per_kg, nama_nutrisi, satuan}]` urut nama nutrisi |
+> | GET | `/fase/{id}/kebutuhan-nutrisi` | `[{id, fase_id, nutrisi_id, batas_min, batas_max, nama_nutrisi, satuan}]` urut nama nutrisi |
+> | GET | `/fase/{id}/standar-konsumsi` | `StandarKonsumsi` atau `null` bila belum diatur |
+>
+> Daftar ini tidak dipaginasi (jumlahnya terbatas per bahan/fase).
+
 | Method | Path | Body | Response |
 |---|---|---|---|
 | PUT | `/bahan-pakan/{id}/nutrisi` | `[{nutrisi_id, nilai_per_kg}]` | `KandunganNutrisiBahan[]` — replace semua sekaligus, lebih praktis dari form di UI daripada CRUD satu-satu |
@@ -112,6 +124,8 @@ Aturan salin: nutrisi dicocokkan berdasarkan **nama** (tanpa membedakan huruf) d
 **Nilai template hanya contoh berdasarkan kisaran umum, bukan rekomendasi gizi resmi** — Pemilik wajib menyesuaikannya sebelum dipakai.
 
 ## 5. Siklus & Populasi (UC-06)
+
+> **Daftar populasi (5B):** `GET /siklus/{id}/populasi` → `PerubahanPopulasi[]` (tanggal terbaru dulu), berpaginasi (`?skip&limit`, header `X-Total-Count`). Boleh dibaca Pemilik dan Pekerja yang ditugaskan; id dari daftar ini dipakai untuk `DELETE /siklus/{id}/populasi/{populasi_id}`.
 
 > **Koreksi salah input (Fase 1 – P1), hanya Pemilik & siklus `AKTIF`:**
 >

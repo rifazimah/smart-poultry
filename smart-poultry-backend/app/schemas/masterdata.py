@@ -141,3 +141,15 @@ class KebutuhanNutrisiFasePublic(BaseModel):
     batas_max: Optional[float] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class KebutuhanNutrisiFaseDetail(KebutuhanNutrisiFasePublic):
+    """Kebutuhan nutrisi fase + nama dan satuan nutrisi (untuk layar edit)."""
+    nama_nutrisi: str
+    satuan: str
+
+
+class KandunganNutrisiBahanDetail(KandunganNutrisiBahanPublic):
+    """Kandungan nutrisi bahan + nama dan satuan nutrisi (untuk layar edit)."""
+    nama_nutrisi: str
+    satuan: str

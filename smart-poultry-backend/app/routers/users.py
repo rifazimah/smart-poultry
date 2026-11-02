@@ -1,18 +1,20 @@
 import uuid
-from typing import Annotated, List
+from typing import Annotated, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlmodel import Session, select
 
 from app.database import get_session
 from app.models.akses import User, PenugasanKandang
+from app.models.fisik import Kandang
 from app.models.enums import PeranUser, StatusPenugasan
 from app.schemas.user import (
     UserPublic, 
     UserCreate, 
     UserStatusUpdate, 
     PenugasanKandangCreate, 
-    PenugasanKandangPublic
+    PenugasanKandangPublic,
+    PenugasanDetailPublic,
 )
 from app.routers.kandang import _get_kandang_or_404
 from app.services.audit import catat_audit
@@ -157,3 +159,54 @@ def akhiri_penugasan(
     catat_audit(session, current_pemilik.id, "AKHIRI_PENUGASAN", "penugasan_kandang", penugasan.id,
                 nilai_lama="AKTIF", nilai_baru="BERAKHIR")
     session.commit()
+
+
+def _penugasan_detail(session: Session, rows: List[PenugasanKandang]) -> List[PenugasanDetailPublic]:
+    if not rows:
+        return []
+    users = {u.id: u for u in session.exec(select(User).where(User.id.in_({r.user_id for r in rows}))).all()}
+    kandang = {k.id: k for k in session.exec(select(Kandang).where(Kandang.id.in_({r.kandang_id for r in rows}))).all()}
+    return [
+        PenugasanDetailPublic(
+            id=r.id, user_id=r.user_id, kandang_id=r.kandang_id, tanggal_mulai=r.tanggal_mulai, status=r.status,
+            nama_pekerja=users[r.user_id].nama, email_pekerja=users[r.user_id].email,
+            nama_kandang=kandang[r.kandang_id].nama,
+        )
+        for r in rows
+    ]
+
+
+@router.get("/kandang/{id}/penugasan", response_model=List[PenugasanDetailPublic])
+def list_penugasan_kandang(
+    id: uuid.UUID,
+    current_pemilik: Annotated[User, Depends(get_current_pemilik)],
+    session: Annotated[Session, Depends(get_session)],
+    response: Response,
+    p: Annotated[Paginasi, Depends()],
+    status_penugasan: Annotated[Optional[StatusPenugasan], Query(alias="status")] = None,
+):
+    """Pekerja yang ditugaskan (atau pernah) di sebuah kandang. Filter `?status=AKTIF|BERAKHIR`."""
+    _get_kandang_or_404(session, id, current_pemilik)
+    query = select(PenugasanKandang).where(PenugasanKandang.kandang_id == id)
+    if status_penugasan:
+        query = query.where(PenugasanKandang.status == status_penugasan)
+    query = query.order_by(PenugasanKandang.tanggal_mulai.desc(), PenugasanKandang.id)
+    return _penugasan_detail(session, terapkan(session, response, query, p))
+
+
+@router.get("/users/{id}/penugasan", response_model=List[PenugasanDetailPublic])
+def list_penugasan_pekerja(
+    id: uuid.UUID,
+    current_pemilik: Annotated[User, Depends(get_current_pemilik)],
+    session: Annotated[Session, Depends(get_session)],
+    response: Response,
+    p: Annotated[Paginasi, Depends()],
+    status_penugasan: Annotated[Optional[StatusPenugasan], Query(alias="status")] = None,
+):
+    """Kandang yang ditugaskan (atau pernah) kepada seorang Pekerja. Filter `?status=AKTIF|BERAKHIR`."""
+    pekerja = _get_pekerja_or_404(session, id, current_pemilik)
+    query = select(PenugasanKandang).where(PenugasanKandang.user_id == pekerja.id)
+    if status_penugasan:
+        query = query.where(PenugasanKandang.status == status_penugasan)
+    query = query.order_by(PenugasanKandang.tanggal_mulai.desc(), PenugasanKandang.id)
+    return _penugasan_detail(session, terapkan(session, response, query, p))
