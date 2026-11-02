@@ -24,7 +24,7 @@ def health():
     return {"status": "ok"}
 
 
-from .routers import auth, users, kandang, masterdata, siklus, formulasi, perintah, device, stok, notifikasi
+from .routers import auth, users, kandang, masterdata, siklus, formulasi, perintah, device, stok, notifikasi, template
 
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(users.router, prefix="/api/v1")
@@ -36,3 +36,4 @@ app.include_router(perintah.router, prefix="/api/v1")
 app.include_router(device.router, prefix="/api/v1")
 app.include_router(stok.router, prefix="/api/v1")
 app.include_router(notifikasi.router, prefix="/api/v1")
+app.include_router(template.router, prefix="/api/v1")
