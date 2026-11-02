@@ -102,14 +102,22 @@ function BagianSiklus({ id }: { id: string }) {
 
   return (
     <div className="space-y-3">
-      {pengguna?.role === "PEMILIK" && (
+      <div className="flex flex-wrap gap-2">
         <Link
-          to={`/kandang/${id}/formulasi`}
+          to={`/kandang/${id}/beri-makan`}
           className="inline-flex min-h-10 items-center rounded-lg bg-brand-700 px-4 text-sm font-semibold text-white hover:bg-brand-800"
         >
-          Kelola formulasi pakan
+          Beri makan
         </Link>
-      )}
+        {pengguna?.role === "PEMILIK" && (
+          <Link
+            to={`/kandang/${id}/formulasi`}
+            className="inline-flex min-h-10 items-center rounded-lg border border-stone-300 bg-white px-4 text-sm font-semibold text-stone-800 hover:bg-stone-100"
+          >
+            Kelola formulasi pakan
+          </Link>
+        )}
+      </div>
       <Card className="grid gap-3 text-sm sm:grid-cols-4">
         <Fakta label="Jenis ayam" nilai={jenis?.nama ?? "..."} />
         <Fakta label="Fase" nilai={fase?.nama ?? "..."} />
