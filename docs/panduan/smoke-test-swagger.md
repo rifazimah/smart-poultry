@@ -80,9 +80,9 @@ Kandungan nutrisi per bahan — `PUT /bahan-pakan/{id}/nutrisi` (200, array hasi
 |---|---|---|---|
 | 4.1 | `POST /kandang` | `{"nama":"Kandang A","lokasi":"Blok 1"}` | 201 → `kandang` |
 | 4.2 | `POST /kandang/{kandang}/alat` | `{}` | 201, `device_token` muncul → **salin sekarang** (hanya tampil sekali), `alat` |
-| 4.3 | `POST /kandang/{kandang}/alat` (ulang) | `{}` | 400 `sudah memiliki Alat IoT` |
+| 4.3 | `POST /kandang/{kandang}/alat` (ulang) | `{}` | 409 `sudah memiliki Alat IoT` |
 | 4.4–4.7 | `POST /alat/{alat}/wadah` ×4 | `{"nomor_wadah":1,"bahan_pakan_id":"<jagung>"}`, lalu nomor 2 `<kedelai>`, 3 `<dedak>`, 4 `<kapur>` | 201 → `wadah1..4` |
-| 4.8 | `POST /alat/{alat}/wadah` | `{"nomor_wadah":1}` | 400 `Wadah nomor 1 sudah ada` |
+| 4.8 | `POST /alat/{alat}/wadah` | `{"nomor_wadah":1}` | 409 `Wadah nomor 1 sudah ada` |
 | 4.9 | `POST /wadah/{wadah1}/stok/isi-ulang` | `{"jumlah":20000}` | 201, jenis `ISI_ULANG` |
 | 4.10 | isi ulang wadah2 | `{"jumlah":10000}` | 201 |
 | 4.11 | isi ulang wadah3 | `{"jumlah":10000}` | 201 |
@@ -169,7 +169,7 @@ Skenario gagal: ulangi 8.5 → 8.7 → 8.8 → 8.10, lalu 8.11 dengan UUID baru 
 |---|---|---|
 | 10.1 | `POST /siklus/{siklus}/selesai` body `{}` | 200, `status: SELESAI` (sebelumnya crash) |
 | 10.2 | `GET /siklus/{siklus}/formulasi` | semua formulasi `aktif: false` |
-| 10.3 | `POST /siklus/{siklus}/populasi` | 400 `Siklus sudah selesai` |
+| 10.3 | `POST /siklus/{siklus}/populasi` | 409 `Siklus sudah selesai` |
 
 ## 11. Otorisasi (opsional, 5 menit)
 

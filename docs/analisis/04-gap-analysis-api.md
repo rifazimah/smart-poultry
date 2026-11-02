@@ -9,6 +9,8 @@ Sumber kontrak: [`../spesifikasi/API_CONTRACT.md`](../spesifikasi/API_CONTRACT.m
 
 > **P2 DELETE (1 Nov 2026):** `DELETE` untuk siklus, formulasi, wadah, alat, dan kandang ditambahkan (lihat [06](06-analisis-endpoint-delete.md)).
 
+> **Fase 2 (2 Nov 2026):** template jenis ayam (BR-13), paginasi `skip/limit` + `X-Total-Count`, `GET /kandang/{id}/alat`, nama pada `GET /formulasi/{id}`, dan konsistensi kode error 400/409/422 sudah ditambahkan; baris kontrak terkait kini ✅ (lihat [03](03-review-kode.md)).
+
 Legenda: ✅ sesuai · ⚠️ ada tapi menyimpang/berisiko (rujuk ID temuan di [03](03-review-kode.md)) · ❌ belum ada.
 
 | # | Bagian kontrak | Endpoint | Status | Catatan |
