@@ -10,7 +10,7 @@ Referensi: `smart-poultry-zumar/frontend` (repo lain, **hanya acuan desain** —
 3. **Yang tidak diikuti:** URL API di-hardcode (dan salah path untuk kita), `alert()` sebagai penanganan galat, halaman 1.000 baris, tidak ada cache/tipe/test, sidebar tetap 256 px tanpa mode ponsel, Dockerfile menjalankan dev server, logo institusi Telkom/BRIN, halaman perbandingan solver.
 4. **Domain kita jauh lebih luas** → butuh 10+ layar yang tidak ada di referensi (kandang, alat/wadah, siklus/populasi, beri makan dengan polling status, notifikasi, pekerja/penugasan) dan pengeditan data nutrisi yang **dinamis** (referensi memakai kolom tetap protein/energi/kalsium/fosfor).
 5. **API kita belum cukup untuk UI penuh:** ada 8 celah (7 di antaranya operasi baca) yang membuat sebagian layar tidak bisa dibuat, mis. membaca kebutuhan nutrisi fase, riwayat populasi, dan daftar penugasan. Ini harus ditutup di backend sebelum/selama layar terkait dibuat (bagian 8).
-6. **Rekomendasi stack:** Vite + React + **TypeScript** + Tailwind v4 (sama dengan acuan, agar tim familier) ditambah **TanStack Query**, tipe otomatis dari OpenAPI, dan komponen aksesibel berbasis Radix. Letakkan di `frontend/` pada monorepo ini.
+6. **Rekomendasi stack (versi ringan, diputuskan 2 Nov 2026):** Vite + React + **TypeScript** + Tailwind v4 (sama dengan acuan, agar tim familier) ditambah **TanStack Query**, tipe otomatis dari OpenAPI, dan hanya dua komponen Radix (Dialog, Toast). Letakkan di `frontend/` pada monorepo ini. Stack ini **tidak membebani server**: alat build hanya jalan saat build dan hasilnya file statis; lihat bagian 6.4.
 
 ## 2. Profil referensi (hasil membaca kode)
 
@@ -82,11 +82,11 @@ Referensi: `smart-poultry-zumar/frontend` (repo lain, **hanya acuan desain** —
 | Styling | Tailwind CSS v4 dengan token tema di `@theme` | Satu tempat ganti warna merek; sesuai acuan |
 | Routing | React Router 7 | Sama dengan acuan; rute berlapis dan `lazy()` per halaman |
 | Data server | **TanStack Query** | Cache, `refetchInterval` untuk polling perintah, invalidasi setelah mutasi, paginasi |
-| Tipe & klien API | `openapi-typescript` + `openapi-fetch` (atau Axios dengan tipe) | Tipe dihasilkan dari `/openapi.json` backend; skrip `npm run gen:api` |
-| Form | `react-hook-form` + `zod` | Validasi sisi klien yang selaras dengan 422; banyak formulir (nutrisi, bahan, siklus) |
-| Komponen dasar | Komponen sendiri di atas **Radix UI** (Dialog, Select, Tabs, Toast) bergaya shadcn/ui | Modal/focus-trap aksesibel tanpa membangun dari nol |
+| Tipe & klien API | `openapi-typescript` + `openapi-fetch` (tanpa Axios) | Tipe dihasilkan dari `/openapi.json` backend (`npm run gen:api`); klien jauh lebih kecil dari Axios |
+| Form | Input terkontrol biasa + helper validasi kecil | Validasi utama tetap di server (422/400/409 dipetakan ke pesan). `react-hook-form`/`zod` **ditunda**; ditambahkan hanya bila formulir master data terasa rumit |
+| Komponen dasar | Komponen sendiri; Radix **hanya** `react-dialog` dan `react-toast` | Modal/focus-trap dan toast aksesibel tanpa membangun dari nol; tab, select, dan lainnya memakai elemen HTML biasa/route |
 | Ikon | `lucide-react` | Sama dengan acuan |
-| Uji | Vitest + Testing Library + MSW; (opsional) Playwright untuk alur demo | Alur kritis: login, formulasi, beri makan |
+| Uji | Vitest + Testing Library + MSW (tanpa Playwright) | Alur kritis: login, formulasi, beri makan; alur ujung ke ujung diuji manual dengan simulator |
 | Lint | `oxlint` (dipertahankan) + `tsc --noEmit` | Cepat; tipe diperiksa terpisah |
 
 ### 6.2 Struktur folder (`frontend/`)
@@ -110,6 +110,38 @@ frontend/
 - **Paginasi**: komponen tabel generik membaca `X-Total-Count`.
 - **Format**: `Intl.NumberFormat('id-ID')`, mata uang Rupiah, tanggal lokal dari ISO UTC.
 - **Peran**: Pemilik = semua; Pekerja = dashboard, kandang yang ditugaskan, beri makan, stok (isi ulang/koreksi), populasi, notifikasi — **tanpa** master data, formulasi (membuat/simpan), pekerja, hapus.
+
+### 6.4 Target ringan (diputuskan 2 November 2026)
+
+Keputusan: aplikasi harus murah dijalankan karena hanya tugas kuliah (tidak perlu server berspek tinggi).
+
+**Mengapa stack ini ringan di server**
+| Bagian | Kapan berjalan | Beban di server |
+|---|---|---|
+| TypeScript, Vite, Node, Tailwind, oxlint, Vitest | Saat pengembangan dan di CI | Tidak ada; tipe dibuang saat build |
+| Hasil `npm run build` | Dilayani sebagai file statis | Nginx/hosting statis: puluhan MB RAM atau nol (hosting statis gratis) |
+| React, React Router, TanStack Query, Radix | Di browser pengguna | Tidak ada; hanya memengaruhi ukuran unduhan pertama |
+| Polling status perintah | Hanya saat ada perintah aktif | 1 request ringan tiap 1,5 detik |
+
+**Aturan menjaga bundle kecil**
+- Anggaran kerja: JS awal ≈ **≤ 200 KB gzip** dan CSS ≈ **≤ 30 KB gzip** (target kerja, bukan jaminan); diukur dengan `vite build` pada tahap 5A, dan CI memeriksa ukuran `dist/assets` lewat skrip shell kecil (tanpa dependency).
+- Pemecahan kode per rute (`React.lazy`) agar layar master data tidak ikut diunduh di layar Pekerja.
+- Impor ikon `lucide-react` satu per satu (tree-shaking); tanpa pustaka grafik (bar rentang nutrisi dibuat dengan CSS), tanpa pustaka tanggal (`Intl`), tanpa font web (font sistem), gambar seminimal mungkin.
+- Tanpa Axios, tanpa kit UI besar (MUI/Ant), tanpa pustaka state global tambahan.
+- Pustaka baru harus disebut beserta alasan dan ukurannya sebelum ditambahkan.
+
+**Beban nyata ada di backend (terukur 2 Nov 2026)**
+- Proses backend memakai ±**133 MB RAM** (working set) saat idle di Windows, tanpa database dan tanpa beban; perhitungan LP saat ada permintaan belum diukur.
+- Image Docker backend **632 MB** (terutama `scipy`/`numpy`): memengaruhi disk dan unduhan, bukan RAM.
+- Perkiraan: satu server **512 MB RAM** cukup, 1 GB nyaman (perkiraan dari angka di atas, belum diuji di server sungguhan).
+
+**Opsi deploy hemat** (batas paket gratis dapat berubah; periksa sebelum memilih)
+| Opsi | Biaya | Catatan |
+|---|---|---|
+| Demo dari laptop dengan `docker compose` + simulator lokal | Rp 0 | Sesuai keputusan D-8; tidak perlu server |
+| Frontend di hosting statis gratis (mis. Cloudflare Pages, Netlify, GitHub Pages) + backend dan database di penyedia berpaket gratis | Rp 0 (dengan batasan) | Backend paket gratis biasanya tidur saat tidak dipakai (permintaan pertama lambat) |
+| Frontend disajikan oleh backend (`StaticFiles` FastAPI) | Satu proses saja | Perlu perubahan kecil di backend; frontend dan API satu origin sehingga CORS tidak diperlukan |
+| Nginx + backend di satu VPS kecil | VPS termurah | Hanya bila perlu online terus-menerus |
 
 ## 7. Peta halaman → endpoint
 
@@ -160,19 +192,20 @@ Tidak diperlukan: WebSocket (polling sesuai arsitektur), refresh token (kedaluwa
 | F-6 | Penyimpanan token | `localStorage` (seperti acuan; risiko XSS dikurangi dengan tanpa HTML mentah + CSP di Nginx). Alternatif cookie httpOnly menuntut perubahan backend (ditunda) |
 | F-7 | Prioritas ponsel | Layar Pekerja (beri makan, stok, populasi) **mobile-first**; layar Pemilik/master data desktop-first tetap responsif |
 | F-8 | Celah API A1–A5 | **DIPUTUSKAN:** ditambahkan lebih dulu (P1); A6–A7 menyusul bila dibutuhkan |
+| F-9 | Target ringan (hemat server) | **DIPUTUSKAN (2 Nov 2026):** stack dipangkas (tanpa react-hook-form/zod, Playwright, Axios; Radix hanya Dialog+Toast), anggaran bundle diukur di 5A; lihat 6.4 |
 
 ## 10. Rencana bertahap (Fase 5)
 
 | Tahap | Isi | Estimasi |
 |---|---|---|
-| 5A Fondasi | `frontend/` (Vite+TS+Tailwind tokens), klien + tipe OpenAPI, Auth + 401/429, layout responsif, helper format, komponen dasar, Vitest/MSW, CI job frontend | 2–3 hari |
+| 5A Fondasi | `frontend/` (Vite+TS+Tailwind tokens), klien + tipe OpenAPI, Auth + 401/429, layout responsif, helper format, komponen dasar, Vitest/MSW, CI job frontend, **pengukuran bundle + skrip anggaran ukuran** | 2–3 hari |
 | 5B Backend P1 | Endpoint A1–A5 + test + kontrak (paralel dengan 5A) | 1 hari |
 | 5C Alur demo inti | Dashboard, detail kandang (alat/wadah/stok), siklus & populasi | 3–4 hari |
 | 5D Formulasi | Wizard preview → simpan, tabel resep, evaluasi nutrisi, diagnosis infeasible | 3 hari |
 | 5E Beri makan | Perintah + polling + stop darurat + riwayat; notifikasi | 2–3 hari |
 | 5F Master data | Nutrisi, bahan (+kandungan), jenis ayam/fase (+kebutuhan, standar), salin template | 3–4 hari |
 | 5G Pekerja | Kelola pekerja & penugasan, peran Pekerja | 1–2 hari |
-| 5H Penutup | Dockerfile+Nginx, profil compose `web`, uji ujung ke ujung dengan simulator, panduan | 2 hari |
+| 5H Penutup | Build produksi dan panduan deploy hemat (Dockerfile+Nginx/profil compose `web` hanya bila di-host sendiri), uji ujung ke ujung dengan simulator | 2 hari |
 Total ±3 minggu satu developer (±2 minggu bila dua orang bekerja paralel pada 5C–5F). **Potongan demo minimum**: 5A + 5C + 5D + 5E, dengan master data diisi lewat `seed_demo.py`/template terlebih dahulu.
 
 ## 11. Risiko
@@ -182,5 +215,6 @@ Total ±3 minggu satu developer (±2 minggu bila dua orang bekerja paralel pada 
 | Lingkup UI besar untuk waktu tersisa | Kerjakan potongan demo minimum dulu; master data lewat seed/template |
 | Selisih kontrak API ↔ UI | Tipe dibuat otomatis; CI memeriksa `gen:api` tidak menimbulkan diff |
 | Editor matriks nutrisi rumit | Mulai dari tabel sederhana per bahan (baris = nutrisi) dengan satuan |
+| Bundle membengkak seiring fitur | Anggaran ukuran diperiksa di CI; pustaka baru perlu alasan dan ukuran |
 | Pekerja memakai ponsel | Mobile-first untuk layar Pekerja, uji di lebar 375 px |
 | Menyalin kode referensi menimbulkan masalah lisensi/identitas | Menulis ulang; hanya meniru pola UX |
