@@ -26,7 +26,7 @@ Legenda severity: **K** = Kritis (fitur inti gagal / data salah), **T** = Tinggi
 > **T-4 selesai (1 Nov 2026):** `POST /formulasi` kini hanya memakai komposisi dari klien dan menghitung ulang semua nilai di server. Temuan baru tentang DELETE: lihat [06](06-analisis-endpoint-delete.md).
 
 > **Pembaruan 1 Nov 2026 (branch `fitur/fase-1-logika-inti`):** temuan bertanda ✅ sudah diperbaiki dan diuji
-> (`pytest`, 46 test). Masih terbuka: S-1..S-4, S-6..S-8, S-10, S-11, S-15, S-16, dan seluruh R-*.
+> (`pytest`, 46 test). Masih terbuka: S-2..S-4, S-6..S-8, S-10, S-11, S-15, S-16, dan seluruh R-*.
 > Catatan T-10: `berat_aktual` belum dipakai untuk koreksi stok (stok dikurangi menurut `berat_per_sesi`).
 
 ### Kritis
@@ -58,7 +58,7 @@ Legenda severity: **K** = Kritis (fitur inti gagal / data salah), **T** = Tinggi
 
 | ID | Lokasi | Temuan | Perbaikan |
 |---|---|---|---|
-| S-1 | `services/formulasi.py:186-197` | Infeasible LP mengembalikan `nutrisi_hasil=[]` dan pesan generik; kontrak & CONVENTIONS §2.5 meminta daftar nutrisi yang tak terpenuhi | Saat infeasible, hitung diagnosis per nutrisi (mis. maksimum yang bisa dicapai per nutrisi dengan LP satu-nutrisi) atau minimal sebut nutrisi berbatas |
+| S-1 ✅ *diperbaiki 2 Nov 2026* | `services/formulasi.py:186-197` | Infeasible LP mengembalikan `nutrisi_hasil=[]` dan pesan generik; kontrak & CONVENTIONS §2.5 meminta daftar nutrisi yang tak terpenuhi | Saat infeasible, hitung diagnosis per nutrisi (mis. maksimum yang bisa dicapai per nutrisi dengan LP satu-nutrisi) atau minimal sebut nutrisi berbatas |
 | S-2 | `services/formulasi.py:130-140` | `kebutuhan` kosong → 400, tetapi `bahan` tanpa baris kandungan untuk suatu nutrisi diperlakukan 0 tanpa peringatan | Beri peringatan di `pesan` bila data kandungan tidak lengkap |
 | S-3 | `services/formulasi.py` (`_evaluate_nutrisi`) | Satuan `nilai_per_kg` bahan vs batas kebutuhan (% atau kkal/kg) tidak dinormalisasi atau divalidasi | Dokumentasikan: satuan harus sama per nutrisi; validasi/peringatan di master data |
 | S-4 | `services/formulasi.py:1-4,279` | Import tak teratur di atas file; `simpan_formulasi_service` meng-import dari `app.routers.siklus` (service → router, risiko circular) | Pindahkan `_get_siklus_or_404` ke service/dependency bersama |

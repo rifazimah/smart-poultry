@@ -13,7 +13,7 @@ Skala: Kemungkinan (K) & Dampak (D) 1–3; skor = K×D.
 | RS-6 | Perubahan skema (enum/`pemilik_id`) bertentangan dengan aturan "model final" | 2 | 2 | 4 | Minta persetujuan eksplisit; migrasi Alembic autogenerate | Product owner |
 | RS-7 | Estimasi waktu frontend meleset (tim kecil, 1 bulan) | 3 | 2 | 6 | Potong UI ke alur demo saja (lihat roadmap Fase 5), pakai komponen siap pakai | Tim |
 | RS-8 (sebagian: Dockerfile + CI siap, staging online ditunda, lihat D-10) | Deploy demo tertunda karena platform belum dipilih | 2 | 2 | 4 | Putuskan di akhir Fase 2; siapkan Dockerfile lebih awal | Tim |
-| RS-9 | Data nutrisi salah satuan membuat LP infeasible tanpa petunjuk | 2 | 2 | 4 | Seed data demo tervalidasi + pesan diagnosis (S-1) | Dev backend |
+| RS-9 | Data nutrisi salah satuan membuat LP infeasible tanpa petunjuk | 2 | 2 | 4 | Seed data demo tervalidasi + diagnosis infeasible (S-1, selesai) | Dev backend |
 
 ## 2. Technical debt (urut prioritas bayar)
 1. Mismatch enum (K-1..K-3) — blocking.

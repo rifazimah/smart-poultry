@@ -15,6 +15,7 @@ from app.models.masterdata import (
 )
 from app.models.fisik import Alat, Wadah
 from app.models.operasional import SiklusKandang
+from app.services.diagnosis_formulasi import BatasNutrisi, diagnosa_infeasible
 from app.schemas.formulasi import (
     FormulasiPreview, FormulasiItemOutput, NutrisiHasilOutput, FormulasiItemInput
 )
@@ -166,15 +167,28 @@ def hitung_formulasi_otomatis(session: Session, siklus: SiklusKandang) -> Formul
     total_pakan_sesi = (standar.gram_per_ekor_per_hari * siklus.jumlah_ayam) / standar.frekuensi_makan
     
     if not res.success:
-        # Infeasible!
+        # Infeasible: tetap HTTP 200, item kosong, tetapi sebut nutrisi yang bermasalah (BR-11, S-1).
+        info = {n.id: n for n in session.exec(select(Nutrisi).where(Nutrisi.id.in_(nutrisi_ids))).all()}
+        batas = [
+            BatasNutrisi(
+                nutrisi_id=k.nutrisi_id,
+                nama=info[k.nutrisi_id].nama,
+                satuan=info[k.nutrisi_id].satuan,
+                batas_min=k.batas_min,
+                batas_max=k.batas_max,
+                kandungan=[kand_map.get(k.nutrisi_id, {}).get(b.id, 0.0) for b in bahan_list],
+            )
+            for k in kebutuhan
+        ]
+        pesan, nutrisi_diagnosis = diagnosa_infeasible(batas, bounds)
         return FormulasiPreview(
             siklus_id=siklus.id,
             mode=ModeFormulasi.OTOMATIS,
             status=StatusFormulasi.TIDAK_SEMPURNA,
             total_biaya_per_kg=None,
             item=[],
-            nutrisi_hasil=[],
-            pesan="Formulasi tidak dapat memenuhi batasan nutrisi dengan bahan pakan yang tersedia."
+            nutrisi_hasil=nutrisi_diagnosis,
+            pesan=pesan,
         )
         
     # Sukses
