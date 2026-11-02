@@ -1,4 +1,5 @@
 import { Warehouse } from "lucide-react";
+import { Link } from "react-router-dom";
 import { pesanGalat } from "../../api/errors";
 import { useAuth } from "../../auth/auth-context";
 import { Badge } from "../../components/ui/badge";
@@ -9,10 +10,14 @@ import { useDaftarKandang, type Kandang } from "./useKandang";
 
 function KartuKandang({ kandang }: { kandang: Kandang }) {
   return (
-    <Card className="flex items-start gap-3">
+    <Card className="relative flex items-start gap-3 transition-colors focus-within:ring-2 focus-within:ring-brand-500 hover:border-brand-400">
       <Warehouse className="mt-0.5 h-6 w-6 shrink-0 text-brand-700" aria-hidden="true" />
       <div className="min-w-0 flex-1">
-        <h3 className="truncate font-semibold text-stone-900">{kandang.nama}</h3>
+        <h3 className="truncate font-semibold text-stone-900">
+          <Link to={`/kandang/${kandang.id}`} className="after:absolute after:inset-0 focus:outline-none">
+            {kandang.nama}
+          </Link>
+        </h3>
         <p className="truncate text-sm text-stone-500">{kandang.lokasi || "Lokasi belum diisi"}</p>
       </div>
       <Badge nada={kandang.status === "AKTIF" ? "baik" : "netral"}>{kandang.status === "AKTIF" ? "Aktif" : "Nonaktif"}</Badge>

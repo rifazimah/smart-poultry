@@ -41,7 +41,7 @@ frontend/src/
   auth/       token (localStorage), AuthProvider, ProtectedRoute
   app/        providers, rute, layout (menu mengikuti peran)
   components/ui/  komponen dasar (button, card, dialog, toast, ...)
-  features/   satu folder per fitur (auth, dashboard, notifikasi, ...)
+  features/   satu folder per fitur (auth, dashboard, kandang, notifikasi, ...)
   lib/        format angka/rupiah/tanggal, env
   test/       setup Vitest, server MSW, helper render
 ```
