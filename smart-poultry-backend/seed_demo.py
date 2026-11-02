@@ -9,24 +9,31 @@ Alur formulasi, heartbeat alat, dan beri makan sengaja TIDAK dibuat: itu yang di
 (docs/panduan/smoke-test-swagger.md).
 
 Pakai:  python seed_demo.py        (butuh requirements-dev.txt karena memakai TestClient)
+
+Hanya untuk development: menolak berjalan bila ENVIRONMENT=production (data demo memakai kredensial publik).
+Kredensial Pemilik mengikuti seed_admin.py (ADMIN_EMAIL / ADMIN_PASSWORD, bawaan admin@smartpoultry.com / admin123).
 """
 from datetime import date
 
 from fastapi.testclient import TestClient
 from sqlmodel import Session, select
 
+from app.config import settings
 from app.database import engine
 from app.main import app
 from app.models.akses import User
 from app.models.masterdata import BahanPakan
-from seed_admin import create_initial_pemilik
+from seed_admin import create_initial_pemilik, kredensial_admin
 
 API = "/api/v1"
-EMAIL, SANDI = "admin@smartpoultry.com", "admin123"
 
 
 def main():
+    if settings.environment == "production":
+        raise SystemExit("seed_demo menolak berjalan di ENVIRONMENT=production (berisi kredensial publik).")
+
     create_initial_pemilik()  # no-op bila admin sudah ada
+    EMAIL, SANDI, _ = kredensial_admin()
 
     with Session(engine) as s:
         pemilik = s.exec(select(User).where(User.email == EMAIL)).first()
