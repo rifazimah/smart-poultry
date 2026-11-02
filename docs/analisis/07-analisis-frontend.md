@@ -103,7 +103,7 @@ frontend/
 ```
 
 ### 6.3 Keputusan teknis penting
-- **Konfigurasi**: `VITE_API_BASE_URL` (mis. `http://localhost:8000/api/v1`); CORS backend sudah mengizinkan `localhost:5173` dan mengekspos `X-Total-Count`.
+- **Konfigurasi**: `VITE_API_BASE_URL` (hanya origin, mis. `http://localhost:8000`; path di `openapi.json` sudah memuat `/api/v1`); CORS backend sudah mengizinkan `localhost:5173` dan mengekspos `X-Total-Count`.
 - **Auth**: `POST /auth/login` (JSON); simpan token; `GET /auth/me` saat muat; 401 → logout otomatis; 403 NONAKTIF dan 429 punya pesan khusus; menu mengikuti `role`, aksi dikunci pula oleh respons server.
 - **Polling perintah**: `useQuery(['perintah', id], { refetchInterval: s => final(s) ? false : 1500 })`; stepper status; berhenti pada `SUKSES/GAGAL/TIMEOUT`; tombol **Stop darurat** selalu tampak saat ada perintah aktif.
 - **Pemeta galat** (satu fungsi): `422` → pesan per field; `400` → pesan aturan; `409` → banner keadaan (alat offline, stok kurang, formulasi tidak layak, masih dipakai); `429` → hitung mundur dari `Retry-After`; `5xx`/jaringan → pesan umum + coba lagi.

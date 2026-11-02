@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+/*
+  Token tema Smart Poultry (hijau-kuning agri). Ganti warna merek cukup di sini.
+  Pakai sebagai kelas Tailwind: bg-brand-600, text-accent-500, dst.
+*/
+@theme {
+  --color-brand-50: #f0fdf4;
+  --color-brand-100: #dcfce7;
+  --color-brand-200: #bbf7d0;
+  --color-brand-500: #22c55e;
+  --color-brand-600: #16a34a;
+  --color-brand-700: #15803d;
+  --color-brand-800: #166534;
+  --color-brand-900: #14532d;
+
+  --color-accent-100: #fef9c3;
+  --color-accent-400: #facc15;
+  --color-accent-500: #eab308;
+  --color-accent-700: #a16207;
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  @apply bg-stone-50 text-stone-800 antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand-600);
+  outline-offset: 2px;
+}

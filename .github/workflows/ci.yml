@@ -1,6 +1,6 @@
 name: CI
 
-# Lint + migrasi + test backend pada setiap push dan Pull Request ke main.
+# Lint + migrasi + test backend, serta lint + tipe + test + build frontend, pada setiap push dan Pull Request ke main.
 # Panduan membaca hasilnya: docs/panduan/operasional.md
 
 on:
@@ -65,3 +65,42 @@ jobs:
 
       - name: Test (pytest)
         run: pytest -q
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Pasang dependency
+        run: npm ci
+
+      - name: Tipe API selaras dengan openapi.json
+        run: |
+          npm run gen:api
+          git diff --exit-code src/api/schema.d.ts
+
+      - name: Lint (oxlint)
+        run: npm run lint
+
+      - name: Cek tipe
+        run: npm run typecheck
+
+      - name: Test (vitest)
+        run: npm test
+
+      - name: Build dan anggaran ukuran bundle
+        run: |
+          npm run build
+          npm run check:size
