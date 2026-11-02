@@ -25,7 +25,7 @@ def health():
     return {"status": "ok"}
 
 
-from .routers import auth, users, kandang, masterdata, siklus, formulasi, perintah, device, stok, notifikasi, template
+from .routers import auth, users, kandang, masterdata, siklus, formulasi, perintah, device, stok, notifikasi, template  # noqa: E402
 
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(users.router, prefix="/api/v1")

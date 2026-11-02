@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
-from typing import Optional, Any, Dict
-from pydantic import BaseModel
+from typing import Optional
+from pydantic import ConfigDict, BaseModel
 from app.models.enums import TipePerintah, StatusPerintah, StatusEksekusi, StatusAlat
 
 
@@ -17,8 +17,7 @@ class LogEksekusiPublic(BaseModel):
     status: StatusEksekusi
     dilaporkan_pada: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PerintahPublic(BaseModel):
@@ -31,8 +30,7 @@ class PerintahPublic(BaseModel):
     status: StatusPerintah
     dibuat_pada: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PerintahDetailPublic(PerintahPublic):

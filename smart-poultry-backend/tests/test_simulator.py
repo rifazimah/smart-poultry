@@ -9,7 +9,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "simulator"))
 from run import Simulator, TokenDitolak  # noqa: E402
 
-from tests.helpers import API, buat_kandang, buat_master, get, post, simpan_formulasi_otomatis  # noqa: E402
+from tests.helpers import buat_kandang, buat_master, get, post, simpan_formulasi_otomatis  # noqa: E402
 
 
 @pytest.fixture

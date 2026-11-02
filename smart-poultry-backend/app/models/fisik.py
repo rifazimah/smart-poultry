@@ -12,7 +12,7 @@ from .enums import StatusKandang, StatusAlat, JenisTransaksi
 if TYPE_CHECKING:
     from .akses import User, PenugasanKandang
     from .masterdata import BahanPakan
-    from .operasional import SiklusKandang, Formulasi, Perintah
+    from .operasional import SiklusKandang, Perintah
 
 
 def utc_now():

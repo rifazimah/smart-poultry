@@ -1,7 +1,7 @@
 import uuid
 from datetime import date
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import ConfigDict, BaseModel, Field
 from app.models.enums import StatusSiklus, JenisPerubahan
 
 
@@ -32,8 +32,7 @@ class SiklusKandangPublic(BaseModel):
     tanggal_mulai: date
     status: StatusSiklus
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # --- PERUBAHAN POPULASI ---
@@ -52,5 +51,4 @@ class PerubahanPopulasiPublic(BaseModel):
     tanggal: date
     catatan: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

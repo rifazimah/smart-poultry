@@ -1,13 +1,12 @@
 """BR-13: template referensi jenis ayam (daftar + salin)."""
 import uuid
 
-import pytest
 from sqlalchemy import func
 from sqlmodel import Session, select
 
 from app.database import engine
 from app.models.akses import AuditLog
-from app.models.masterdata import Fase, JenisAyam, KebutuhanNutrisiFase, Nutrisi, StandarKonsumsi
+from app.models.masterdata import Fase, KebutuhanNutrisiFase, StandarKonsumsi
 from tests.conftest import login
 from tests.helpers import API, buat_master, get, post
 

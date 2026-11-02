@@ -204,7 +204,7 @@ def register_alat(
     Mendaftarkan alat IoT ke sebuah kandang.
     device_token di-generate dan HANYA DIKEMBALIKAN SEKALI di endpoint ini.
     """
-    kandang = _get_kandang_or_404(session, id, current_pemilik)
+    _get_kandang_or_404(session, id, current_pemilik)  # validasi kepemilikan
     
     # Cek apakah sudah ada alat (karena 1 kandang = max 1 alat di skema kita, unique index)
     existing_alat = session.exec(select(Alat).where(Alat.kandang_id == id)).first()

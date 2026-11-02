@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 from typing import Optional, List
-from pydantic import BaseModel
+from pydantic import ConfigDict, BaseModel
 from app.models.enums import ModeFormulasi, StatusFormulasi, StatusNutrisi
 
 
@@ -54,8 +54,7 @@ class FormulasiPublic(BaseModel):
     aktif: bool
     dibuat_pada: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class FormulasiItemPublic(BaseModel):
@@ -65,8 +64,7 @@ class FormulasiItemPublic(BaseModel):
     proporsi: float
     berat_per_sesi: float
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class FormulasiNutrisiHasilPublic(BaseModel):
@@ -77,8 +75,7 @@ class FormulasiNutrisiHasilPublic(BaseModel):
     nilai_hasil: float
     status: StatusNutrisi
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class FormulasiLengkapPublic(FormulasiPublic):

@@ -7,7 +7,7 @@ from sqlmodel import Session, select
 
 from app.models.enums import JenisNotifikasi, JenisTransaksi, StatusFormulasi, StatusSiklus
 from app.models.fisik import Alat, Stok, TransaksiStok, Wadah
-from app.models.operasional import Formulasi, FormulasiItem, Perintah, SiklusKandang
+from app.models.operasional import Formulasi, Perintah, SiklusKandang
 from app.services.notifikasi import notify
 
 # (label untuk pesan, kelas model, kondisi where)

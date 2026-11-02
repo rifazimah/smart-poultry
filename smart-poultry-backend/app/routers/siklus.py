@@ -8,7 +8,6 @@ from app.database import get_session
 from app.models.akses import User
 from app.models.enums import StatusSiklus, JenisPerubahan, StatusFormulasi, JenisNotifikasi, StatusKandang
 from app.services.notifikasi import notify
-from app.models.fisik import Kandang
 from app.models.operasional import SiklusKandang, PerubahanPopulasi, Formulasi
 from app.models.masterdata import JenisAyam, Fase
 from app.schemas.operasional import (

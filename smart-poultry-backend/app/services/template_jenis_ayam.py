@@ -6,7 +6,7 @@ PERHATIAN: angka di bawah adalah CONTOH berdasarkan kisaran umum, BUKAN rekomend
 menyesuaikannya dengan pedoman strain/pakar nutrisi sebelum dipakai untuk formulasi sungguhan.
 """
 import uuid
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from fastapi import HTTPException
 from sqlalchemy import func

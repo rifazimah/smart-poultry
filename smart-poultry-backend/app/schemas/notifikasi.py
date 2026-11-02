@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import ConfigDict, BaseModel
 from app.models.enums import JenisNotifikasi, StatusNotifikasi
 
 class NotifikasiPublic(BaseModel):
@@ -12,5 +12,4 @@ class NotifikasiPublic(BaseModel):
     status: StatusNotifikasi
     dibuat_pada: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
