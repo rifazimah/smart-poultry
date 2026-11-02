@@ -86,7 +86,7 @@ Tujuan: alur inti tidak crash.
 
 ## Fase 5 — Frontend React (paralel, ±2 minggu)
 
-> **Progres 2 Nov 2026:** 5B selesai (endpoint baca A1–A5). 5A (fondasi frontend: login, sesi, layout, dashboard kandang, notifikasi; 34 test, JS awal ±116 KB gzip) selesai di `frontend/`; panduan: [panduan/frontend.md](../panduan/frontend.md). Berikutnya 5C.
+> **Progres 2 Nov 2026:** 5B selesai (endpoint baca A1–A5). 5A (fondasi frontend: login, sesi, layout, dashboard kandang, notifikasi; 34 test, JS awal ±116 KB gzip) selesai di `frontend/`; panduan: [panduan/frontend.md](../panduan/frontend.md). 5C selesai pada branch `fitur/fase-5c-alur-inti`: detail kandang (alat, wadah, stok menipis, siklus aktif, riwayat populasi), hanya baca; 39 test. Berikutnya 5D (formulasi).
 
 > **Analisis 2 Nov 2026:** perbandingan dengan frontend referensi, rekomendasi stack, celah API (A1–A8), dan rencana bertahap 5A–5H ada di [analisis/07-analisis-frontend.md](../analisis/07-analisis-frontend.md). Urutan di bawah adalah rencana awal; rincian terbaru mengikuti dokumen itu.
 Urutan halaman (nilai demo tertinggi dulu):

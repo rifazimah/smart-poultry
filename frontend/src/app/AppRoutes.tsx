@@ -8,6 +8,8 @@ import { AppLayout } from "./AppLayout";
 // Halaman dipecah per rute agar kode layar yang tidak dibuka tidak ikut diunduh.
 const DashboardPage = lazy(() => import("../features/dashboard/DashboardPage"));
 
+const KandangDetailPage = lazy(() => import("../features/kandang/KandangDetailPage"));
+
 const memuat = (
   <div className="py-10 text-center">
     <Spinner label="Memuat halaman..." />
@@ -30,6 +32,14 @@ export function AppRoutes() {
           element={
             <Suspense fallback={memuat}>
               <DashboardPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="kandang/:id"
+          element={
+            <Suspense fallback={memuat}>
+              <KandangDetailPage />
             </Suspense>
           }
         />
