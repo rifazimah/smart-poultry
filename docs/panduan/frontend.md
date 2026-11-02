@@ -57,6 +57,7 @@ npm run gen:api                       # menulis src/api/schema.d.ts
 Commit kedua berkas. Dua pengaman: tes backend `tests/test_openapi_snapshot.py` gagal bila `openapi.json` tertinggal, dan CI frontend gagal bila `schema.d.ts` tidak sesuai `openapi.json`.
 
 ## Perilaku penting
+- Pekerja: Pemilik membuat akun Pekerja (kata sandi awal minimal 8 karakter, aturan di klien; server hanya mewajibkan role PEKERJA dan email unik) dan menugaskannya ke kandang. Pekerja hanya melihat kandang yang ditugaskan; menu dan tombol Pemilik disembunyikan, otorisasi sebenarnya di server.
 - Master data: hapus data yang masih dipakai ditolak server (409) dan alasannya tampil di dalam dialog konfirmasi. Batas maksimum bahan diketik sebagai pecahan 0–1 (0,4 = 40%); input angka menerima koma desimal.
 - Beri makan: riwayat perintah di-poll tiap 3 detik hanya selama ada perintah berstatus PENDING/DIAMBIL/BERJALAN, lalu berhenti sendiri. Tombol dinonaktifkan di UI bila alat tidak ada/offline, tidak ada formulasi aktif, atau ada perintah berjalan; aturan sebenarnya tetap dijalankan server (409).
 - Formulasi: hasil hitung hanya pratinjau sampai tombol Simpan ditekan; status `TIDAK_SEMPURNA` datang sebagai respons 200 dengan `pesan` diagnosis, bukan galat. Proporsi manual diketik dalam persen dan dikirim sebagai pecahan 0–1.
