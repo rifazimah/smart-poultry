@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import type { ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ApiError, pesanGalat } from "../../api/errors";
+import { useAuth } from "../../auth/auth-context";
 import { Badge, type NadaBadge } from "../../components/ui/badge";
 import { Card } from "../../components/ui/card";
 import { Spinner } from "../../components/ui/spinner";
@@ -90,6 +91,7 @@ function BagianStok({ id }: { id: string }) {
 }
 
 function BagianSiklus({ id }: { id: string }) {
+  const { pengguna } = useAuth();
   const siklus = useSiklusAktif(id);
   const { jenis, fase } = useNamaJenisFase(siklus.data);
   const populasi = usePopulasi(siklus.data?.id);
@@ -100,6 +102,14 @@ function BagianSiklus({ id }: { id: string }) {
 
   return (
     <div className="space-y-3">
+      {pengguna?.role === "PEMILIK" && (
+        <Link
+          to={`/kandang/${id}/formulasi`}
+          className="inline-flex min-h-10 items-center rounded-lg bg-brand-700 px-4 text-sm font-semibold text-white hover:bg-brand-800"
+        >
+          Kelola formulasi pakan
+        </Link>
+      )}
       <Card className="grid gap-3 text-sm sm:grid-cols-4">
         <Fakta label="Jenis ayam" nilai={jenis?.nama ?? "..."} />
         <Fakta label="Fase" nilai={fase?.nama ?? "..."} />
