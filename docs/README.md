@@ -16,7 +16,7 @@ Semua dokumen proyek berada di folder ini. Baca berurutan bila baru bergabung.
 | [spesifikasi/ARCHITECTURE.md](spesifikasi/ARCHITECTURE.md) | Komponen, alur data, keputusan teknis final | Developer |
 | [spesifikasi/API_CONTRACT.md](spesifikasi/API_CONTRACT.md) | Kontrak endpoint | Developer, FE |
 | [spesifikasi/CONVENTIONS.md](spesifikasi/CONVENTIONS.md) | Aturan kode (hashing, LP, struktur) | Developer |
-| [panduan/setup-backend.md](panduan/setup-backend.md) | Menjalankan DB, migrasi, server | Developer |
+| [panduan/setup-backend.md](panduan/setup-backend.md) | **Panduan setup lokal anggota tim** (Docker/WSL, venv, migrasi, seed, test, berbagi data, troubleshooting) | Semua anggota |
 | [panduan/smoke-test-swagger.md](panduan/smoke-test-swagger.md) | Skenario smoke test lewat Swagger UI | Developer, QA |
 | [panduan/smoke-test-fase-1.md](panduan/smoke-test-fase-1.md) | Smoke test khusus perilaku baru Fase 1 | Developer, QA |
 | [panduan/simulator.md](panduan/simulator.md) | Simulator alat IoT (cara pakai, opsi, skenario demo) | Developer, QA |

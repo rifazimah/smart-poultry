@@ -1,12 +1,15 @@
-version: "3.9"
-
-# Smart Poultry — local development compose
-# Starts an identical PostgreSQL Alpine instance for every team member.
+# Smart Poultry — compose untuk development lokal
+# Menjalankan PostgreSQL yang identik untuk setiap anggota tim. Setiap anggota punya database
+# SENDIRI di komputernya (tidak ada database bersama). Panduan lengkap: docs/panduan/setup-backend.md
 #
-# Usage:
-#   docker compose up -d          # start in background
-#   docker compose down           # stop (data is preserved in the volume)
-#   docker compose down -v        # stop AND wipe all data (CAUTION!)
+# Pakai:
+#   docker compose up -d          # jalankan di latar belakang
+#   docker compose ps             # tunggu sampai STATUS "healthy"
+#   docker compose down           # hentikan (data tetap ada di volume)
+#   docker compose down -v        # hentikan DAN hapus semua data (HATI-HATI!)
+#
+# Port 5432 di host bentrok dengan Postgres lain? Ubah lewat environment:
+#   POSTGRES_PORT=5433 docker compose up -d     (lalu sesuaikan port di DATABASE_URL pada .env)
 
 services:
   db:
@@ -14,15 +17,16 @@ services:
     container_name: smart-poultry-db
     restart: unless-stopped
     environment:
+      # Kredensial HANYA untuk lokal. Jangan dipakai di server yang dapat diakses publik.
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: popuri123
       POSTGRES_DB: smart_poultry
     ports:
-      # Exposes port 5432 on the host so Alembic / uvicorn running on the
-      # host machine (outside Docker) can connect via localhost:5432.
-      - "5432:5432"
+      # Membuka port ke host agar Alembic/uvicorn/pytest yang berjalan di luar Docker
+      # dapat tersambung lewat localhost:${POSTGRES_PORT:-5432}.
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
-      # Named volume — data survives `docker compose down` (without -v).
+      # Named volume — data bertahan setelah `docker compose down` (tanpa -v).
       - smart_poultry_pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin -d smart_poultry"]
@@ -32,6 +36,3 @@ services:
 
 volumes:
   smart_poultry_pgdata:
-    # Leave driver blank → uses Docker's default local driver.
-    # Data is stored in Docker's managed volume directory,
-    # completely separate from WSL file paths.

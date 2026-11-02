@@ -1,0 +1,3 @@
+# Rahasia dan data lokal (lihat docs/panduan/setup-backend.md)
+.env
+backups/

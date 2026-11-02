@@ -5,6 +5,8 @@ mengonfirmasi perilaku setelah perbaikan Fase 1. Waktu: ±30–45 menit. Acuan t
 
 ## 0. Persiapan
 
+> Belum menyiapkan lingkungan? Ikuti [panduan setup lokal](setup-backend.md) lebih dulu (Docker, venv, migrasi, seed).
+
 > **Jalan pintas:** `python seed_demo.py` (lihat [setup-backend](setup-backend.md#data-demo)) membuat seluruh data bagian 1–5 sekaligus
 > (nutrisi, bahan, fase, kandang, alat, wadah, stok, siklus) dan Pekerja Budi. Setelah itu mulai dari **bagian 6**; ID bisa diambil dari `GET` masing-masing resource.
 > Bagian 11 memakai Budi yang sudah ada, jadi langkah 11.1 dilewati.

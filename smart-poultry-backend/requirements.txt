@@ -6,6 +6,7 @@ alembic>=1.13
 pydantic-settings>=2.4
 python-jose[cryptography]>=3.3
 passlib[bcrypt]>=1.7
+bcrypt>=4.0,<4.1  # passlib 1.7: bcrypt 5 -> ValueError '72 bytes'; bcrypt 4.1+ -> galat bising '__about__'
 python-multipart>=0.0.9
 scipy>=1.13
 email-validator>=2.0
