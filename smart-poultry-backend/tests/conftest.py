@@ -1,13 +1,16 @@
 """
 Fixture test. Memakai database terpisah (smart_poultry_test) di server Postgres yang sama
-dengan DATABASE_URL. Override via env TEST_DATABASE_URL.
+dengan DATABASE_URL; dibuat otomatis bila belum ada. Override via env TEST_DATABASE_URL.
 
 DATABASE_URL harus di-set SEBELUM `app` diimport, karena engine dibuat saat import.
 """
 import os
+import re
 from pathlib import Path
 
-from sqlalchemy import text
+from sqlalchemy import create_engine, text
+from sqlalchemy.engine import make_url
+from sqlalchemy.exc import OperationalError
 
 
 def _test_database_url() -> str:
@@ -28,6 +31,32 @@ TEST_URL = _test_database_url()
 # Pengaman: test menghapus seluruh schema, jadi hanya boleh berjalan pada database *_test.
 if not TEST_URL.rsplit("/", 1)[-1].split("?")[0].endswith("_test"):
     raise RuntimeError(f"Nama database test harus berakhiran '_test': {TEST_URL.rsplit('/', 1)[-1]}")
+
+
+def _pastikan_database_test_ada(url_str: str) -> None:
+    """Buat database *_test bila belum ada (konek ke database `postgres` pada server yang sama)."""
+    url = make_url(url_str)
+    nama = url.database
+    if not re.fullmatch(r"[A-Za-z0-9_]+_test", nama or ""):
+        raise RuntimeError(f"Nama database test tidak valid: {nama!r}")
+    admin = create_engine(
+        url.set(database="postgres"), isolation_level="AUTOCOMMIT", connect_args={"connect_timeout": 5}
+    )
+    try:
+        with admin.connect() as conn:
+            ada = conn.execute(text("SELECT 1 FROM pg_database WHERE datname = :n"), {"n": nama}).scalar()
+            if not ada:
+                conn.execute(text(f'CREATE DATABASE "{nama}"'))
+    except OperationalError as e:
+        raise RuntimeError(
+            f"Tidak bisa tersambung ke Postgres di {url.host}:{url.port}. Jalankan `docker compose up -d` "
+            f"dan periksa DATABASE_URL di .env. Detail: {e.orig}"
+        ) from e
+    finally:
+        admin.dispose()
+
+
+_pastikan_database_test_ada(TEST_URL)
 os.environ["DATABASE_URL"] = TEST_URL
 
 import pytest  # noqa: E402
