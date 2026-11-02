@@ -1,0 +1,11 @@
+# Hanya konfigurasi alat bantu; dependency aplikasi ada di requirements.txt / requirements-dev.txt.
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+extend-exclude = ["alembic/versions", ".venv"]
+
+[tool.ruff.lint]
+# Aturan konservatif: kesalahan sintaks/runtime (E9), import & variabel tak terpakai/tak terdefinisi (F),
+# kesalahan gaya yang umumnya bug (E4 import, E7 pernyataan). `ruff format` sengaja tidak diwajibkan.
+select = ["E4", "E7", "E9", "F"]

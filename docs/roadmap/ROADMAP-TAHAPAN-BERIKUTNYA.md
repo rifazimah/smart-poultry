@@ -74,6 +74,8 @@ Tujuan: alur inti tidak crash.
 **DoD:** demo CLI tanpa frontend: dari seed sampai stok turun dan notifikasi muncul.
 
 ## Fase 4 — Kualitas & operasional (±4 hari)
+
+> ✅ **Selesai (2 Nov 2026):** 4.1 test (169), 4.2 ruff (lint saja; `ruff format` tidak diwajibkan), 4.3 Dockerfile + compose profil `app` + `/health/db`, 4.4 GitHub Actions (belum pernah berjalan di GitHub), 4.5 hardening (secret production, login NONAKTIF + rate-limit, seed tanpa password bawaan, hash token alat). Panduan: [operasional.md](../panduan/operasional.md).
 | Task | Rincian |
 |---|---|
 | 4.1 Test | `pytest` + DB test (SQLite tidak cukup karena ENUM/UUID → gunakan Postgres test via compose atau `testcontainers`). Prioritas: LP (feasible/infeasible/batas bahan), manual, alur perintah, otorisasi Pemilik/Pekerja/lintas-Pemilik, idempotensi log |

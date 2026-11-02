@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import ConfigDict, BaseModel, Field
 from app.models.enums import JenisTransaksi
 
 
@@ -21,8 +21,7 @@ class StokPublic(BaseModel):
     ambang_menipis: Optional[float] = None
     nama_bahan: Optional[str] = None # Akan diisi secara manual saat query
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TransaksiStokPublic(BaseModel):
@@ -34,5 +33,4 @@ class TransaksiStokPublic(BaseModel):
     alasan: Optional[str] = None
     dibuat_pada: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

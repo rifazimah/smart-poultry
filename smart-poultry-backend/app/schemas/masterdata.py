@@ -1,6 +1,6 @@
 import uuid
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import ConfigDict, BaseModel
 from app.models.enums import TipeBatas, StatusBahan
 
 
@@ -18,8 +18,7 @@ class JenisAyamPublic(BaseModel):
     pemilik_id: uuid.UUID
     nama: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # --- FASE ---
@@ -42,8 +41,7 @@ class FasePublic(BaseModel):
     umur_min_hari: int
     umur_max_hari: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # --- NUTRISI ---
@@ -66,8 +64,7 @@ class NutrisiPublic(BaseModel):
     satuan: str
     tipe_batas: TipeBatas
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # --- BAHAN PAKAN ---
@@ -92,8 +89,7 @@ class BahanPakanPublic(BaseModel):
     status_sistem: StatusBahan
     batas_maksimum: Optional[float] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # --- STANDAR KONSUMSI ---
@@ -112,8 +108,7 @@ class StandarKonsumsiPublic(BaseModel):
     durasi_aduk: int
     volume_air: float
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # --- KANDUNGAN NUTRISI BAHAN ---
@@ -128,8 +123,7 @@ class KandunganNutrisiBahanPublic(BaseModel):
     nutrisi_id: uuid.UUID
     nilai_per_kg: float
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # --- KEBUTUHAN NUTRISI FASE ---
@@ -146,5 +140,4 @@ class KebutuhanNutrisiFasePublic(BaseModel):
     batas_min: Optional[float] = None
     batas_max: Optional[float] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

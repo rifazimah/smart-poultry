@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+import hashlib
+from datetime import datetime, timedelta, timezone
 from typing import Annotated, Optional
 
 from fastapi import Depends, HTTPException, status
@@ -12,6 +13,7 @@ from app.database import get_session
 from app.models.akses import User
 from app.models.enums import StatusUser, PeranUser
 from app.schemas.auth import TokenData
+from app.services.ratelimit import pembatas_login
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -25,12 +27,44 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
+
+def hash_device_token(token: str) -> str:
+    """
+    SHA-256 (hex) dari token alat. Token alat adalah 256-bit acak (secrets.token_hex(32)), sehingga hash tanpa salt
+    cukup; yang disimpan di database hanya hash ini, token mentah hanya ditampilkan sekali saat dibuat/dirotasi.
+    """
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+def autentikasi_pengguna(session: Session, email: str, kata_sandi: str, klien: str) -> User:
+    """
+    Verifikasi email+kata sandi untuk login. Percobaan gagal dibatasi per (email, alamat klien):
+    429 + Retry-After bila melewati batas. User NONAKTIF ditolak dengan 403 (setelah kata sandi benar,
+    agar status akun tidak bocor ke penebak kata sandi).
+    """
+    kunci = f"{email.strip().lower()}|{klien}"
+    pembatas_login.periksa(kunci)
+
+    user = session.exec(select(User).where(User.email == email)).first()
+    if not user or not verify_password(kata_sandi, user.kata_sandi_hash):
+        pembatas_login.catat_gagal(kunci)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Email atau kata sandi salah",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    if user.status == StatusUser.NONAKTIF:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User nonaktif")
+
+    pembatas_login.reset(kunci)
+    return user
+
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=settings.jwt_expire_minutes)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=settings.jwt_expire_minutes)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, settings.jwt_secret, algorithm="HS256")
     return encoded_jwt

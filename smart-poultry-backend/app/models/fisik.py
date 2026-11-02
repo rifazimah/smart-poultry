@@ -12,7 +12,7 @@ from .enums import StatusKandang, StatusAlat, JenisTransaksi
 if TYPE_CHECKING:
     from .akses import User, PenugasanKandang
     from .masterdata import BahanPakan
-    from .operasional import SiklusKandang, Formulasi, Perintah
+    from .operasional import SiklusKandang, Perintah
 
 
 def utc_now():
@@ -43,7 +43,7 @@ class Alat(SQLModel, table=True):
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     kandang_id: uuid.UUID = Field(foreign_key="kandang.id", unique=True, index=True)
-    device_token: str = Field(unique=True, index=True)
+    device_token_hash: str = Field(unique=True, index=True)  # SHA-256 hex; token mentah tidak disimpan
     status: StatusAlat = Field(default=StatusAlat.OFFLINE)
     versi_jadwal_aktif: Optional[int] = None  # disiapkan untuk Fase 2, tidak dipakai di MVP
     waktu_terakhir_sinkron: Optional[datetime] = None

@@ -24,7 +24,7 @@ from app.services.hapus import (
 )
 from app.services.perintah import deteksi_offline
 from app.services.paginasi import Paginasi, terapkan
-from app.services.auth import get_current_user, get_current_pemilik
+from app.services.auth import get_current_user, get_current_pemilik, hash_device_token
 
 router = APIRouter(tags=["Kandang & Alat"])
 
@@ -204,7 +204,7 @@ def register_alat(
     Mendaftarkan alat IoT ke sebuah kandang.
     device_token di-generate dan HANYA DIKEMBALIKAN SEKALI di endpoint ini.
     """
-    kandang = _get_kandang_or_404(session, id, current_pemilik)
+    _get_kandang_or_404(session, id, current_pemilik)  # validasi kepemilikan
     
     # Cek apakah sudah ada alat (karena 1 kandang = max 1 alat di skema kita, unique index)
     existing_alat = session.exec(select(Alat).where(Alat.kandang_id == id)).first()
@@ -214,14 +214,22 @@ def register_alat(
     new_token = secrets.token_hex(32)
     alat = Alat(
         kandang_id=id,
-        device_token=new_token,
+        device_token_hash=hash_device_token(new_token),
     )
-    
+
     session.add(alat)
     session.commit()
     session.refresh(alat)
-    
-    return alat
+
+    # Token mentah hanya ada di respons ini; di database hanya hash-nya.
+    return AlatWithToken(
+        id=alat.id,
+        kandang_id=alat.kandang_id,
+        status=alat.status,
+        versi_jadwal_aktif=alat.versi_jadwal_aktif,
+        waktu_terakhir_sinkron=alat.waktu_terakhir_sinkron,
+        device_token=new_token,
+    )
 
 
 @router.post("/alat/{id}/rotasi-token", response_model=TokenRotasiResponse)
@@ -239,7 +247,7 @@ def rotasi_token_alat(
     _get_kandang_or_404(session, alat.kandang_id, current_pemilik)
     
     new_token = secrets.token_hex(32)
-    alat.device_token = new_token
+    alat.device_token_hash = hash_device_token(new_token)
     session.add(alat)
     session.commit()
     

@@ -21,6 +21,8 @@ Legenda severity: **K** = Kritis (fitur inti gagal / data salah), **T** = Tinggi
 
 ## B. Temuan
 
+> **Fase 4 (2 Nov 2026):** S-10, S-11 (user NONAKTIF ditolak + rate-limit; `WAJIB_GANTI_SANDI` tidak ditegakkan karena tidak ada alur yang mengisinya), S-16, R-1 (sebagian), R-2, R-3 (`/health/db`; log terstruktur belum), R-4 selesai. Token alat kini di-hash. Lihat [operasional](../panduan/operasional.md).
+
 > **T-4 selesai (1 Nov 2026):** `POST /formulasi` kini hanya memakai komposisi dari klien dan menghitung ulang semua nilai di server. Temuan baru tentang DELETE: lihat [06](06-analisis-endpoint-delete.md).
 
 > **Pembaruan 1 Nov 2026 (branch `fitur/fase-1-logika-inti`):** temuan bertanda ✅ sudah diperbaiki dan diuji
@@ -65,22 +67,22 @@ Legenda severity: **K** = Kritis (fitur inti gagal / data salah), **T** = Tinggi
 | S-7 ✅ *diperbaiki Fase 2, 2 Nov 2026* | `routers/siklus.py:34-53` | `create_siklus` tak cek `kandang.status == AKTIF`; fase tak dibandingkan dengan umur ayam | Tambah cek status; umur→fase boleh ditunda |
 | S-8 ✅ *diperbaiki Fase 2, 2 Nov 2026* | `routers/*` list endpoint | Paginasi `?skip&limit` (kontrak) tak ada di semua list | Dependency `Pagination` bersama (default 20, maks 100) |
 | S-9 ✅ *diperbaiki* | `routers/device.py:56` | `heartbeat_interval_seconds=10` hardcode padahal ada `settings.device_heartbeat_interval_seconds` | Pakai settings |
-| S-10 | `services/auth.py:31-33` | `datetime.utcnow()` deprecated (Python 3.12); `sub=email` rawan bila email diubah | `datetime.now(timezone.utc)`; pertimbangkan `sub=user.id` |
-| S-11 | `routers/auth.py:36-48` | Login tidak menolak `NONAKTIF` (baru ditolak di request berikutnya, 403); `WAJIB_GANTI_SANDI` tak ditegakkan; tak ada rate-limit | Tolak di login; paksa ganti sandi; rate-limit sederhana bila perlu |
+| S-10 ✅ *diperbaiki Fase 4, 2 Nov 2026* | `services/auth.py:31-33` | `datetime.utcnow()` deprecated (Python 3.12); `sub=email` rawan bila email diubah | `datetime.now(timezone.utc)`; pertimbangkan `sub=user.id` |
+| S-11 ✅ *diperbaiki Fase 4, 2 Nov 2026* | `routers/auth.py:36-48` | Login tidak menolak `NONAKTIF` (baru ditolak di request berikutnya, 403); `WAJIB_GANTI_SANDI` tak ditegakkan; tak ada rate-limit | Tolak di login; paksa ganti sandi; rate-limit sederhana bila perlu |
 | S-12 ✅ *diperbaiki (`SQL_ECHO`)* | `database.py:7` | `echo=True` (komentar menyuruh dimatikan sebelum demo) – log SQL berisik & bocor data | Jadikan setting `SQL_ECHO` default `False` |
 | S-13 ✅ *diperbaiki (CORS, `CORS_ORIGINS`)* | `main.py` | Tidak ada CORS → React (origin berbeda) akan diblok browser | `CORSMiddleware` dengan origin dari settings |
 | S-14 ✅ *diperbaiki Fase 1, 1 Nov 2026* | `models/akses.py` `AuditLog` | Tabel ada, tak pernah ditulis (BR-03/BR-34: koreksi stok, penugasan, perubahan status) | Tulis audit di koreksi stok, penugasan, nonaktifkan user |
 | S-15 ✅ *diperbaiki 1 Nov 2026 (P1 DELETE)* | `routers/masterdata.py` DELETE | Hapus `BahanPakan` yang terpasang di wadah / dipakai `FormulasiItem`, atau `Nutrisi` yang dipakai → `IntegrityError` 500 | Cek referensi → 409 dengan pesan |
-| S-16 | `config.py:9` | `jwt_secret` default `"ganti-ini-di-.env"` – app tetap jalan dengan secret lemah | Gagal start bila production & secret default |
+| S-16 ✅ *diperbaiki Fase 4, 2 Nov 2026* | `config.py:9` | `jwt_secret` default `"ganti-ini-di-.env"` – app tetap jalan dengan secret lemah | Gagal start bila production & secret default |
 
 ### Rendah / kebersihan
 
 | ID | Temuan |
 |---|---|
-| R-1 | `docker-compose.yml`: key `version: "3.9"` obsolete di Compose v2; kredensial `admin/popuri123` hardcode & juga ada di `.env.example` (dev saja – beri catatan, jangan dipakai di demo publik). |
-| R-2 | `seed_admin.py` mencetak kredensial default (`admin123`); cukup untuk dev, hindari di demo online. |
-| R-3 | Tidak ada logging terstruktur/`request_id`; tidak ada `/health` yang menyentuh DB. |
-| R-4 | `from_attributes` memakai `class Config` (Pydantic v2 → `model_config = ConfigDict(from_attributes=True)`), muncul sebagai deprecation warning. |
+| R-1 ✅ *sebagian: key `version` dihapus; kredensial compose tetap hanya untuk lokal (Fase 4)* | `docker-compose.yml`: key `version: "3.9"` obsolete di Compose v2; kredensial `admin/popuri123` hardcode & juga ada di `.env.example` (dev saja – beri catatan, jangan dipakai di demo publik). |
+| R-2 ✅ *diperbaiki Fase 4, 2 Nov 2026* | `seed_admin.py` mencetak kredensial default (`admin123`); cukup untuk dev, hindari di demo online. |
+| R-3 ✅ *diperbaiki Fase 4, 2 Nov 2026* | Tidak ada logging terstruktur/`request_id`; tidak ada `/health` yang menyentuh DB. |
+| R-4 ✅ *diperbaiki Fase 4, 2 Nov 2026* | `from_attributes` memakai `class Config` (Pydantic v2 → `model_config = ConfigDict(from_attributes=True)`), muncul sebagai deprecation warning. |
 | R-5 | Docstring/komentar bercampur Indonesia–Inggris; wajar untuk tim, tapi tetapkan satu bahasa di CONVENTIONS. |
 | R-6 | Beberapa endpoint melakukan query berulang per-item (N+1 kecil di `services/device.py` loop item); aman untuk skala MVP. |
 

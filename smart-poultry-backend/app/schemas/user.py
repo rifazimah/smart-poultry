@@ -1,8 +1,7 @@
 import uuid
 from datetime import date, datetime
-from typing import Optional
 
-from pydantic import BaseModel, EmailStr
+from pydantic import ConfigDict, BaseModel, EmailStr
 
 from app.models.enums import PeranUser, StatusUser, StatusPenugasan
 
@@ -16,8 +15,7 @@ class UserPublic(BaseModel):
     status: StatusUser
     dibuat_pada: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserCreate(BaseModel):
@@ -47,5 +45,4 @@ class PenugasanKandangPublic(BaseModel):
     tanggal_mulai: date
     status: StatusPenugasan
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

@@ -9,7 +9,8 @@ endpoint untuk **simulator alat**. Tidak ada endpoint jadwal/pengajuan
 
 - Base URL: `/api/v1`
 - Autentikasi web: **Bearer JWT** di header `Authorization`, didapat dari `POST /auth/login`.
-- Autentikasi alat (simulator): header `X-Device-Token: <device_token>` (bukan JWT — perangkat tidak login sebagai user).
+- Autentikasi alat (simulator): header `X-Device-Token: <device_token>` (bukan JWT — perangkat tidak login sebagai user). Server menyimpan hanya hash SHA-256 token; token mentah hanya muncul di respons pembuatan/rotasi.
+- Health check: `GET /health` (proses hidup, tanpa DB) dan `GET /health/db` (`200 {"status":"ok","database":"ok"}` atau `503` bila database tidak terjangkau). Keduanya tanpa autentikasi, di luar `/api/v1`.
 - Body & response: JSON. Semua `id` adalah UUID string.
 - Semua angka uang: `number` (desimal), dikirim sebagai string di JSON kalau presisi jadi masalah — untuk MVP cukup `number` biasa.
 - Error: `{"detail": "pesan"}` dengan status code HTTP standar (400 validasi, 401 tidak terautentikasi, 403 tidak berizin, 404 tidak ditemukan, 409 konflik state, 422 validasi body).
@@ -32,7 +33,7 @@ endpoint untuk **simulator alat**. Tidak ada endpoint jadwal/pengajuan
 
 | Method | Path | Body | Response | Catatan |
 |---|---|---|---|---|
-| POST | `/auth/login` | `{email, kata_sandi}` | `{access_token, token_type, user}` | Menerima JSON murni. |
+| POST | `/auth/login` | `{email, kata_sandi}` | `{access_token, token_type, user}` | Menerima JSON murni. `401` email/kata sandi salah; `403` user `NONAKTIF`; `429` + header `Retry-After` setelah 5 percobaan gagal per email+alamat klien dalam 300 detik (in-memory per proses) |
 | GET | `/auth/me` | — | `User` | Butuh JWT |
 | POST | `/auth/ganti-kata-sandi` | `{kata_sandi_lama, kata_sandi_baru}` | 204 | Butuh JWT |
 

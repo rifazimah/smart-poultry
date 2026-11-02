@@ -3,7 +3,7 @@ from app.models.operasional import FormulasiItem
 from app.models.operasional import Formulasi
 from app.models.akses import User
 import uuid
-from typing import List, Dict, Optional
+from typing import List, Dict
 
 from sqlmodel import Session, select
 from scipy.optimize import linprog
@@ -32,7 +32,7 @@ def _get_alat_and_bahan(session: Session, kandang_id: uuid.UUID):
         raise FormulasiException("Kandang belum memiliki Alat IoT", 409)
 
     wadah_list = session.exec(
-        select(Wadah).where(Wadah.alat_id == alat.id, Wadah.bahan_pakan_id != None)
+        select(Wadah).where(Wadah.alat_id == alat.id, Wadah.bahan_pakan_id.is_not(None))
     ).all()
     
     if not wadah_list:
@@ -221,7 +221,6 @@ def hitung_formulasi_manual(
     kebutuhan, standar = _get_kebutuhan_and_standar(session, siklus.fase_id)
     
     bahan_ids_available = {b.id for b in bahan_list}
-    bahan_map = {b.id: b for b in bahan_list}
     
     # Validasi input
     total_proporsi = 0.0

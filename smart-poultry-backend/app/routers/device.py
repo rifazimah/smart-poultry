@@ -14,6 +14,7 @@ from app.schemas.perintah import (
     DeviceHeartbeatRequest, DeviceHeartbeatResponse, DeviceLogRequest,
     DeviceConfig, LogEksekusiPublic, PerintahPublic
 )
+from app.services.auth import hash_device_token
 from app.services.notifikasi import notify
 from app.services.perintah import expire_perintah, ubah_status
 
@@ -25,7 +26,7 @@ def get_device_by_token(
     x_device_token: str = Header(...),
     session: Session = Depends(get_session)
 ) -> Alat:
-    alat = session.exec(select(Alat).where(Alat.device_token == x_device_token)).first()
+    alat = session.exec(select(Alat).where(Alat.device_token_hash == hash_device_token(x_device_token))).first()
     if not alat:
         raise HTTPException(status_code=401, detail="Invalid Device Token")
     return alat

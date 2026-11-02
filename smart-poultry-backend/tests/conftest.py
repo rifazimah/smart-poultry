@@ -94,6 +94,15 @@ def _bersihkan_data():
         conn.execute(text("TRUNCATE " + ", ".join(f'"{t}"' for t in tabel) + " CASCADE"))
 
 
+@pytest.fixture(autouse=True)
+def _reset_pembatas_login():
+    """Pembatas login bersifat in-memory per proses; kosongkan agar test tidak saling memengaruhi."""
+    from app.services.ratelimit import pembatas_login
+    pembatas_login.bersihkan()
+    yield
+    pembatas_login.bersihkan()
+
+
 @pytest.fixture
 def client():
     with TestClient(app) as c:

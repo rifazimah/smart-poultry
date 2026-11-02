@@ -165,7 +165,10 @@ Hampir semua nilai bawaan sudah benar untuk lokal. Yang perlu dicek:
 |---|---|---|
 | `DATABASE_URL` | Alamat database kerja | Bawaan `...@localhost:5432/smart_poultry`. Ubah port bila memakai `POSTGRES_PORT` lain. **Host harus `localhost`**, bukan IP WSL |
 | `TEST_DATABASE_URL` | Database untuk `pytest` (opsional) | Kosong = otomatis `smart_poultry_test` di server yang sama; **nama wajib berakhiran `_test`** |
-| `JWT_SECRET` | Penanda token login | Ganti dengan string acak: `python -c "import secrets; print(secrets.token_urlsafe(48))"` |
+| `ENVIRONMENT` | `development` (bawaan) atau `production` | Pada `production` aplikasi menolak start bila `JWT_SECRET` lemah; lihat [operasional](operasional.md) |
+| `JWT_SECRET` | Penanda token login | Ganti dengan string acak: `python -c "import secrets; print(secrets.token_urlsafe(48))"` (production: ≥ 32 karakter) |
+| `LOGIN_MAX_GAGAL`, `LOGIN_JENDELA_DETIK` | Pembatas login gagal | Bawaan 5 percobaan / 300 detik, lalu 429 |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Akun untuk `seed_admin.py` | Kosongkan password di development untuk memakai `admin123`; lihat bagian 8 |
 | `DEVICE_HEARTBEAT_INTERVAL_SECONDS` | Interval heartbeat alat | 10 |
 | `PERINTAH_TIMEOUT_*`, `ALAT_OFFLINE_AFTER_SECONDS` | Batas waktu perintah dan alat offline | Bawaan 60 / 300 / 0 (=3× heartbeat) |
 | `SQL_ECHO` | Cetak SQL ke terminal | `true` hanya saat debugging |
@@ -235,6 +238,8 @@ pytest -q
 - Jangan menimpa `TEST_DATABASE_URL` dengan database berisi data penting.
 - Bila server database tidak terjangkau, `pytest` berhenti dalam ±5 detik dengan pesan `Tidak bisa tersambung ke Postgres ...` (di jalur B: cek [sesi WSL](#khusus-jalur-b-docker-di-wsl-ubuntu)).
 - Satu file: `pytest tests/test_alur_inti.py -q`; satu test: `pytest -k nama_test -q`.
+- **Lint**: `ruff check .` (sudah terpasang lewat `requirements-dev.txt`). CI menjalankan lint, migrasi, dan test yang sama pada setiap PR; lihat [operasional](operasional.md#6-lint-dan-ci).
+- **Backend di Docker (opsional)**: `docker compose --profile app up -d --build`; lihat [operasional](operasional.md#2-menjalankan-backend-di-docker).
 
 ## 12. Berbagi data tanpa database bersama
 
@@ -310,6 +315,9 @@ python seed_admin.py && python seed_demo.py
 | `RuntimeError: Nama database test harus berakhiran '_test'` | `TEST_DATABASE_URL` menunjuk ke database yang bukan `*_test` | Perbaiki nama, atau kosongkan variabel itu |
 | Login `/docs` gagal 401 | `seed_admin.py` belum dijalankan atau database di-reset | `python seed_admin.py` |
 | `POST /kandang/{id}/perintah/beri-makan` → 409 "Alat sedang OFFLINE" | Belum ada heartbeat dari alat | Jalankan simulator atau panggil `/device/heartbeat` |
+| `ValidationError ... JWT_SECRET` saat start | `ENVIRONMENT=production` dengan secret bawaan/pendek | Isi `JWT_SECRET` acak ≥ 32 karakter, atau pakai `ENVIRONMENT=development` untuk lokal |
+| Login 429 "Terlalu banyak percobaan" | 5 percobaan gagal dalam 5 menit untuk email+alamat yang sama | Tunggu sesuai `Retry-After`; atau restart server (pembatas ada di memori) |
+| Container `backend` `unhealthy` / keluar | Database belum siap, `DATABASE_URL` salah, atau guard production | `docker compose --profile app logs backend` |
 | Peringatan `LF will be replaced by CRLF` | Normal di Windows | Abaikan |
 
 Bila masih macet, kumpulkan keluaran `docker compose ps`, `alembic current`, dan pesan galat lengkap, lalu tanyakan ke tim.
@@ -337,7 +345,7 @@ docker compose logs -f db            # log database
 
 Panduan ini diuji 2 November 2026 dengan simulasi "anggota baru": clone bersih, venv baru, `pip install -r requirements-dev.txt`,
 Docker Engine di WSL Ubuntu 24.04 (jalur B) dengan proyek compose terpisah, `alembic upgrade head` dari database kosong, `seed_admin.py`, `seed_demo.py` (dua kali),
-`uvicorn` + `/health` + login, `pytest -q` (99 test lulus, database test dibuat otomatis, data database kerja tetap utuh), serta `pg_dump` dan restore ke database lain maupun di atas data yang sama.
+`uvicorn` + `/health` + login, `pytest -q` (99 test lulus pada saat itu; kini 169 dengan lint dan CI, database test dibuat otomatis, data database kerja tetap utuh), serta `pg_dump` dan restore ke database lain maupun di atas data yang sama.
 Simulasi itu menemukan dan memperbaiki: pembatasan `bcrypt`, pembuatan database test otomatis, dan penyebab menggantungnya perintah (WSL idle).
 
 **Belum diuji**: jalur A (Docker Desktop) dan jalur C (Linux native), serta macOS; langkahnya mengikuti perilaku standar Docker dan Python.

@@ -2,6 +2,7 @@ import uuid
 from typing import Annotated, List
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
+from sqlalchemy import delete
 from sqlmodel import Session, select
 
 from app.database import get_session
@@ -216,7 +217,7 @@ def upsert_kebutuhan_nutrisi_fase(
     get_entity_or_404(session, JenisAyam, fase.jenis_ayam_id, current_pemilik.id)
 
     # Delete existing requirements for this phase
-    session.query(KebutuhanNutrisiFase).filter(KebutuhanNutrisiFase.fase_id == id).delete()
+    session.exec(delete(KebutuhanNutrisiFase).where(KebutuhanNutrisiFase.fase_id == id))
 
     new_items = []
     for item in data_in:
@@ -381,10 +382,10 @@ def upsert_kandungan_nutrisi_bahan(
     current_pemilik: Annotated[User, Depends(get_current_pemilik)],
     session: Annotated[Session, Depends(get_session)]
 ):
-    bahan = get_entity_or_404(session, BahanPakan, id, current_pemilik.id)
+    get_entity_or_404(session, BahanPakan, id, current_pemilik.id)
 
     # Delete existing requirements for this ingredient
-    session.query(KandunganNutrisiBahan).filter(KandunganNutrisiBahan.bahan_pakan_id == id).delete()
+    session.exec(delete(KandunganNutrisiBahan).where(KandunganNutrisiBahan.bahan_pakan_id == id))
 
     new_items = []
     for item in data_in:

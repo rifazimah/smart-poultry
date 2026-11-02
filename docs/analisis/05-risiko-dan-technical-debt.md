@@ -12,7 +12,7 @@ Skala: Kemungkinan (K) & Dampak (D) 1–3; skor = K×D.
 | RS-5 (teratasi Fase 1) | Alat tampak ONLINE padahal mati / perintah macet PENDING → demo "hang" | 2 | 3 | 6 | Lazy timeout + OFFLINE efektif | Dev backend |
 | RS-6 | Perubahan skema (enum/`pemilik_id`) bertentangan dengan aturan "model final" | 2 | 2 | 4 | Minta persetujuan eksplisit; migrasi Alembic autogenerate | Product owner |
 | RS-7 | Estimasi waktu frontend meleset (tim kecil, 1 bulan) | 3 | 2 | 6 | Potong UI ke alur demo saja (lihat roadmap Fase 5), pakai komponen siap pakai | Tim |
-| RS-8 (masih terbuka; staging online ditunda, lihat D-10) | Deploy demo tertunda karena platform belum dipilih | 2 | 2 | 4 | Putuskan di akhir Fase 2; siapkan Dockerfile lebih awal | Tim |
+| RS-8 (sebagian: Dockerfile + CI siap, staging online ditunda, lihat D-10) | Deploy demo tertunda karena platform belum dipilih | 2 | 2 | 4 | Putuskan di akhir Fase 2; siapkan Dockerfile lebih awal | Tim |
 | RS-9 | Data nutrisi salah satuan membuat LP infeasible tanpa petunjuk | 2 | 2 | 4 | Seed data demo tervalidasi + pesan diagnosis (S-1) | Dev backend |
 
 ## 2. Technical debt (urut prioritas bayar)
@@ -37,4 +37,5 @@ Skala: Kemungkinan (K) & Dampak (D) 1–3; skor = K×D.
 | D-7 | Hosting demo | Railway / Render / Fly | Render atau Railway (Postgres managed) |
 | D-8 | Simulator online saat demo? | Lokal / deploy | Lokal saat presentasi + rekaman cadangan |
 | D-9 | State management React | Context/TanStack Query/Redux | TanStack Query (cocok dengan pola polling) |
+| D-11 | Fase 4: cakupan hardening, migrasi container, CI | — | **DIPUTUSKAN (2 Nov 2026):** login NONAKTIF + rate-limit in-memory, seed admin tanpa password bawaan di production, hash token alat; migrasi Alembic otomatis saat container start; CI = lint + migrasi + test (tanpa build image) |
 | D-10 | Database untuk tim | Satu DB bersama (Supabase/VPS) / DB lokal per anggota | **DIPUTUSKAN (2 Nov 2026): DB lokal (Docker) per anggota**; panduan lengkap di [setup-backend](../panduan/setup-backend.md). Staging online (Supabase + hosting backend) ditunda sampai ada kebutuhan demo bersama; saat itu pakai DB staging terpisah dari DB lokal dan jangan dipakai untuk test |

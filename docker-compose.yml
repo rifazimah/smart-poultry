@@ -34,5 +34,22 @@ services:
       timeout: 5s
       retries: 5
 
+  # Backend dalam container (opsional). Tidak ikut menyala pada `docker compose up -d` biasa; jalankan dengan:
+  #   docker compose --profile app up -d --build
+  # Migrasi Alembic dijalankan otomatis saat container start. Panduan: docs/panduan/operasional.md
+  backend:
+    profiles: ["app"]
+    build: ./smart-poultry-backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://admin:popuri123@db:5432/smart_poultry
+      JWT_SECRET: ${JWT_SECRET:-dev-only-ganti-di-production}
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
 volumes:
   smart_poultry_pgdata:

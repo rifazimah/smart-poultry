@@ -1,6 +1,6 @@
 import uuid
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import ConfigDict, BaseModel
 from datetime import datetime
 
 from app.models.enums import StatusKandang, StatusAlat
@@ -24,8 +24,7 @@ class KandangPublic(BaseModel):
     lokasi: Optional[str] = None
     status: StatusKandang
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class KandangDetailPublic(KandangPublic):
@@ -41,8 +40,7 @@ class AlatPublic(BaseModel):
     versi_jadwal_aktif: Optional[int] = None
     waktu_terakhir_sinkron: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class WadahDetailPublic(BaseModel):
@@ -82,5 +80,4 @@ class WadahPublic(BaseModel):
     nomor_wadah: int
     bahan_pakan_id: Optional[uuid.UUID] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

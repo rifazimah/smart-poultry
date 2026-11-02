@@ -85,7 +85,7 @@ def test_riwayat_perintah_tanpa_alat_total_nol(client, pemilik):
 
 
 def test_kandang_pekerja_dipaginasi_sesuai_penugasan(client, pemilik):
-    d = buat_master(client, pemilik)
+    buat_master(client, pemilik)
     ids = [post(client, pemilik, "/kandang", {"nama": f"K{i}"})["id"] for i in range(3)]
     post(client, pemilik, "/users", {"nama": "Budi", "email": "budi@example.com", "kata_sandi": "budi12345", "role": "PEKERJA"})
     budi = get(client, pemilik, "/users")[0]["id"]

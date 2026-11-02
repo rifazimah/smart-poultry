@@ -82,7 +82,9 @@ KISS di AGENTS.md).
 
 Tidak ada staging/CI-CD bertingkat untuk MVP ini — ini keputusan sadar
 karena waktu 1 bulan (lihat diskusi tim), bukan sesuatu yang "belum
-sempat dikerjakan". Jangan membangun pipeline CI/CD kecuali diminta.
+sempat dikerjakan". Pengecualian yang diminta tim pada Fase 4: satu workflow GitHub Actions
+ringan (lint + migrasi + test) dan Dockerfile backend; lihat `docs/panduan/operasional.md`.
+Jangan menambah pipeline CI/CD lain kecuali diminta.
 
 ## Keputusan teknis yang sudah final (jangan diganti tanpa konfirmasi)
 
@@ -90,7 +92,7 @@ sempat dikerjakan". Jangan membangun pipeline CI/CD kecuali diminta.
 - **Migrasi**: Alembic, selalu lewat `--autogenerate`, tidak pernah SQL manual
 - **LP solver**: `scipy.optimize.linprog` (lihat detail constraint di CONVENTIONS.md)
 - **Auth manusia**: JWT (python-jose) + password hashing bcrypt (passlib)
-- **Auth alat**: token string statis per alat, dikirim lewat header kustom
+- **Auth alat**: token string statis per alat (disimpan sebagai hash SHA-256), dikirim lewat header kustom
 - **Tidak ada caching layer** (Redis, dsb.) — skala data MVP ini kecil, tidak perlu
 - **Tidak ada background job queue** (Celery, dsb.) — semua operasi MVP cukup cepat untuk dijalankan langsung di request/response
 
