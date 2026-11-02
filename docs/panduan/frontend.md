@@ -70,7 +70,24 @@ Commit kedua berkas. Dua pengaman: tes backend `tests/test_openapi_snapshot.py` 
 Ditegakkan oleh `npm run check:size` (juga di CI): JS awal ≤ 200 KB gzip, CSS awal ≤ 30 KB gzip. Hanya berkas yang dimuat langsung oleh `index.html` yang dihitung; halaman dimuat malas (lazy). Pengukuran saat 5A selesai: JS awal ±116 KB, CSS ±5 KB. Tambah dependensi besar hanya bila perlu.
 
 ## Deploy hemat
-Hasil build berupa berkas statis, jadi tidak butuh server aplikasi: cukup hosting statis (Netlify, Cloudflare Pages, GitHub Pages, atau Nginx kecil). Atur `VITE_API_BASE_URL` ke alamat backend publik saat build, dan tambahkan origin frontend ke CORS backend. Untuk rute SPA, hosting harus mengarahkan semua path ke `index.html`.
+Hasil build berupa berkas statis, jadi tidak butuh server aplikasi: cukup hosting statis (Netlify, Cloudflare Pages, GitHub Pages, atau Nginx kecil). Atur `VITE_API_BASE_URL` ke alamat backend publik saat build, dan tambahkan origin frontend ke CORS backend (`CORS_ORIGINS`, daftar JSON). Untuk rute SPA, hosting harus mengarahkan semua path ke `index.html`.
+
+### Nginx dalam Docker (bila di-host sendiri)
+`frontend/Dockerfile` membangun aplikasi lalu menyajikannya dengan Nginx (`frontend/nginx.conf`: fallback SPA ke `index.html`, gzip, aset ber-hash di-cache setahun, `index.html` tidak di-cache). Build gagal bila melampaui anggaran ukuran bundle.
+```bash
+VITE_API_BASE_URL=http://localhost:8000 docker compose --profile web up -d --build web   # buka http://localhost:8080
+docker compose --profile web down
+```
+`WEB_PORT` mengubah port (bawaan 8080). Alamat backend ditanam saat build, jadi ubah lalu build ulang bila berpindah server. Tambahkan origin frontend ke `CORS_ORIGINS` backend (bawaan compose sudah mencakup `http://localhost:8080`).
+
+## Satuan data
+Stok dan berat per sesi dari server bersatuan **gram**; UI menampilkan gram atau kg otomatis (`formatBerat`). Kandungan nutrisi bahan dinyatakan per kg bahan, dan proporsi/batas maksimum bahan berupa pecahan 0–1.
+
+## Uji ujung ke ujung (manual)
+Backend + simulator + frontend dengan database sementara (jangan DB dev):
+1. Migrasi dan seed demo ke DB uji, jalankan `uvicorn` di port bebas (mis. 18000), simulator `--interval 3`, dan `VITE_API_BASE_URL=http://localhost:18000 npm run dev`.
+2. Masuk sebagai Pemilik → detail kandang → formulasi → Hitung otomatis → Simpan → Beri makan; status perintah berubah sendiri sampai Sukses, stok berkurang sebesar berat per sesi, dan notifikasi "Perintah sukses" muncul.
+Hasil uji 2 Nov 2026 sesuai skenario ini.
 
 ## Catatan keamanan dependensi
 `npm audit` melaporkan 3 temuan tingkat moderat pada rantai `openapi-typescript` → `@redocly/openapi-core` → `minimatch`. Paket ini hanya dipakai saat generate tipe (devDependency), tidak masuk ke bundle produksi. Perbaikan otomatis (`audit fix --force`) menurunkan versi `openapi-typescript` dan merusak generate, jadi ditunda sampai ada rilis perbaikan.

@@ -19,6 +19,7 @@ export function useAlatKandang(id: string) {
   return useQuery({
     queryKey: ["kandang", id, "alat"],
     queryFn: async () => (await ambil(api.GET("/api/v1/kandang/{id}/alat", { params: { path: { id } } }))).data ?? null,
+    refetchInterval: 15_000, // status ONLINE/OFFLINE berubah di luar UI; polling jarang cukup
   });
 }
 

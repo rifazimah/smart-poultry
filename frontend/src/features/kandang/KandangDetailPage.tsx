@@ -7,7 +7,7 @@ import { Badge, type NadaBadge } from "../../components/ui/badge";
 import { Card } from "../../components/ui/card";
 import { Spinner } from "../../components/ui/spinner";
 import { EmptyState, ErrorState } from "../../components/ui/states";
-import { formatAngka, formatTanggal, formatWaktu } from "../../lib/format";
+import { formatAngka, formatBerat, formatTanggal, formatWaktu } from "../../lib/format";
 import {
   useAlatKandang,
   useKandang,
@@ -80,7 +80,7 @@ function BagianStok({ id }: { id: string }) {
           <Card className="flex items-center justify-between gap-3">
             <div className="min-w-0">
               <p className="truncate font-medium text-stone-800">{s.nama_bahan ?? "Wadah tanpa bahan"}</p>
-              <p className="text-sm text-stone-500">{formatAngka(s.jumlah_estimasi, "kg")}</p>
+              <p className="text-sm text-stone-500">{formatBerat(s.jumlah_estimasi)}</p>
             </div>
             {menipis(s) && <Badge nada="peringatan">Menipis</Badge>}
           </Card>

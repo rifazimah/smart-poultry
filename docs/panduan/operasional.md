@@ -32,7 +32,7 @@ Khusus compose: `POSTGRES_PORT` (default 5432), `BACKEND_PORT` (default 8000).
 ```bash
 docker compose --profile app up -d --build      # build image + jalankan db dan backend
 docker compose ps                                # backend harus "healthy"
-docker compose --profile app logs -f backend
+docker compose --profile app logs -f backend   # frontend statis ada di profil `web`, lihat docs/panduan/frontend.md
 docker compose --profile app down                # hentikan (data DB tetap); tambahkan -v untuk menghapus data
 ```
 Backend tersedia di `http://localhost:8000` (ubah dengan `BACKEND_PORT`). Mulai-ulang tidak perlu migrasi manual: lihat bagian 3.
