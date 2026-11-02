@@ -57,6 +57,7 @@ npm run gen:api                       # menulis src/api/schema.d.ts
 Commit kedua berkas. Dua pengaman: tes backend `tests/test_openapi_snapshot.py` gagal bila `openapi.json` tertinggal, dan CI frontend gagal bila `schema.d.ts` tidak sesuai `openapi.json`.
 
 ## Perilaku penting
+- Formulasi: hasil hitung hanya pratinjau sampai tombol Simpan ditekan; status `TIDAK_SEMPURNA` datang sebagai respons 200 dengan `pesan` diagnosis, bukan galat. Proporsi manual diketik dalam persen dan dikirim sebagai pecahan 0–1.
 - Token JWT disimpan di `localStorage`; sesi dipulihkan lewat `GET /auth/me` saat aplikasi dibuka.
 - Respons 401 pada request terautentikasi (selain login) memaksa keluar dan menampilkan toast "Sesi berakhir".
 - Pesan galat dipetakan di `api/errors.ts` (`pesanGalat`): 422, 403, 429 (memakai `Retry-After`), galat server, dan jaringan.
