@@ -28,6 +28,8 @@ class NutrisiHasilOutput(BaseModel):
     batas_min: Optional[float] = None
     batas_max: Optional[float] = None
     status: StatusNutrisi
+    # Hanya pada preview TIDAK_SEMPURNA hasil diagnosis (S-1): penjelasan nutrisi yang bermasalah.
+    keterangan: Optional[str] = None
 
 
 class FormulasiPreview(BaseModel):
