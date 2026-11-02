@@ -85,6 +85,8 @@ Tujuan: alur inti tidak crash.
 | 4.5 Hardening | Secret wajib, token alat di-hash (opsional), rate-limit login (opsional), hapus kredensial default dari demo publik |
 
 ## Fase 5 — Frontend React (paralel, ±2 minggu)
+
+> **Analisis 2 Nov 2026:** perbandingan dengan frontend referensi, rekomendasi stack, celah API (A1–A8), dan rencana bertahap 5A–5H ada di [analisis/07-analisis-frontend.md](../analisis/07-analisis-frontend.md). Urutan di bawah adalah rencana awal; rincian terbaru mengikuti dokumen itu.
 Urutan halaman (nilai demo tertinggi dulu):
 1. Login & layout (JWT di memori + refresh manual; interceptor 401).
 2. Dashboard kandang (status alat, siklus aktif, stok ringkas, notifikasi).
