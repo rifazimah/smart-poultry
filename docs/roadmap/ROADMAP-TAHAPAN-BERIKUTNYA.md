@@ -86,6 +86,8 @@ Tujuan: alur inti tidak crash.
 
 ## Fase 5 — Frontend React (paralel, ±2 minggu)
 
+> **Progres 2 Nov 2026:** 5B selesai (endpoint baca A1–A5). 5A (fondasi frontend) sedang dikerjakan di branch terpisah.
+
 > **Analisis 2 Nov 2026:** perbandingan dengan frontend referensi, rekomendasi stack, celah API (A1–A8), dan rencana bertahap 5A–5H ada di [analisis/07-analisis-frontend.md](../analisis/07-analisis-frontend.md). Urutan di bawah adalah rencana awal; rincian terbaru mengikuti dokumen itu.
 Urutan halaman (nilai demo tertinggi dulu):
 1. Login & layout (JWT di memori + refresh manual; interceptor 401).

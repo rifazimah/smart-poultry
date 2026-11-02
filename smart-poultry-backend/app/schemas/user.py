@@ -46,3 +46,10 @@ class PenugasanKandangPublic(BaseModel):
     status: StatusPenugasan
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class PenugasanDetailPublic(PenugasanKandangPublic):
+    """Penugasan + nama pekerja dan kandang agar daftar dapat ditampilkan tanpa request tambahan."""
+    nama_pekerja: str
+    email_pekerja: str
+    nama_kandang: str

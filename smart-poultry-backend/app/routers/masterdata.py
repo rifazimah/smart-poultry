@@ -1,5 +1,5 @@
 import uuid
-from typing import Annotated, List
+from typing import Annotated, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy import delete
@@ -17,8 +17,8 @@ from app.schemas.masterdata import (
     NutrisiCreate, NutrisiUpdate, NutrisiPublic,
     BahanPakanCreate, BahanPakanUpdate, BahanPakanPublic,
     StandarKonsumsiCreateUpdate, StandarKonsumsiPublic,
-    KandunganNutrisiBahanInput, KandunganNutrisiBahanPublic,
-    KebutuhanNutrisiFaseInput, KebutuhanNutrisiFasePublic
+    KandunganNutrisiBahanInput, KandunganNutrisiBahanPublic, KandunganNutrisiBahanDetail,
+    KebutuhanNutrisiFaseInput, KebutuhanNutrisiFasePublic, KebutuhanNutrisiFaseDetail
 )
 from app.models.fisik import Wadah
 from app.models.operasional import FormulasiItem, FormulasiNutrisiHasil, SiklusKandang
@@ -405,3 +405,67 @@ def upsert_kandungan_nutrisi_bahan(
         session.refresh(obj)
         
     return new_items
+
+
+# --- BACA data relasi (untuk layar edit di UI) ---
+@router.get("/fase/{id}/kebutuhan-nutrisi", response_model=List[KebutuhanNutrisiFaseDetail])
+def get_kebutuhan_nutrisi_fase(
+    id: uuid.UUID,
+    current_pemilik: Annotated[User, Depends(get_current_pemilik)],
+    session: Annotated[Session, Depends(get_session)]
+):
+    """Kebutuhan nutrisi sebuah fase beserta nama dan satuan nutrisi (urut nama nutrisi)."""
+    fase = session.get(Fase, id)
+    if not fase:
+        raise HTTPException(status_code=404, detail="Fase tidak ditemukan")
+    get_entity_or_404(session, JenisAyam, fase.jenis_ayam_id, current_pemilik.id)
+    rows = session.exec(
+        select(KebutuhanNutrisiFase, Nutrisi)
+        .join(Nutrisi, Nutrisi.id == KebutuhanNutrisiFase.nutrisi_id)
+        .where(KebutuhanNutrisiFase.fase_id == id)
+        .order_by(Nutrisi.nama, KebutuhanNutrisiFase.id)
+    ).all()
+    return [
+        KebutuhanNutrisiFaseDetail(
+            id=k.id, fase_id=k.fase_id, nutrisi_id=k.nutrisi_id, batas_min=k.batas_min, batas_max=k.batas_max,
+            nama_nutrisi=n.nama, satuan=n.satuan,
+        )
+        for k, n in rows
+    ]
+
+
+@router.get("/fase/{id}/standar-konsumsi", response_model=Optional[StandarKonsumsiPublic])
+def get_standar_konsumsi_fase(
+    id: uuid.UUID,
+    current_pemilik: Annotated[User, Depends(get_current_pemilik)],
+    session: Annotated[Session, Depends(get_session)]
+):
+    """Standar konsumsi fase; `null` bila belum diatur."""
+    fase = session.get(Fase, id)
+    if not fase:
+        raise HTTPException(status_code=404, detail="Fase tidak ditemukan")
+    get_entity_or_404(session, JenisAyam, fase.jenis_ayam_id, current_pemilik.id)
+    return session.exec(select(StandarKonsumsi).where(StandarKonsumsi.fase_id == id)).first()
+
+
+@router.get("/bahan-pakan/{id}/nutrisi", response_model=List[KandunganNutrisiBahanDetail])
+def get_kandungan_nutrisi_bahan(
+    id: uuid.UUID,
+    current_pemilik: Annotated[User, Depends(get_current_pemilik)],
+    session: Annotated[Session, Depends(get_session)]
+):
+    """Kandungan nutrisi sebuah bahan pakan beserta nama dan satuan nutrisi (urut nama nutrisi)."""
+    get_entity_or_404(session, BahanPakan, id, current_pemilik.id)
+    rows = session.exec(
+        select(KandunganNutrisiBahan, Nutrisi)
+        .join(Nutrisi, Nutrisi.id == KandunganNutrisiBahan.nutrisi_id)
+        .where(KandunganNutrisiBahan.bahan_pakan_id == id)
+        .order_by(Nutrisi.nama, KandunganNutrisiBahan.id)
+    ).all()
+    return [
+        KandunganNutrisiBahanDetail(
+            id=k.id, bahan_pakan_id=k.bahan_pakan_id, nutrisi_id=k.nutrisi_id, nilai_per_kg=k.nilai_per_kg,
+            nama_nutrisi=n.nama, satuan=n.satuan,
+        )
+        for k, n in rows
+    ]

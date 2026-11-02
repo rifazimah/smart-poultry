@@ -163,15 +163,17 @@ Keputusan: aplikasi harus murah dijalankan karena hanya tugas kuliah (tidak perl
 
 ## 8. Celah API untuk UI (harus ditambah di backend)
 
+> **Status 2 Nov 2026:** A1–A5 **sudah ditambahkan** (tahap 5B, branch `fitur/fase-5b-endpoint-baca`, 16 test) dan tercatat di `API_CONTRACT.md`. A6–A8 belum dikerjakan.
+
 Dibuktikan dengan memeriksa OpenAPI (`main`, 76 operasi). Semuanya baca-saja atau kecil; belum ada di `API_CONTRACT.md` sehingga perlu persetujuan (aturan AGENTS).
 
 | # | Celah | Mengapa UI membutuhkannya | Usulan | Prioritas |
 |---|---|---|---|---|
-| A1 | Tidak ada `GET /fase/{id}/kebutuhan-nutrisi` | Tidak bisa menampilkan/mengedit kebutuhan nutrisi fase yang sudah ada (hanya `PUT` replace) | `GET` mengembalikan `KebutuhanNutrisiFase[]` (+ nama nutrisi, satuan) | **P1** |
-| A2 | Tidak ada `GET /fase/{id}/standar-konsumsi` | Idem untuk standar konsumsi | `GET` → `StandarKonsumsi \| null` | **P1** |
-| A3 | Tidak ada `GET /bahan-pakan/{id}/nutrisi` | Idem untuk kandungan nutrisi bahan | `GET` → `KandunganNutrisiBahan[]` (+ nama nutrisi) | **P1** |
-| A4 | Tidak ada `GET /siklus/{id}/populasi` | Daftar catatan populasi untuk memilih yang salah dan dihapus (`DELETE .../populasi/{pid}` butuh id) | `GET` berpaginasi, terbaru dulu | **P1** |
-| A5 | Tidak ada daftar penugasan | `DELETE /penugasan/{id}` butuh id; UI perlu "kandang milik pekerja" dan "pekerja di kandang" | `GET /kandang/{id}/penugasan` dan/atau `GET /users/{id}/penugasan` | **P1** |
+| A1 ✅ | Tidak ada `GET /fase/{id}/kebutuhan-nutrisi` | Tidak bisa menampilkan/mengedit kebutuhan nutrisi fase yang sudah ada (hanya `PUT` replace) | `GET` mengembalikan `KebutuhanNutrisiFase[]` (+ nama nutrisi, satuan) | **P1** |
+| A2 ✅ | Tidak ada `GET /fase/{id}/standar-konsumsi` | Idem untuk standar konsumsi | `GET` → `StandarKonsumsi \| null` | **P1** |
+| A3 ✅ | Tidak ada `GET /bahan-pakan/{id}/nutrisi` | Idem untuk kandungan nutrisi bahan | `GET` → `KandunganNutrisiBahan[]` (+ nama nutrisi) | **P1** |
+| A4 ✅ | Tidak ada `GET /siklus/{id}/populasi` | Daftar catatan populasi untuk memilih yang salah dan dihapus (`DELETE .../populasi/{pid}` butuh id) | `GET` berpaginasi, terbaru dulu | **P1** |
+| A5 ✅ | Tidak ada daftar penugasan | `DELETE /penugasan/{id}` butuh id; UI perlu "kandang milik pekerja" dan "pekerja di kandang" | `GET /kandang/{id}/penugasan` dan/atau `GET /users/{id}/penugasan` | **P1** |
 | A6 | Tidak ada `GET /kandang/{id}/siklus` (riwayat) dan `GET /siklus/{id}` | Riwayat siklus lampau; tautan ke formulasi siklus lama | `GET` berpaginasi + detail | P2 |
 | A7 | Tidak ada `PATCH /users/{id}` / reset kata sandi pekerja | Pemilik tidak bisa memperbaiki nama/email atau mengatur ulang sandi Pekerja yang lupa | `PATCH` (nama, email) + `POST .../reset-sandi` | P2 |
 | A8 | Tidak ada ringkasan dashboard | Dashboard memanggil beberapa endpoint per kandang | Cukup request paralel dulu; endpoint agregat hanya bila lambat | P3 (ditunda) |
