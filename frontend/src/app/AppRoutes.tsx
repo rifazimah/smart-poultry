@@ -18,6 +18,8 @@ const NotifikasiPage = lazy(() => import("../features/notifikasi/NotifikasiPage"
 const MasterDataPage = lazy(() => import("../features/master-data/MasterDataPage"));
 const JenisAyamDetailPage = lazy(() => import("../features/master-data/JenisAyamDetailPage"));
 
+const PekerjaPage = lazy(() => import("../features/pekerja/PekerjaPage"));
+
 const memuat = (
   <div className="py-10 text-center">
     <Spinner label="Memuat halaman..." />
@@ -93,6 +95,16 @@ export function AppRoutes() {
             <ProtectedRoute peran={["PEMILIK"]}>
               <Suspense fallback={memuat}>
                 <JenisAyamDetailPage />
+              </Suspense>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="pekerja"
+          element={
+            <ProtectedRoute peran={["PEMILIK"]}>
+              <Suspense fallback={memuat}>
+                <PekerjaPage />
               </Suspense>
             </ProtectedRoute>
           }
