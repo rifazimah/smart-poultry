@@ -100,7 +100,7 @@ sequenceDiagram
 - Variabel: proporsi `x_i ∈ [0, batas_maksimum_i ∪ 1]` untuk bahan terpasang di wadah; objektif `min Σ harga_i·x_i`; `Σ x_i = 1`;
   per nutrisi `min ≤ Σ k_ij·x_i ≤ max`. Solver `linprog(method="highs")`.
 - `berat_per_sesi_i = x_i × (gram/ekor/hari × populasi ÷ frekuensi)` → gram per sesi per bahan.
-- Kelebihan: sederhana, deterministik, cepat. Batasan: tidak ada batas minimum per bahan, tidak ada kendala kapasitas wadah / stok tersedia, tidak ada diagnosis infeasible (S-1).
+- Kelebihan: sederhana, deterministik, cepat. Batasan: tidak ada batas minimum per bahan, tidak ada kendala kapasitas wadah / stok tersedia. Saat infeasible, `services/diagnosis_formulasi.py` menjelaskan nutrisi yang bermasalah (rentang yang mungkin per nutrisi + LP elastis untuk kompromi; S-1).
 - Rekomendasi: tambahkan kendala stok (opsional), tampilkan nutrisi yang paling "jauh" saat infeasible, uji unit dengan kasus emas (contoh jagung+bungkil kedelai+dedak).
 
 ## 6. Keamanan (ringkas)

@@ -166,6 +166,11 @@ Aturan salin: nutrisi dicocokkan berdasarkan **nama** (tanpa membedakan huruf) d
 ```
 
 - Kalau LP **tidak feasible**: response tetap `200`, `status = "TIDAK_SEMPURNA"`, `item = []`, `pesan` berisi daftar nutrisi yang tidak terpenuhi (BR-11). **Bukan** error HTTP, karena ini hasil valid dari proses (bukan kegagalan request).
+  Diagnosis (S-1): `nutrisi_hasil[]` memuat **semua** nutrisi kebutuhan fase dengan `status` (`KURANG`/`BERLEBIH`/`SESUAI`), `nilai_hasil`, dan field baru `keterangan` (null bila tidak bermasalah). Tiga jenis temuan:
+  1. *Mustahil sendiri*: batas di luar rentang yang mungkin dengan bahan terpasang (mis. protein min 60% padahal bahan terbaik hanya 44%) → `nilai_hasil` = nilai terbaik yang mungkin, `keterangan` "tidak tercapai ...".
+  2. *Berbenturan*: tiap batas mungkin sendiri-sendiri, tidak bersama → `nilai_hasil` dari komposisi kompromi terdekat (pelanggaran relatif terkecil), `keterangan` "Berbenturan ...", `pesan` memuat "saling bertentangan". Nutrisi yang disebut hanyalah salah satu pilihan kompromi.
+  3. *Batas maksimum bahan*: jumlah `batas_maksimum` bahan terpasang < 100% → `nutrisi_hasil = []`, `pesan` menyebut persentasenya.
+  `nilai_hasil` pada preview ini bukan formulasi yang dapat disimpan (`item` kosong; `POST /formulasi` menolak dengan `400`).
 - `harga` kosong pada salah satu bahan yang terpasang di wadah → endpoint otomatis balas `409` dengan pesan bahan mana yang belum ada harganya.
 - Endpoint `/formulasi` (simpan) menolak (`409`) kalau sejak preview dibuat ada bahan yang dilepas dari wadah — mencegah snapshot menyimpan data yang sudah tidak valid.
 

@@ -71,7 +71,7 @@ Di luar cakupan MVP: Super Admin, role dinamis, penjadwalan, notifikasi eksterna
 | BR-02/03 | Pemilik membuat Pekerja; penugasan ke kandang | `users.py` | ⚠️ (T-1..T-3) |
 | BR-08 | Harga wajib untuk mode otomatis | `formulasi.py` (409) | ✅ |
 | BR-09 | Total proporsi = 1, hanya bahan terpasang di wadah | `formulasi.py` | ✅ |
-| BR-11 | Infeasible → 200 `TIDAK_SEMPURNA` + daftar nutrisi gagal | `formulasi.py` | ⚠️ (S-1) |
+| BR-11 | Infeasible → 200 `TIDAK_SEMPURNA` + daftar nutrisi gagal | `formulasi.py`, `diagnosis_formulasi.py` | ✅ |
 | BR-13 | Template referensi | — | ❌ |
 | BR-14 | `berat_per_sesi = proporsi × gram/ekor/hari × populasi ÷ frekuensi` | `formulasi.py` | ✅ |
 | BR-24/26 | Satu perintah aktif per alat, alat online | `perintah.py` | ⚠️ (T-7, T-8) |

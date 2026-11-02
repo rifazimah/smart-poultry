@@ -3,7 +3,7 @@
 Sumber kontrak: [`../spesifikasi/API_CONTRACT.md`](../spesifikasi/API_CONTRACT.md). Implementasi: `smart-poultry-backend/app/routers/`.
 > **Pembaruan 1 Nov 2026:** baris yang merujuk T-1, T-2, T-3, T-5..T-12, K-1..K-3 dan S-5/S-9/S-14 sudah diperbaiki
 > (lihat [03](03-review-kode.md)); baris tersebut kini berstatus ✅ kecuali dicatat lain. Masih ❌/⚠️: template (BR-13), paginasi,
-> S-1, S-4, S-6, S-7, S-15 (lihat [06](06-analisis-endpoint-delete.md)).
+> S-4, S-6, S-7, S-15 (lihat [06](06-analisis-endpoint-delete.md)).
 
 > **P1 DELETE (1 Nov 2026):** DELETE master data kini 409 bila dipakai (S-15 selesai); ditambah `PATCH /siklus/{id}` dan `DELETE /siklus/{id}/populasi/{pid}`. Endpoint ini ada di luar kontrak awal dan sudah ditambahkan ke `API_CONTRACT.md`.
 
@@ -40,7 +40,7 @@ Legenda: ✅ sesuai · ⚠️ ada tapi menyimpang/berisiko (rujuk ID temuan di [
 | | | `PATCH /siklus/{id}/fase` | ⚠️ | Logika ada tetapi crash (K-2); tidak membuat notifikasi `PERLU_DITINJAU` (T-11) |
 | | | `POST /siklus/{id}/populasi` | ⚠️ | S-6 |
 | | | `POST /siklus/{id}/selesai` | ⚠️ | K-2 |
-| 6 | Formulasi | `POST /siklus/{id}/formulasi/otomatis` | ⚠️ | K-1, S-1, S-5; harga kosong → 409 ✅ |
+| 6 | Formulasi | `POST /siklus/{id}/formulasi/otomatis` | ✅ | K-1, S-1 (diagnosis infeasible), S-5 selesai; harga kosong → 409 ✅ |
 | | | `POST /siklus/{id}/formulasi/manual` | ⚠️ | K-1; salah validasi total proporsi → 400 (kontrak: 400 validasi ✅) |
 | | | `POST /formulasi` | ⚠️ | K-2, T-4; cek bahan dilepas → 409 ✅ |
 | | | `GET /siklus/{id}/formulasi`, `GET /formulasi/{id}` | ✅ | `FormulasiLengkapPublic` belum memuat `nama_bahan`/`nama_nutrisi` (kontrak menyebut item lengkap) |

@@ -48,10 +48,10 @@ Tujuan: alur inti tidak crash.
 | 1.6 Simpan formulasi aman | Hitung ulang server-side atau verifikasi preview; validasi id | T-4 |
 | 1.7 Notifikasi lengkap | Helper `notify`; kirim ke Pemilik + pekerja ditugaskan; STOK_MENIPIS/KOSONG, ALAT_OFFLINE/ERROR, PERLU_DITINJAU | T-11 |
 | 1.8 Audit | Tulis `AuditLog` untuk koreksi stok, penugasan, ubah status user | S-14 |
-| 1.9 Diagnosis infeasible | Daftar nutrisi bermasalah di `pesan` + `nutrisi_hasil` | S-1 |
+| 1.9 Diagnosis infeasible ✅ | Daftar nutrisi bermasalah di `pesan` + `nutrisi_hasil` | S-1 (selesai 2 Nov 2026) |
 **DoD:** setiap perbaikan punya test (lihat Fase 4) atau skenario manual terdokumentasi; checklist AGENTS (§Checklist) terpenuhi.
 
-**Progres (1 Nov 2026, branch `fitur/fase-1-logika-inti`):** selesai — 1.1 (tenant isolation, `User.pemilik_id`), 1.2 (stok otomatis + backfill), 1.3 (validasi beri makan, stok cukup → 409), 1.4 (state machine, lazy-timeout, alat OFFLINE, stop darurat), 1.5 (idempotensi log 200/201, SKIPPED_STOCK), 1.7 (notifikasi ke Pemilik + pekerja), 1.8 (AuditLog). **1.6 (T-4) selesai.** Belum: 1.9 (diagnosis infeasible, S-1). Tambahan di luar rencana awal: DELETE aman + koreksi siklus (P1 dan P2, lihat [analisis/06](../analisis/06-analisis-endpoint-delete.md)). Test otomatis: 46 test lulus (`pytest`, DB `smart_poultry_test`).
+**Progres (1 Nov 2026, branch `fitur/fase-1-logika-inti`):** selesai — 1.1 (tenant isolation, `User.pemilik_id`), 1.2 (stok otomatis + backfill), 1.3 (validasi beri makan, stok cukup → 409), 1.4 (state machine, lazy-timeout, alat OFFLINE, stop darurat), 1.5 (idempotensi log 200/201, SKIPPED_STOCK), 1.7 (notifikasi ke Pemilik + pekerja), 1.8 (AuditLog). **1.6 (T-4) selesai.** **1.9 (S-1) selesai.** Tambahan di luar rencana awal: DELETE aman + koreksi siklus (P1 dan P2, lihat [analisis/06](../analisis/06-analisis-endpoint-delete.md)). Test otomatis: 46 test lulus (`pytest`, DB `smart_poultry_test`).
 
 ## Fase 2 — Kelengkapan kontrak (±3 hari)
 

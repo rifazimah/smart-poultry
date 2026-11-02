@@ -118,7 +118,7 @@ Total pakan per sesi untuk 100 ekor: 50 g × 100 ÷ 4 = **1250 g**.
 | 6.7 | `GET /formulasi/{formulasi}` | — | `item[]` dan `nutrisi_hasil[]` terisi |
 | 6.8 | `POST /formulasi` | tempel JSON hasil 6.2 | 201; formulasi 6.5 kini `aktif: false` (cek via 6.6), yang baru `aktif: true` |
 
-Opsional – infeasible: ubah kebutuhan Protein fase starter ke `batas_min: 60` (`PUT .../kebutuhan-nutrisi`), jalankan 6.1 → 200 `TIDAK_SEMPURNA`, `item: []`. Kembalikan ke 20–23 setelahnya. (Catatan: `nutrisi_hasil` kosong & pesan generik adalah temuan S-1, belum diperbaiki.)
+Opsional – infeasible: ubah kebutuhan Protein fase starter ke `batas_min: 60` (`PUT .../kebutuhan-nutrisi`), jalankan 6.1 → 200 `TIDAK_SEMPURNA`, `item: []`; `nutrisi_hasil` memuat Protein `KURANG` dengan `nilai_hasil` ≈ 44 dan `keterangan`, dan `pesan` menyebut "Protein (min 60 %; tertinggi yang mungkin 44.00)". Kembalikan ke 20–23 setelahnya.
 
 ## 7. Pindah fase → PERLU_DITINJAU (K-2)
 
@@ -199,6 +199,6 @@ Salin tabel ini, isi PASS/FAIL, dan lampirkan JSON error bila ada 500:
 | 10 Selesai siklus (K-2) | | |
 | 11 Otorisasi | | |
 
-**Kriteria lulus Fase 0:** bagian 0–10 tanpa 500, dan hasil formulasi 6.1/6.2 `VALID`. Penyimpangan yang masih *diperkirakan* (bukan kegagalan): infeasible tanpa rincian nutrisi (S-1) dan `POST /formulasi` yang masih mempercayai preview klien (T-4). Pada bagian 11, `GET /users` kini hanya menampilkan Pekerja milik Pemilik yang login.
+**Kriteria lulus Fase 0:** bagian 0–10 tanpa 500, dan hasil formulasi 6.1/6.2 `VALID`. Penyimpangan yang masih *diperkirakan* (bukan kegagalan): `POST /formulasi` yang masih mempercayai preview klien (T-4). Pada bagian 11, `GET /users` kini hanya menampilkan Pekerja milik Pemilik yang login.
 
 **Bila menemukan 500:** lihat terminal uvicorn (traceback), catat endpoint + body + pesan, lalu kirim ke saya untuk diperbaiki.

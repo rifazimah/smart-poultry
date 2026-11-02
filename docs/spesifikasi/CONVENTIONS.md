@@ -131,9 +131,11 @@ mengembalikan **HTTP 200** (bukan error) dengan:
   "total_biaya_per_kg": null,
   "item": [],
   "nutrisi_hasil": [...],
-  "pesan": "Formulasi tidak dapat memenuhi batas nutrisi: Protein (min 20%), Kalsium (min 3.5%)"
+  "pesan": "Formulasi tidak dapat memenuhi batas nutrisi: Protein (min 60 %; tertinggi yang mungkin 44.00). Tambah bahan pakan berkadar nutrisi yang sesuai, longgarkan batas nutrisi, atau naikkan batas_maksimum bahan."
 }
 ```
+
+`nutrisi_hasil` berisi tiap nutrisi kebutuhan dengan `status` dan `keterangan` hasil diagnosis (`app/services/diagnosis_formulasi.py`); lihat API_CONTRACT bagian 6.
 
 Ini adalah bagian dari alur normal aplikasi — **bukan** kegagalan teknis.
 Jangan gunakan HTTP 4xx/5xx untuk kasus ini.

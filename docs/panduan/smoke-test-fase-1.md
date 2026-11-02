@@ -163,7 +163,7 @@ Harapan: baris `KOREKSI_STOK` (alasan di `catatan`), `BUAT_PENUGASAN`, `UBAH_STA
 | I Isolasi antar-Pemilik | | |
 | J Audit log | | |
 
-**Fase 1 dinyatakan selesai** bila semua bagian A–J sesuai harapan tanpa 500. Hal yang memang belum ada dan tidak dihitung: T-4 (simpan formulasi mempercayai preview), S-1 (infeasible tanpa rincian), STOK_MENIPIS lewat UI (tidak ada endpoint untuk mengatur `ambang_menipis`; sudah teruji otomatis).
+**Fase 1 dinyatakan selesai** bila semua bagian A–J sesuai harapan tanpa 500. Hal yang memang belum ada dan tidak dihitung: STOK_MENIPIS lewat UI (tidak ada endpoint untuk mengatur `ambang_menipis`; sudah teruji otomatis).
 
 ## K. DELETE aman dan koreksi salah input (P1)
 
