@@ -1,6 +1,6 @@
 import secrets
 import uuid
-from typing import Annotated, List
+from typing import Annotated, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy import delete
@@ -12,7 +12,7 @@ from app.models.fisik import Kandang, Alat, Wadah, Stok
 from app.models.enums import PeranUser, StatusPenugasan
 from app.schemas.fisik import (
     KandangCreate, KandangUpdate, KandangPublic, KandangDetailPublic,
-    AlatWithToken, TokenRotasiResponse,
+    AlatWithToken, AlatDetailPublic, WadahDetailPublic, TokenRotasiResponse,
     WadahCreate, WadahUpdate, WadahPublic
 )
 from app.models.masterdata import BahanPakan
@@ -129,6 +129,49 @@ def get_kandang(
         detail.siklus_aktif_status = siklus_aktif.status.value
         
     return detail
+
+
+@router.get("/kandang/{id}/alat", response_model=Optional[AlatDetailPublic])
+def get_alat_kandang(
+    id: uuid.UUID,
+    current_user: Annotated[User, Depends(get_current_user)],
+    session: Annotated[Session, Depends(get_session)],
+):
+    """
+    Alat kandang ini beserta wadah, bahan, dan stok (untuk layar kandang). `null` bila belum ada alat.
+    Status alat sudah memperhitungkan heartbeat kedaluwarsa. `device_token` tidak pernah dikembalikan.
+    """
+    _get_kandang_or_404(session, id, current_user)
+    alat = session.exec(select(Alat).where(Alat.kandang_id == id)).first()
+    if not alat:
+        return None
+    deteksi_offline(session, alat)
+
+    wadah_list = session.exec(select(Wadah).where(Wadah.alat_id == alat.id).order_by(Wadah.nomor_wadah)).all()
+    stok_map = {
+        s.wadah_id: s
+        for s in session.exec(select(Stok).where(Stok.wadah_id.in_([w.id for w in wadah_list]))).all()
+    } if wadah_list else {}
+    bahan_ids = {w.bahan_pakan_id for w in wadah_list if w.bahan_pakan_id}
+    nama_bahan = {
+        b.id: b.nama for b in session.exec(select(BahanPakan).where(BahanPakan.id.in_(bahan_ids))).all()
+    } if bahan_ids else {}
+
+    return AlatDetailPublic(
+        id=alat.id,
+        kandang_id=alat.kandang_id,
+        status=alat.status,
+        versi_jadwal_aktif=alat.versi_jadwal_aktif,
+        waktu_terakhir_sinkron=alat.waktu_terakhir_sinkron,
+        wadah=[WadahDetailPublic(
+            id=w.id,
+            nomor_wadah=w.nomor_wadah,
+            bahan_pakan_id=w.bahan_pakan_id,
+            nama_bahan=nama_bahan.get(w.bahan_pakan_id),
+            jumlah_stok=stok_map[w.id].jumlah_estimasi if w.id in stok_map else 0,
+            ambang_menipis=stok_map[w.id].ambang_menipis if w.id in stok_map else None,
+        ) for w in wadah_list],
+    )
 
 
 @router.patch("/kandang/{id}", response_model=KandangPublic)

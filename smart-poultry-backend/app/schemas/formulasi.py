@@ -61,6 +61,7 @@ class FormulasiPublic(BaseModel):
 class FormulasiItemPublic(BaseModel):
     id: uuid.UUID
     bahan_pakan_id: uuid.UUID
+    nama_bahan: Optional[str] = None
     proporsi: float
     berat_per_sesi: float
 
@@ -71,6 +72,8 @@ class FormulasiItemPublic(BaseModel):
 class FormulasiNutrisiHasilPublic(BaseModel):
     id: uuid.UUID
     nutrisi_id: uuid.UUID
+    nama_nutrisi: Optional[str] = None
+    satuan: Optional[str] = None
     nilai_hasil: float
     status: StatusNutrisi
 

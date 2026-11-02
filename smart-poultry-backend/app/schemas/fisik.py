@@ -1,5 +1,5 @@
 import uuid
-from typing import Optional
+from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -43,6 +43,20 @@ class AlatPublic(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class WadahDetailPublic(BaseModel):
+    id: uuid.UUID
+    nomor_wadah: int
+    bahan_pakan_id: Optional[uuid.UUID] = None
+    nama_bahan: Optional[str] = None
+    jumlah_stok: float = 0
+    ambang_menipis: Optional[float] = None
+
+
+class AlatDetailPublic(AlatPublic):
+    """Alat + wadah + bahan + stok untuk layar kandang. Tidak memuat device_token."""
+    wadah: List[WadahDetailPublic] = []
 
 
 class AlatWithToken(AlatPublic):

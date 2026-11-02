@@ -9,6 +9,7 @@ from app.models.akses import User
 from app.models.enums import StatusFormulasi
 from app.models.operasional import Formulasi, FormulasiItem, FormulasiNutrisiHasil
 from app.models.fisik import Alat, Wadah
+from app.models.masterdata import BahanPakan, Nutrisi
 from app.schemas.formulasi import (
     FormulasiPreview, FormulasiManualRequest, 
     FormulasiLengkapPublic, FormulasiPublic
@@ -96,7 +97,23 @@ def get_formulasi_lengkap(
         raise HTTPException(status_code=404, detail="Formulasi tidak ditemukan")
         
     _get_siklus_or_404(session, form.siklus_id, current_user)
-    return form
+
+    lengkap = FormulasiLengkapPublic.model_validate(form)
+    nama_bahan = {
+        b.id: b.nama
+        for b in session.exec(select(BahanPakan).where(BahanPakan.id.in_([i.bahan_pakan_id for i in lengkap.item]))).all()
+    } if lengkap.item else {}
+    nutrisi = {
+        n.id: n
+        for n in session.exec(select(Nutrisi).where(Nutrisi.id.in_([h.nutrisi_id for h in lengkap.nutrisi_hasil]))).all()
+    } if lengkap.nutrisi_hasil else {}
+    for i in lengkap.item:
+        i.nama_bahan = nama_bahan.get(i.bahan_pakan_id)
+    for h in lengkap.nutrisi_hasil:
+        n = nutrisi.get(h.nutrisi_id)
+        h.nama_nutrisi = n.nama if n else None
+        h.satuan = n.satuan if n else None
+    return lengkap
 
 
 @router.delete("/formulasi/{id}", status_code=status.HTTP_204_NO_CONTENT)
