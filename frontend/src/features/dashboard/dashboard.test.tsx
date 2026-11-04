@@ -61,7 +61,7 @@ describe("dashboard", () => {
     stub();
     server.use(http.get(`${API}/kandang`, () => HttpResponse.json([], { headers: { "X-Total-Count": "0" } })));
     const { unmount } = renderApp("/", { masuk: true });
-    expect(await screen.findByText(/setelah dibuat/)).toBeInTheDocument();
+    expect(await screen.findByText(/Tambah kandang untuk membuat/)).toBeInTheDocument();
     unmount();
 
     stub(PEKERJA);

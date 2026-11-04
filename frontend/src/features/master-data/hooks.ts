@@ -149,9 +149,10 @@ export function useSalinTemplate() {
   });
 }
 
-export function useDaftarFase(jenisId: string) {
+export function useDaftarFase(jenisId: string, aktif = true) {
   return useQuery({
     queryKey: ["md", "jenis-ayam", jenisId, "fase"],
+    enabled: aktif && !!jenisId,
     queryFn: async () =>
       (await ambil(api.GET("/api/v1/jenis-ayam/{id}/fase", { params: { path: { id: jenisId }, query: BATAS } }))).data,
   });

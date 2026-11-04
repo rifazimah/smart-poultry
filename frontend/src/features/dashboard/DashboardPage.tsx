@@ -6,6 +6,7 @@ import { Badge } from "../../components/ui/badge";
 import { Card } from "../../components/ui/card";
 import { Spinner } from "../../components/ui/spinner";
 import { EmptyState, ErrorState } from "../../components/ui/states";
+import { TambahKandang } from "../kandang/AksiKandang";
 import { useDaftarKandang, type Kandang } from "./useKandang";
 
 function KartuKandang({ kandang }: { kandang: Kandang }) {
@@ -31,9 +32,12 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-xl font-bold text-stone-900 sm:text-2xl">Halo, {pengguna?.nama}</h1>
-        <p className="text-sm text-stone-500">Ringkasan kandang Anda.</p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-xl font-bold text-stone-900 sm:text-2xl">Halo, {pengguna?.nama}</h1>
+          <p className="text-sm text-stone-500">Ringkasan kandang Anda.</p>
+        </div>
+        {pengguna?.role === "PEMILIK" && <TambahKandang />}
       </div>
 
       {isPending && (
@@ -47,7 +51,7 @@ export default function DashboardPage() {
           judul="Belum ada kandang"
           pesan={
             pengguna?.role === "PEMILIK"
-              ? "Kandang akan tampil di sini setelah dibuat."
+              ? "Klik Tambah kandang untuk membuat kandang pertama Anda."
               : "Anda belum ditugaskan ke kandang mana pun. Hubungi Pemilik."
           }
         />

@@ -3,7 +3,7 @@
 Menguji aplikasi web (`frontend/`) bersama backend, simulator alat, dan data demo. Skenario ini juga menyentuh perilaku Fase 3 (simulator) dan Fase 4 (login NONAKTIF, rate-limit, health) yang terlihat dari UI.
 Perilaku API Fase 2 (template, paginasi, kode error) punya panduan tersendiri: [smoke-test-fase-2.md](smoke-test-fase-2.md). Waktu total ±60–75 menit.
 
-> **Status:** kode diuji otomatis (194 test backend, 73 test frontend) dan satu alur ujung ke ujung (login → formulasi otomatis → simpan → beri makan lewat simulator → stok turun → notifikasi) pernah dijalankan di browser nyata.
+> **Status:** kode diuji otomatis (194 test backend, 90 test frontend) dan satu alur ujung ke ujung (login → formulasi otomatis → simpan → beri makan lewat simulator → stok turun → notifikasi) pernah dijalankan di browser nyata.
 > Skenario di bawah **belum pernah dijalankan manusia secara lengkap**. Catat setiap baris yang tidak sesuai di [lembar temuan](#lembar-temuan) pada akhir dokumen.
 
 ## 0. Persiapan
@@ -60,10 +60,9 @@ python simulator/run.py --device-token <TOKEN> --interval 3
 | B.3 | Bagian **Alat dan wadah** | Status alat (**Offline** bila simulator belum jalan), `Sinkron terakhir: -`, Wadah 1–4 berurutan dengan nama bahan: Jagung, Bungkil Kedelai, Dedak, Tepung Batu |
 | B.4 | Bagian **Stok pakan** | `20 kg`, `10 kg`, `10 kg`, `2 kg` (stok disimpan dalam gram; tampil g atau kg otomatis) |
 | B.5 | Bagian **Siklus pemeliharaan** | Jenis ayam **Broiler**, Fase **Starter**, Jumlah ayam **100**, tanggal mulai hari ini; **Riwayat populasi** `Belum ada perubahan populasi.`; tombol **Beri makan** dan **Kelola formulasi pakan** |
-| B.6 | (Opsional, via Swagger) `PATCH /wadah/{id}` `{"ambang_menipis": 25000}` pada wadah Jagung, lalu muat ulang detail | Kartu Jagung memiliki lencana **Menipis** (stok 20 kg ≤ ambang 25 kg) |
-| B.7 | (Opsional, via Swagger) `POST /siklus/{siklus}/populasi` `{"jenis":"MORTALITAS","jumlah":3,"tanggal":"<hari ini>","catatan":"Uji"}`, muat ulang | Riwayat populasi menampilkan `Mortalitas · Uji` dan `3 ekor`; jumlah ayam menjadi **97** |
+| B.6 | Di bagian **Siklus pemeliharaan**, klik **Catat populasi**: Jenis Mortalitas, Jumlah `3`, catatan `Uji` → **Simpan** | Toast **Perubahan populasi dicatat**; Riwayat populasi menampilkan `Mortalitas · Uji` dan `3 ekor`; jumlah ayam menjadi **97** |
 
-> Setelah B.7, jumlah ayam 97 membuat berat per sesi menjadi 1.212,5 g; angka di bagian C–D di bawah mengikuti 100 ekor. Lewati B.7 atau sesuaikan hitungan.
+> Setelah B.6, jumlah ayam 97 membuat berat per sesi menjadi 1.212,5 g; angka di bagian C–D di bawah mengikuti 100 ekor. Lewati B.6 atau sesuaikan hitungan (atau hapus catatannya di L.11).
 
 ## C. Formulasi pakan (Pemilik)
 
@@ -196,6 +195,34 @@ DevTools → mode perangkat (lebar ±375 px) atau kecilkan jendela.
 | J.4 | Dialog (mis. Tambah nutrisi) | Muat di layar, bisa ditutup dengan Esc dan tombol **Tutup**; fokus keyboard tetap di dalam dialog |
 | J.5 | Navigasi hanya dengan keyboard (Tab/Enter) di halaman masuk dan dashboard | Semua tombol dan tautan dapat dijangkau dengan indikator fokus terlihat |
 
+## L. Membangun data dari nol lewat UI (5I)
+
+Pemilik dapat menyiapkan kandang sampai beri makan tanpa Swagger atau `seed_demo.py`. Skenario ini paling jelas bila database hanya berisi akun Pemilik (`python seed_admin.py`) ditambah master data (nutrisi, bahan beserta kandungan, jenis ayam dengan fase Starter, kebutuhan nutrisi, dan standar konsumsi; bisa dari Master data di UI atau tombol **Salin dari template** lalu isi harga dan kandungan bahan).
+
+| # | Aksi | Harapan |
+|---|---|---|
+| L.1 | Dashboard saat belum ada kandang | Teks `Klik Tambah kandang untuk membuat kandang pertama Anda.` dan tombol **Tambah kandang** (hanya untuk Pemilik) |
+| L.2 | **Tambah kandang**: nama `Kandang Uji`, lokasi `Blok Uji` → **Simpan** | Toast **Kandang dibuat** dan langsung berpindah ke halaman detailnya; tombol **Ubah kandang**, **Nonaktifkan**, **Hapus kandang** tampil |
+| L.3 | **Daftarkan alat** | Dialog **Token alat** dengan token panjang dan peringatan bahwa token tidak akan ditampilkan lagi; **tetap terbuka** walau daftar alat di belakangnya sudah berubah menjadi kartu alat (Offline). Catat token, klik **Sudah saya simpan** |
+| L.4 | **Rotasi token** → **Batal**; ulangi → **Buat token baru** | Batal: tidak ada perubahan. Buat token baru: dialog token baru tampil; token lama tidak berlaku lagi untuk simulator |
+| L.5 | **Tambah wadah**: nomor terisi otomatis (berikutnya), pilih bahan **Jagung** → **Simpan** | Toast **Wadah ditambahkan**; muncul **Wadah 1 · Jagung** dan kartu stok **Jagung 0 g** dengan tombol **Isi ulang**, **Koreksi**, **Riwayat** |
+| L.6 | Tambahkan wadah 2–4 (Bungkil Kedelai, Dedak, Tepung Batu) | Wadah dan kartu stok bertambah; **Ubah bahan** pada satu wadah mengganti bahannya (toast **Bahan wadah disimpan**) |
+| L.7 | **Isi ulang Jagung**: jumlah `0` → **Simpan** | Galat `Jumlah harus berupa angka lebih dari nol`; tidak terkirim |
+| L.8 | Isi ulang Jagung `20` (kg) | Toast **Stok diisi ulang**; stok tampil **20 kg**. Isi ulang tiga wadah lain (10, 10, 2 kg) |
+| L.9 | **Koreksi Dedak**: jumlah `9,5`, alasan dikosongkan → **Simpan** | Ditolak oleh isian wajib (alasan harus diisi); setelah alasan diisi, stok Dedak menjadi **9,5 kg** |
+| L.10 | **Riwayat Jagung** | Daftar transaksi: **Isi ulang** 20 kg; setelah beri makan, **Pengeluaran** dalam gram (mis. 737,4 g) |
+| L.11 | **Mulai siklus**: pilih jenis ayam → daftar **Fase** terisi (terurut umur) → pilih Starter, jumlah `100`, tanggal hari ini | Toast **Siklus dimulai**; muncul Jenis ayam, Fase, Jumlah ayam 100; tombol **Catat populasi**, **Ganti fase**, **Koreksi siklus**, **Selesaikan siklus**, **Hapus siklus** |
+| L.12 | **Catat populasi**: Mortalitas, `3` | Jumlah ayam 97; baris riwayat dengan tombol **Hapus** (Pemilik) |
+| L.13 | **Hapus** catatan itu → **Hapus** | Toast **Catatan populasi dihapus**; jumlah ayam kembali 100 |
+| L.14 | **Ganti fase** ke Grower | Toast **Fase diganti**; pada halaman formulasi, formulasi lama berstatus **Perlu ditinjau** (bila ada). Kembalikan ke Starter |
+| L.15 | **Koreksi siklus**: jumlah `98` → **Simpan** | Jumlah ayam 98 (hanya untuk membetulkan salah input) |
+| L.16 | Hitung dan simpan formulasi, jalankan simulator dengan token dari L.3/L.4, lalu **Beri makan** | Seperti bagian D: status berubah sampai **Sukses**, stok berkurang, notifikasi muncul |
+| L.17 | **Hapus alat** (setelah ada perintah) | Dialog menampilkan penolakan server (alat sudah punya riwayat perintah atau stok belum 0) |
+| L.18 | **Selesaikan siklus** → **Batal**, lalu ulangi → **Selesaikan** | Batal: tetap aktif. Selesaikan: toast **Siklus diselesaikan**; kandang kembali **Kandang kosong** dengan tombol **Mulai siklus** |
+| L.19 | **Nonaktifkan** kandang lalu **Aktifkan** lagi | Lencana berubah **Nonaktif**/**Aktif**; toast sesuai |
+| L.20 | **Hapus kandang** pada kandang yang sudah punya siklus | Ditolak dengan alasan di dialog (sarannya: nonaktifkan). Kandang baru tanpa siklus/alat dapat dihapus dan kembali ke dashboard |
+| L.21 | Sebagai Pekerja yang ditugaskan: buka detail kandang | Terlihat **Isi ulang/Koreksi/Riwayat** dan **Catat populasi**; **tidak** terlihat Ubah/Hapus kandang, Tambah wadah, Rotasi token, Hapus alat, Mulai siklus, Ganti fase, Koreksi/Selesaikan/Hapus siklus |
+
 ## K. Membersihkan dan mengulang
 
 - Hanya data uji: hapus manual lewat UI (bagian F dan G sudah membersihkan sebagian) atau abaikan.
@@ -210,4 +237,4 @@ Salin tabel ini; isi satu baris per langkah yang tidak sesuai harapan (sertakan 
 |---|---|---|---|---|
 | | | | | |
 
-Hal yang sangat berguna untuk dilaporkan walaupun tidak "salah": teks yang membingungkan, langkah yang terasa lambat (>3 detik tanpa indikator), tombol yang tidak jelas fungsinya, dan data yang tidak bisa dibuat dari UI (kandang baru, alat, siklus, stok) yang kamu butuhkan saat menguji.
+Hal yang sangat berguna untuk dilaporkan walaupun tidak "salah": teks yang membingungkan, langkah yang terasa lambat (>3 detik tanpa indikator), tombol yang tidak jelas fungsinya, dan data yang kamu butuhkan saat menguji tetapi tidak bisa dibuat dari UI.
