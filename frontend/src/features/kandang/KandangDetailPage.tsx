@@ -1,5 +1,5 @@
 import { ArrowLeft } from "lucide-react";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ApiError, pesanGalat } from "../../api/errors";
 import { useAuth } from "../../auth/auth-context";
@@ -8,6 +8,10 @@ import { Card } from "../../components/ui/card";
 import { Spinner } from "../../components/ui/spinner";
 import { EmptyState, ErrorState } from "../../components/ui/states";
 import { formatAngka, formatBerat, formatTanggal, formatWaktu } from "../../lib/format";
+import { AksiAlat, AksiWadah, DaftarkanAlat, TokenDialog } from "./AksiAlat";
+import { AksiKandang } from "./AksiKandang";
+import { AksiSiklus, HapusPopulasi, MulaiSiklus } from "./AksiSiklus";
+import { AksiStok } from "./AksiStok";
 import {
   useAlatKandang,
   useKandang,
@@ -43,11 +47,30 @@ function menipis(s: Stok): boolean {
   return s.ambang_menipis != null && s.jumlah_estimasi <= s.ambang_menipis;
 }
 
-function BagianAlat({ id }: { id: string }) {
+function BagianAlat({ id, pemilik }: { id: string; pemilik: boolean }) {
+  // Token alat baru ditampung di sini (bukan di tombol) karena tombol hilang begitu alat terdaftar dan data dimuat ulang.
+  const [tokenBaru, setTokenBaru] = useState<string | null>(null);
+  return (
+    <>
+      <IsiAlat id={id} pemilik={pemilik} saatTerdaftar={setTokenBaru} />
+      <TokenDialog token={tokenBaru} saatTutup={() => setTokenBaru(null)} />
+    </>
+  );
+}
+
+function IsiAlat({ id, pemilik, saatTerdaftar }: { id: string; pemilik: boolean; saatTerdaftar: (token: string) => void }) {
   const { data, isPending, isError, error, refetch } = useAlatKandang(id);
   if (isPending) return <Memuat label="Memuat alat..." />;
   if (isError) return <ErrorState pesan={pesanGalat(error)} ulangi={() => void refetch()} />;
-  if (!data) return <EmptyState judul="Belum ada alat" pesan="Alat pemberi pakan belum didaftarkan untuk kandang ini." />;
+  if (!data) {
+    return (
+      <EmptyState
+        judul="Belum ada alat"
+        pesan="Alat pemberi pakan belum didaftarkan untuk kandang ini."
+        aksi={pemilik ? <DaftarkanAlat kandangId={id} saatBerhasil={saatTerdaftar} /> : undefined}
+      />
+    );
+  }
   return (
     <Card className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
@@ -60,10 +83,14 @@ function BagianAlat({ id }: { id: string }) {
           .map((w) => (
             <li key={w.id} className="flex items-center justify-between gap-3 py-2 text-sm">
               <span className="font-medium text-stone-800">Wadah {w.nomor_wadah}</span>
-              <span className="text-stone-500">{w.nama_bahan ?? "Belum diisi bahan"}</span>
+              <span className="flex flex-wrap items-center justify-end gap-2">
+                <span className="text-stone-500">{w.nama_bahan ?? "Belum diisi bahan"}</span>
+                {pemilik && <AksiWadah wadah={w} />}
+              </span>
             </li>
           ))}
       </ul>
+      {pemilik && <AksiAlat alat={data} />}
     </Card>
   );
 }
@@ -77,12 +104,15 @@ function BagianStok({ id }: { id: string }) {
     <ul className="grid gap-3 sm:grid-cols-2">
       {data.map((s) => (
         <li key={s.id}>
-          <Card className="flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <p className="truncate font-medium text-stone-800">{s.nama_bahan ?? "Wadah tanpa bahan"}</p>
-              <p className="text-sm text-stone-500">{formatBerat(s.jumlah_estimasi)}</p>
+          <Card className="space-y-2">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="truncate font-medium text-stone-800">{s.nama_bahan ?? "Wadah tanpa bahan"}</p>
+                <p className="text-sm text-stone-500">{formatBerat(s.jumlah_estimasi)}</p>
+              </div>
+              {menipis(s) && <Badge nada="peringatan">Menipis</Badge>}
             </div>
-            {menipis(s) && <Badge nada="peringatan">Menipis</Badge>}
+            <AksiStok stok={s} />
           </Card>
         </li>
       ))}
@@ -98,7 +128,16 @@ function BagianSiklus({ id }: { id: string }) {
 
   if (siklus.isPending) return <Memuat label="Memuat siklus..." />;
   if (siklus.isError) return <ErrorState pesan={pesanGalat(siklus.error)} ulangi={() => void siklus.refetch()} />;
-  if (!siklus.data) return <EmptyState judul="Kandang kosong" pesan="Belum ada siklus pemeliharaan yang aktif." />;
+  if (!siklus.data) {
+    return (
+      <EmptyState
+        judul="Kandang kosong"
+        pesan="Belum ada siklus pemeliharaan yang aktif."
+        aksi={pengguna?.role === "PEMILIK" ? <MulaiSiklus kandangId={id} /> : undefined}
+      />
+    );
+  }
+  const pemilik = pengguna?.role === "PEMILIK";
 
   return (
     <div className="space-y-3">
@@ -124,6 +163,7 @@ function BagianSiklus({ id }: { id: string }) {
         <Fakta label="Jumlah ayam" nilai={formatAngka(siklus.data.jumlah_ayam)} />
         <Fakta label="Mulai" nilai={formatTanggal(siklus.data.tanggal_mulai)} />
       </Card>
+      <AksiSiklus siklus={siklus.data} pemilik={pemilik} />
       <h3 className="text-sm font-semibold text-stone-700">Riwayat populasi</h3>
       {populasi.isPending && <Memuat label="Memuat populasi..." />}
       {populasi.isError && <ErrorState pesan={pesanGalat(populasi.error)} ulangi={() => void populasi.refetch()} />}
@@ -139,8 +179,9 @@ function BagianSiklus({ id }: { id: string }) {
                   <span className="font-medium text-stone-800">{LABEL_POPULASI[p.jenis] ?? p.jenis}</span>
                   {p.catatan && <span className="text-stone-500"> · {p.catatan}</span>}
                 </span>
-                <span className="shrink-0 text-stone-500">
+                <span className="flex shrink-0 items-center gap-2 text-stone-500">
                   {formatAngka(p.jumlah)} ekor · {formatTanggal(p.tanggal)}
+                  {pemilik && siklus.data && <HapusPopulasi siklusId={siklus.data.id} populasi={p} />}
                 </span>
               </li>
             ))}
@@ -162,6 +203,8 @@ function Fakta({ label, nilai }: { label: string; nilai: string }) {
 
 export default function KandangDetailPage() {
   const { id = "" } = useParams();
+  const { pengguna } = useAuth();
+  const pemilik = pengguna?.role === "PEMILIK";
   const kandang = useKandang(id);
 
   const tautanKembali = (
@@ -194,8 +237,9 @@ export default function KandangDetailPage() {
         <Badge nada={k.status === "AKTIF" ? "baik" : "netral"}>{k.status === "AKTIF" ? "Aktif" : "Nonaktif"}</Badge>
       </div>
       <p className="-mt-3 text-sm text-stone-500">{k.lokasi || "Lokasi belum diisi"}</p>
+      {pemilik && <AksiKandang kandang={k} />}
       <Bagian judul="Alat dan wadah">
-        <BagianAlat id={id} />
+        <BagianAlat id={id} pemilik={pemilik} />
       </Bagian>
       <Bagian judul="Stok pakan">
         <BagianStok id={id} />

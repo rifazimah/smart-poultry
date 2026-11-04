@@ -11,19 +11,26 @@ export function KonfirmasiHapus({
   saatHapus,
   memuat,
   galat,
+  judul = "Hapus data?",
+  deskripsi,
+  tombol = "Hapus",
 }: {
   nama: string | null;
   saatTutup: () => void;
   saatHapus: () => void;
   memuat: boolean;
   galat: unknown;
+  /** Bawaan untuk hapus; ganti untuk aksi destruktif lain (selesai siklus, rotasi token, ...). */
+  judul?: string;
+  deskripsi?: string;
+  tombol?: string;
 }) {
   return (
     <Dialog
       buka={nama !== null}
       saatBerubah={(b) => !b && saatTutup()}
-      judul="Hapus data?"
-      deskripsi={`"${nama ?? ""}" akan dihapus. Data yang masih dipakai tidak dapat dihapus.`}
+      judul={judul}
+      deskripsi={deskripsi ?? `"${nama ?? ""}" akan dihapus. Data yang masih dipakai tidak dapat dihapus.`}
     >
       {galat != null && (
         <p role="alert" className="mb-3 rounded-lg bg-red-50 p-3 text-sm text-red-800">
@@ -35,7 +42,7 @@ export function KonfirmasiHapus({
           Batal
         </Button>
         <Button varian="bahaya" memuat={memuat} onClick={saatHapus}>
-          Hapus
+          {tombol}
         </Button>
       </div>
     </Dialog>

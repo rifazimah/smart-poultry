@@ -55,3 +55,16 @@ export function formatWaktu(iso: string | null | undefined): string {
     minute: "2-digit",
   }).format(d);
 }
+
+/** Tanggal hari ini menurut zona waktu pengguna, format YYYY-MM-DD (untuk input tanggal). */
+export function hariIni(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+/** Kilogram (teks atau angka dari input) ke gram bulat; kosong/tidak valid -> undefined. */
+export function kgKeGram(teks: string): number | undefined {
+  if (teks.trim() === "") return undefined;
+  const n = Number(teks.replace(",", "."));
+  return Number.isFinite(n) ? Math.round(n * 1000) : undefined;
+}

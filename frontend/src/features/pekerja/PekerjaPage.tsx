@@ -8,7 +8,7 @@ import { Field } from "../../components/ui/field";
 import { Spinner } from "../../components/ui/spinner";
 import { EmptyState, ErrorState } from "../../components/ui/states";
 import { useToast } from "../../components/ui/toast";
-import { formatTanggal } from "../../lib/format";
+import { formatTanggal, hariIni } from "../../lib/format";
 import { useDaftarKandang } from "../dashboard/useKandang";
 import {
   useAkhiriPenugasan,
@@ -26,11 +26,6 @@ const LABEL_STATUS: Record<Pekerja["status"], string> = {
   WAJIB_GANTI_SANDI: "Wajib ganti sandi",
 };
 const NADA_STATUS: Record<Pekerja["status"], NadaBadge> = { AKTIF: "baik", NONAKTIF: "netral", WAJIB_GANTI_SANDI: "peringatan" };
-
-const hariIni = () => {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-};
 
 function Galat({ pesan }: { pesan: string }) {
   return (
